@@ -1,6 +1,4 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿
 
 <div class="login-container">
     <div>
@@ -11,13 +9,16 @@
     <div>
         <h6 class="app-name-text">Auto Verify System</h6>
     </div>
-    <div>
-        <a class="login-button" asp-area="" asp-controller="Home" asp-action="HomeScreen"><span class="login-text">Scan ID/Login</span></a>
+    <div class="packaging">
+        <a class="login-button" asp-area="" asp-controller="Home" asp-action="WorkOrderScan"><span class="login-text">Packaging</span></a>
+    </div>
+       <div>
+        <a class="login-button" asp-area="" asp-controller="Home" asp-action="Index"><span class="login-text">Boxing/Carton</span></a>
     </div>
 </div>
 
-<div class="error-mockup">
-    <a class="login-error-button" asp-area="" asp-controller="Home" asp-action="LoginError"><span class="login-error-text">For Error Scenario</span></a>
+<div class="logout-container">
+    <a class="logout" asp-area="" asp-controller="Home" asp-action="Index"><span class="logout-text">Logout</span></a>
 </div>
 
 @*<div class="text-center">
@@ -25,6 +26,9 @@
 </div>*@
 
 <style>
+    .logout{
+        text-decoration:none;
+    }
     .logo-image{
         width: 353px;
         height: 71px;
@@ -52,7 +56,20 @@
         text-decoration:none;
     }
 
-
+    .login-error-button{
+           display: block;
+        width: 280px;
+        height: 67px;
+        background: #FFDADA;
+        padding: 10px;
+        text-align: center;
+        border-radius: 5px;
+        color: white;
+        font-weight: bold;
+        line-height: 40px;
+        margin:auto;
+        text-decoration:none;
+    }
 
     .login-text{
         font-size:24px;
@@ -63,6 +80,13 @@
         font-size:24px;
         font-weight:500;
         color: orange;
+    }
+
+    .logout-text{
+        font-size:24px;
+        font-weight:500;
+        color:#003C71;
+     
     }
 
     .login-container{
@@ -76,5 +100,15 @@
     .error-mockup{
         position: relative;
         top: 50%;
+    }
+
+    .packaging{
+        padding-top:10px;
+    }
+
+    .logout-container{
+        position:relative;
+        top:50%;
+        padding-left:10px;
     }
 </style>

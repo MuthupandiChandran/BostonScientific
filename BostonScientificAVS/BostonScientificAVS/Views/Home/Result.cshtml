@@ -1,0 +1,539 @@
+﻿
+<div class="main-container row pt-15">
+
+@*<div class="heading">*@
+    <div class="col-7">
+        <div class="image-div">
+           <img src="/assets/images/abeTechHeading.png" class="image-size" />
+           <span class="heading-text"> | Packaging</span>
+        </div>
+    </div>
+    <div class="p-17 col-4">
+        <div class="back-button">
+            <a class="button" asp-area="" asp-controller="Home" asp-action="WorkOrderScan"><img class="back-button-img" src="/assets/images/back-arrow.png" /><span class="back-text">Back</span></a>
+        </div>
+    </div>
+@*</div>*@
+
+<div class="mid-content">
+    <div class="left-content">
+        <div class="count-data">
+            <div class="p-10">
+                <h6 class="processing-lot-text">Processing Lot No. : <span class="processing-lot-no">AAA1234 AA1</span></h6>
+            </div>
+            <div class="data-stat">
+                <div class="data-card p-10">
+                    <div class="data-heading">
+                        <h6 class="data-heading-text">Total</h6>
+
+                    </div>
+                    <hr style="color: #003C71;"/>
+                    <div class="data-val">
+                        <h6 class="data-val-text">12</h6>
+                    </div>
+                </div>
+                <div class="data-card p-10">
+                      <div class="data-heading">
+                        <div>
+                             <h6 class="data-heading-text">Passed</h6>
+                        </div>
+                        <div>
+                             <img src="/assets/images/passed-icon.png" class="pass-icon"/>
+                        </div>
+                    </div>
+                    <hr style="color: #003C71;"/>
+                    <div class="data-val">
+                        <h6 class="data-val-text">09</h6>
+                    </div>
+                </div>
+                <div class="data-card p-10">
+                      <div class="data-heading">
+                          <div>
+                              <h6 class="data-heading-text">Failed</h6>
+                          </div>
+                          <div>
+                             <img src="/assets/images/failed-icon.png" class="pass-icon"/>
+                        </div>
+                    </div>
+                    <hr style="color: #003C71;"/>
+                    <div class="data-val">
+                        <h6 class="data-val-text">01</h6>
+                    </div>
+                </div>
+                <div class="data-card p-10">
+                      <div class="data-heading">
+                          <div>
+                              <h6 class="data-heading-text">Approved</h6>
+                          </div>
+                           <div>
+                             <img src="/assets/images/approved-icon.png" class="pass-icon"/>
+                        </div>
+                    </div>
+                    <hr style="color: #003C71;"/>
+                    <div class="data-val">
+                        <h6 class="data-val-text">02</h6>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    
+        <div class="scanning-icon">
+            <div class="scanning-gif">
+                <img class="barcode-img-size" src="/assets/images/scanning-temp-image.png" />
+            </div>
+            <div class="scanning-instruction">
+                <div class="scanning-text-container temp-button">
+                 <h6 class="scanning-text-1">Place The Product Label </h6>
+                <h6 class="scanning-text-1">under the scanner</h6>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="right-content">
+        <div class="product-spec-container">
+            <div class="product-spec">
+                <div id="before-scan-lot-no">
+                    <img src="/assets/images/before-scanning.png" class="scanning-stage-img-size"/>
+                </div>
+                 <div class="temp-display" id="during-scan-lot-no">
+                    <img src="/assets/images/scanning-stage-icon.png" class="scanning-stage-img-size"/>
+                </div>
+                 <div class="temp-display" id="after-scan-pass-lot-no">
+                    <img src="/assets/images/after-scanned-pass-icon.png" class="scanning-stage-img-size"/>
+                </div>
+                <div>
+                    <h6 class="product-spec-text">Lot Number</h6>
+                </div>
+            </div>
+              <div class="product-spec">
+                 <div id="before-scan-gtin">
+                     <img src="/assets/images/before-scanning.png" class="scanning-stage-img-size"/>
+                </div>
+                 <div class="temp-display" id="during-scan-gtin">
+                    <img src="/assets/images/scanning-stage-icon.png" class="scanning-stage-img-size"/>
+                </div>
+                 <div class="temp-display" id="after-scan-pass-gtin">
+                    <img src="/assets/images/after-scanned-pass-icon.png" class="scanning-stage-img-size"/>
+                </div>
+                <div>
+                    <h6 class="product-spec-text">GTIN</h6>
+                </div>
+            </div>
+              <div class="product-spec">
+                   <div id="before-scan-cat-no">
+                       <img src="/assets/images/before-scanning.png" class="scanning-stage-img-size"/>
+                </div>
+                      <div class="temp-display" id="during-scan-cat-no">
+                    <img src="/assets/images/scanning-stage-icon.png" class="scanning-stage-img-size"/>
+                </div>
+                 <div class="temp-display" id="after-scan-pass-cat-no">
+                    <img src="/assets/images/after-scanned-pass-icon.png" class="scanning-stage-img-size"/>
+                </div>
+                <div>
+                    <h6 class="product-spec-text">Catalogue Number</h6>
+                </div>
+            </div>
+              <div class="product-spec">
+                   <div id="before-scan-label-spec">
+                    <img src="/assets/images/before-scanning.png" class="scanning-stage-img-size"/>
+                </div>
+                      <div class="temp-display" id="during-scan-label-spec">
+                    <img src="/assets/images/scanning-stage-icon.png" class="scanning-stage-img-size"/>
+                </div>
+                 <div class="temp-display" id="after-scan-pass-label-spec">
+                    <img src="/assets/images/after-scanned-pass-icon.png" class="scanning-stage-img-size"/>
+                </div>
+                <div>
+                    <h6 class="product-spec-text">Label Specification</h6>
+                </div>
+            </div>
+              <div class="product-spec">
+                 <div id="before-scan-use-date">
+                    <img src="/assets/images/before-scanning.png" class="scanning-stage-img-size" />
+                </div>
+                 <div class="temp-display" id="during-scan-use-date">
+                    <img src="/assets/images/scanning-stage-icon.png" class="scanning-stage-img-size"/>
+                </div>
+                 <div class="temp-display" id="after-scan-pass-use-date">
+                    <img src="/assets/images/after-scanned-pass-icon.png" class="scanning-stage-img-size"/>
+                </div>
+                <div>
+                     <h6 class="product-spec-text">Use Date</h6>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="loading-and-nav">
+<div id="left-part-before-scan" class="left-part ">
+    <h6 class="scanning-loading-text">
+        Status Indicator
+    </h6>
+</div>
+<div id="left-part-during-scan" class="left-part temp-display">
+    <h6 class="scanning-loading-text">
+        Scanning...
+    </h6>
+</div>
+<div id="left-part-after-scan-pass" class="left-part-pass temp-display">
+    <h6 class="pass-text">
+        Data Verified
+    </h6>
+</div>
+<div class="right-part">
+    <div id="next-scan-button" class="right-part-container temp-reset-button">
+    <h6 class="scanning-next-text">
+      Send To Boxing / Next Scan
+    </h6>
+    </div>
+  
+</div>
+</div>
+
+</div>
+
+<style>
+    .temp-display{
+        display:none;
+    }
+
+    .pt-15{
+        padding-top:15px;
+    }
+
+    .back-button{
+        position: relative;
+        float:right;
+    }
+
+    .main-container{
+        height:100%;
+    }
+
+    .image-div{
+        position:relative;
+        float:right;
+    }
+
+    .heading {
+        display: flex;
+        justify-content: space-around;
+    }
+
+    .image-size {
+        width: 560px;
+        height: 52px;
+    }
+
+    .heading-text {
+        font-size: 27px;
+        vertical-align: -12px;
+    }
+
+
+   .p-17 {
+       padding:17px;
+   }
+
+   .mid-content{
+       display:flex;
+       justify-content:center;
+   }
+
+   .left-content{
+       display:flex;
+       flex-direction: column;
+       width: 772px;
+       color: red;
+   }
+
+   .right-content {
+       width: 402px;
+       color: blue;
+       padding-left:10px;
+   }
+
+   .count-data {
+      height: 201px;
+      background-color: #003C71;
+      border-radius: 10px;
+   }
+
+   .scanning-icon {
+      height: 322px;
+   }
+
+   .processing-lot-text{
+       font-size: 24px;
+       font-weight: 300;
+       color: white;
+   }
+
+   .processing-lot-no{
+       font-weight: 700;
+   }
+
+   .p-10 {
+       padding: 10px;
+   }
+
+   .data-stat{
+      height: 135px;
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+   }
+
+   .data-card{
+        background-color: white;
+        width: 24%;
+        height: 135px;
+        border-radius:10px;
+      }
+   
+    .data-heading{
+        height:21px;
+        display:flex;
+        justify-content:space-between;
+    }
+
+    .data-val{
+        height:80px;
+    }
+
+    .data-heading-text{
+        color: #003C71;
+        font-size: 21px;
+        font-weight:700;
+    }
+
+    .data-val-text{
+         font-size: 60px;
+         font-weight: 600;
+         color: #003C71;
+         text-align: end;
+    }
+
+    .pass-icon{
+        width:21px;
+        height:21px;
+    }
+
+    .barcode-img-size{
+        height:322px;
+        width:322px;
+    }
+
+    .scanning-icon{
+        display:flex;
+        justify-content: space-between;
+        padding-top:10px;
+    }
+
+    .scanning-instruction{
+        width:363px;
+        background-color:#C5C5C5;
+        display: flex;
+        align-items: center;
+        border-radius:10px;
+    }
+
+    .scanning-text-1{
+        font-size:28px;
+        font-weight:700;
+        color:#868686;
+        text-align:center;
+    }
+
+    .scanning-text-container{
+        margin:auto;
+    }
+
+    .product-spec{
+        display: flex;
+        gap: 15px;
+        padding-left: 10px;
+    }
+
+    .scanning-stage-img-size{
+        height:50px;
+        width:50px;
+    }
+
+    .product-spec-container{
+        height: 533px;
+        background-color: #EAF5FF;
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+        padding-top: 20px;
+        border-radius: 10px;
+}
+
+    .product-spec-text{
+        font-size: 30px;
+        font-weight: 600;
+        color: black;
+        padding-top:5px;
+    }
+
+    .loading-and-nav{
+        display:flex;
+        padding-top:10px;
+        justify-content:center; }
+
+    .left-part{
+        border:1px solid;
+        border-color:#003C71;
+        width:772px;
+        height:54px;
+        border-radius:10px;
+    }
+
+    .right-part{
+        width: 402px;
+        padding-left:10px;
+    }
+
+    .right-part-container{
+         background-color:#C5C5C5;
+         height:54px;
+         border-radius:10px;
+    }
+
+    .scanning-loading-text{
+       font-size:24px;
+       font-weight:700;
+       color:#003C71;
+       padding-left: 15px;
+       padding-top:10px;
+    }
+
+    .scanning-next-text{
+        font-size:24px;
+        font-weight:500;
+        color:white;
+        padding-top: 10px;
+        text-align: center;
+    }
+
+     .pr-70{
+        padding-right:70px;
+    }
+
+    .scanning-icon{
+        margin-top: 10px;
+        padding: 14px;
+        background-color: #EAEAEA;
+        border-radius:10px;
+    }
+
+    .left-part-pass{
+        width: 772px;
+        height: 54px;
+        border-radius: 10px;
+        background-color: #00E13F;
+    }
+
+    .pass-text{
+        font-size: 24px;
+        font-weight: 700;
+        color: white;
+        padding-left: 15px;
+        padding-top: 10px;
+    }
+
+</style>
+
+<script>
+let inPassScenario = false;
+
+
+    document.getElementsByClassName('temp-button')[0]
+        .addEventListener('click', function (event) {
+            // do something
+              console.log("clicked");
+            beforeToDuringScan();
+              setTimeout(duringToScanPass, 5000);
+
+        });
+
+     document.getElementsByClassName('temp-reset-button')[0]
+        .addEventListener('click', function (event) {
+            // do something
+              console.log("reset button clicked");
+              if (inPassScenario) {
+                  inPassScenario = false;
+                  resetPassScenario();
+              }
+       
+
+        });
+
+      function beforeToDuringScan() {
+            document.getElementById("before-scan-lot-no").style.display = "none";
+            document.getElementById("during-scan-lot-no").style.display = "block";
+
+            document.getElementById("before-scan-gtin").style.display = "none";
+            document.getElementById("during-scan-gtin").style.display = "block";
+
+            document.getElementById("before-scan-cat-no").style.display = "none";
+            document.getElementById("during-scan-cat-no").style.display = "block";
+
+            document.getElementById("before-scan-label-spec").style.display = "none";
+            document.getElementById("during-scan-label-spec").style.display = "block";
+
+            document.getElementById("before-scan-use-date").style.display = "none";
+            document.getElementById("during-scan-use-date").style.display = "block";
+
+            document.getElementById("left-part-before-scan").style.display = "none";
+            document.getElementById("left-part-during-scan").style.display = "block";
+      }
+
+      function duringToScanPass(){
+          inPassScenario = true;
+            document.getElementById("during-scan-lot-no").style.display = "none";
+            document.getElementById("after-scan-pass-lot-no").style.display = "block";
+
+            document.getElementById("during-scan-gtin").style.display = "none";
+            document.getElementById("after-scan-pass-gtin").style.display = "block";
+
+            document.getElementById("during-scan-cat-no").style.display = "none";
+            document.getElementById("after-scan-pass-cat-no").style.display = "block";
+
+            document.getElementById("during-scan-label-spec").style.display = "none";
+            document.getElementById("after-scan-pass-label-spec").style.display = "block";
+
+            document.getElementById("during-scan-use-date").style.display = "none";
+            document.getElementById("after-scan-pass-use-date").style.display = "block";
+
+            document.getElementById("left-part-during-scan").style.display = "none";
+            document.getElementById("left-part-after-scan-pass").style.display = "block";
+            
+            document.getElementById("next-scan-button").style.backgroundColor = "#003C71";
+      }
+
+      function resetPassScenario() {
+            document.getElementById("after-scan-pass-lot-no").style.display = "none";
+            document.getElementById("before-scan-lot-no").style.display = "block";
+
+            document.getElementById("after-scan-pass-gtin").style.display = "none";
+            document.getElementById("before-scan-gtin").style.display = "block";
+
+            document.getElementById("after-scan-pass-cat-no").style.display = "none";
+            document.getElementById("before-scan-cat-no").style.display = "block";
+
+            document.getElementById("after-scan-pass-label-spec").style.display = "none";
+            document.getElementById("before-scan-label-spec").style.display = "block";
+
+            document.getElementById("after-scan-pass-use-date").style.display = "none";
+            document.getElementById("before-scan-use-date").style.display = "block";
+
+            document.getElementById("left-part-after-scan-pass").style.display = "none";
+            document.getElementById("left-part-before-scan").style.display = "block";
+            
+            document.getElementById("next-scan-button").style.backgroundColor = "#C5C5C5";
+      }
+</script>
