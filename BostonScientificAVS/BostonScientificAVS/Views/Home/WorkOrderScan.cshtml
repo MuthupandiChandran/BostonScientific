@@ -2,17 +2,20 @@
 <div class="main-container row pt-15">
 
 @*<div class="heading">*@
-    <div class="col-7">
-        <div class="image-div">
+    <div class="heading">
+    <div >
+        <div>
            <img src="/assets/images/abeTechHeading.png" class="image-size" />
            <span class="heading-text"> | Packaging</span>
         </div>
     </div>
-    <div class="p-17 col-4">
-        <div class="back-button">
+    <div >
+        <div>
             <a class="button" asp-area="" asp-controller="Home" asp-action="Index"><img class="back-button-img" src="/assets/images/back-arrow.png" /><span class="back-text">Back</span></a>
         </div>
     </div>
+</div>
+
 
     <div class="work-order-scan">
     <div>
@@ -54,6 +57,12 @@
      .heading-text {
         font-size: 27px;
         vertical-align: -12px;
+    }
+
+       .heading {
+        display: flex;
+        gap: 307px;
+        justify-content: center;
     }
 
     .image-div{
