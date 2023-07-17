@@ -23,6 +23,31 @@ namespace BostonScientificAVS.Controllers
             return View();
         }
 
+        public IActionResult Result()
+        {
+            return View();
+        }
+
+        public IActionResult HomeScreen()
+        {
+            return View();
+        }
+
+        public IActionResult WorkOrderScan()
+        {
+            return View();
+        }
+
+        public IActionResult LoginError()
+        {
+            return View();
+        }
+
+        public IActionResult WorkOrderError()
+        {
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
