@@ -1,7 +1,20 @@
+using BostonScientificAVS.Services;
+using Context;
+using DotNetEnv;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+DotNetEnv.Env.Load();
+string DBConStr = Environment.GetEnvironmentVariable("DB_CON_STRING");
+builder.Services.AddDbContext<DataContext>(options =>
+{
+    options.UseSqlServer(DBConStr);
+});
+builder.Services.AddScoped<ItemService>();
 
 var app = builder.Build();
 

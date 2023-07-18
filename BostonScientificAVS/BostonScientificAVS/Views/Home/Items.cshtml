@@ -1,0 +1,155 @@
+﻿@model List<Entity.ItemMaster>
+<h3>Items</h3>
+<table id="itemsTable">
+    <thead>
+        <tr>
+            <th>
+               GTIN
+            </th>
+            <th>
+               Catalog_Num
+            </th>
+            <th>
+                Shelf_Life
+            </th>
+            <th>
+                Label_Spec
+            </th>
+            <th>
+                IFU
+            </th>
+            <th>
+                Edit_Date_Time
+            </th>
+            <th>
+                Edit_By
+            </th>
+            <th>
+                Created
+            </th>
+            <th>
+                Created_by
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+       
+        @foreach(var item in Model)
+        {
+              <tr>
+            <td>  
+                <div data-gtin=@item.GTIN data-column="GTIN" contenteditable="true" id="editor">@item.GTIN</div>
+            </td>
+            <td>
+                @item.Catalog_Num
+            </td>
+            <td>
+                @item.Shelf_Life
+            </td>
+            <td>
+                @item.Label_Spec
+            </td>
+            <td>
+                @item.IFU
+            </td>
+            <td>
+                @item.Edit_Date_Time
+            </td>
+            <td>
+                @item.Edit_By
+            </td>
+            <td>
+                @item.Created
+            </td>
+            <td>
+                @item.Created_by
+            </td>
+        </tr>
+        }
+         <tr>
+            <td><div contenteditable="true" >zgtin</div></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        
+      
+    </tbody>
+</table>
+
+
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.css" />
+  
+<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.js"></script>
+
+<script>
+$(() => {
+  
+  $('#itemsTable').DataTable({});
+
+$(document).on("keypress", "#editor", function(event) {
+    if (event.which === 13) { // Enter key code
+        event.preventDefault(); // Prevent default Enter key behavior
+         $(this).blur(); 
+        var gtinValue = $(this).data("gtin");
+        var columnName = $(this).data("column");
+        console.log(gtinValue);
+        console.log(columnName);
+        var originalValue = $(this).data("original-value");
+        var newValue = $(this).text(); // Get the new value from the editable div
+        // Perform any additional logic or actions with the new value
+        console.log("New value: " + newValue);
+    }
+});
+
+$(document).on("focusout", "#editor", function() {
+    var originalValue = $(this).data("original-value");
+    var currentValue = $(this).text();
+
+    if (originalValue !== currentValue) {
+        // Perform any actions you want with the previous and current values
+        console.log("Previous value: " + originalValue);
+        console.log("Current value: " + currentValue);
+        // You can update the data or make an API call to save the changes here
+
+        // Restore the original value
+        $(this).text(originalValue);
+    }
+});
+
+$(document).on("focusin", "#editor", function() {
+    var currentValue = $(this).text();
+    $(this).data("original-value", currentValue);
+});
+
+function saveData(originalValue, newValue) {
+    // Replace the URL below with your API endpoint
+    var apiUrl = "https://localhost:7157/Home/";
+
+    $.ajax({
+        url: apiUrl,
+        method: "POST",
+        data: {
+            originalValue: originalValue,
+            newValue: newValue
+        },
+        success: function(response) {
+            console.log("Data saved successfully");
+        },
+        error: function(xhr, status, error) {
+            console.log("An error occurred while saving the data:", error);
+        }
+    });
+}
+
+
+})
+
+
+</script>
