@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using BostonScientificAVS.Services;
 using BostonScientificAVS.DTO;
+using Entity;
 
 namespace BostonScientificAVS.Controllers
 {
@@ -58,9 +59,14 @@ namespace BostonScientificAVS.Controllers
         }
 
 
-        [HttpPost("/SaveItem")]
+        [HttpPost("/UpdateItem")]
+        public ActionResult UpdateItem(SingleItemEdit itemToEdit )
+        {
+            return Ok();
+        }
 
-        public ActionResult SaveItem(SingleItemEdit itemToEdit )
+        [HttpPost("/SaveNewItem")]
+        public ActionResult SaveNewItem(ItemMaster item)
         {
             return Ok();
         }
