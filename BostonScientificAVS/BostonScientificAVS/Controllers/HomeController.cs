@@ -58,18 +58,68 @@ namespace BostonScientificAVS.Controllers
             return View(items);
         }
 
+        public PartialViewResult RefreshItemsGrid()
+        {
+            var items = _itemService.getItems();
+            return PartialView("_ItemsTable", items);
+        }
+
 
         [HttpPost("/UpdateItem")]
         public ActionResult UpdateItem(SingleItemEdit itemToEdit )
         {
-            return Ok();
+            try
+            {
+                if (itemToEdit != null)
+                {
+                    _itemService.updateItem(itemToEdit); 
+                }
+                return Ok("Successfully updated item");
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e);
+                return Ok("Error While updating item");
+            }
+           
         }
 
         [HttpPost("/SaveNewItem")]
         public ActionResult SaveNewItem(ItemMaster item)
         {
-            return Ok();
+            try
+            {
+                if (item != null)
+                {
+                    _itemService.saveNewItem(item);
+                }
+                return Ok("success");
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e);
+                return Ok("error while adding item");
+            }
         }
+
+        // MVC Controller action method to handle file upload
+        [HttpPost("/uploadItemsExcel")]
+        public async Task<IActionResult> ImportCSV(IFormFile file)
+        {
+            try
+            {
+                await _itemService.importCsv(file);
+                return Ok();
+            }
+            catch(Exception e)
+            {
+                return Ok("upload failed");
+            }
+            
+            
+        }
+
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

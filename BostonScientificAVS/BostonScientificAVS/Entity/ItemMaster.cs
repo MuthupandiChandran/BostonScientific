@@ -1,6 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Linq.Expressions;
 
 namespace Entity
 {
@@ -20,6 +19,7 @@ namespace Entity
         public string? Edit_By { get; set; }
         public string? Created { get; set; }
         public string? Created_by { get; set; }
+
     }
 
 }

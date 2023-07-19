@@ -1,0 +1,153 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model List<Entity.ItemMaster>
+<table class="table table-bordered table-striped" id="itemsTable">
+    <thead class="text-white bg-custom">
+        <tr>
+            <th>
+               GTIN
+            </th>
+            <th>
+               Catalog_Num
+            </th>
+            <th>
+                Shelf_Life
+            </th>
+            <th>
+                Label_Spec
+            </th>
+            <th>
+                IFU
+            </th>
+            <th>
+                Edit_Date_Time
+            </th>
+            <th>
+                Edit_By
+            </th>
+            <th>
+                Created
+            </th>
+            <th>
+                Created_by
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+       
+        @foreach(var item in Model)
+        {
+              <tr>
+            <td>  
+                <div >@item.GTIN</div>
+            </td>
+            <td>             
+                <div data-gtin=@item.GTIN data-column="Catalog_Num" contenteditable="true" class="editableContent">@item.Catalog_Num</div>
+            </td>
+            <td>
+               
+                <div data-gtin=@item.GTIN data-column="Shelf_Life" contenteditable="true" class="editableContent">@item.Shelf_Life </div>
+            </td>
+            <td>
+                
+                <div data-gtin=@item.GTIN data-column="Label_Spec" contenteditable="true" class="editableContent">@item.Label_Spec</div>
+            </td>
+            <td>
+                
+                <div data-gtin=@item.GTIN data-column="IFU" contenteditable="true" class="editableContent">@item.IFU</div>
+            </td>
+            <td>
+                
+                <div data-gtin=@item.GTIN data-column="Edit_Date_Time" contenteditable="true" class="editableContent">@item.Edit_Date_Time</div>
+            </td>
+            <td>
+                
+                <div data-gtin=@item.GTIN data-column="Edit_By" contenteditable="true" class="editableContent">@item.Edit_By</div>
+            </td>
+            <td>
+                
+                <div data-gtin=@item.GTIN data-column="Created" contenteditable="true" class="editableContent">@item.Created</div>
+            </td>
+            <td>
+                
+                <div data-gtin=@item.GTIN data-column="Created_by" contenteditable="true" class="editableContent">@item.Created_by</div>
+            </td>
+        </tr>
+        }
+        
+        
+      
+    </tbody>
+</table>
+
+<script>
+$(() => {
+    var table = $('#itemsTable').DataTable({
+
+    });
+
+    $(document).on("keypress", ".editableContent", function(event) {
+        if (event.which === 13) { // Enter key code
+            event.preventDefault(); // Prevent default Enter key behavior
+            $(this).blur();
+            var gtinValue = $(this).data("gtin");
+            var columnName = $(this).data("column");
+            console.log(gtinValue);
+            console.log(columnName);
+            var originalValue = $(this).data("original-value");
+            var newValue = $(this).text(); // Get the new value from the editable div
+            // Perform any additional logic or actions with the new value
+            var itemToUpdate = {
+                original_value: originalValue,
+                updated_value: newValue,
+                column_name: columnName,
+                gtin_value: gtinValue
+            }
+            updateItem(itemToUpdate);
+            console.log("New value: " + newValue);
+        }
+    });
+
+    $(document).on("focusout", ".editableContent", function() {
+        var originalValue = $(this).data("original-value");
+        var currentValue = $(this).text();
+
+        if (originalValue !== currentValue) {
+            // Perform any actions you want with the previous and current values
+            console.log("Previous value: " + originalValue);
+            console.log("Current value: " + currentValue);
+            // You can update the data or make an API call to save the changes here
+
+            // Restore the original value
+            $(this).text(originalValue);
+        }
+    });
+
+    $(document).on("focusin", ".editableContent", function() {
+        var currentValue = $(this).text();
+        $(this).data("original-value", currentValue);
+    });
+
+    function updateItem(itemToUpdate) {
+        // Replace the URL below with your API endpoint
+        var apiUrl = "https://localhost:7157/UpdateItem";
+
+        $.ajax({
+            url: apiUrl,
+            method: "POST",
+            data: itemToUpdate,
+            success: function(response) {
+                console.log("Item updated successfully");
+            },
+            error: function(xhr, status, error) {
+                console.log("An error occurred while updating the data:", error);
+            }
+        });
+
+    }
+
+});
+</script>

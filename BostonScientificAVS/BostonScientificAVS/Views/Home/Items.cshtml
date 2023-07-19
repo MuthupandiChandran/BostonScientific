@@ -1,81 +1,16 @@
-﻿@model List<Entity.ItemMaster>
+﻿
 <div >
     <div class="p-15" >
         <div >
             <h3>Items</h3>
         </div>
 
-<table class="table table-bordered table-striped" id="itemsTable">
-    <thead class="text-white bg-custom">
-        <tr>
-            <th>
-               GTIN
-            </th>
-            <th>
-               Catalog_Num
-            </th>
-            <th>
-                Shelf_Life
-            </th>
-            <th>
-                Label_Spec
-            </th>
-            <th>
-                IFU
-            </th>
-            <th>
-                Edit_Date_Time
-            </th>
-            <th>
-                Edit_By
-            </th>
-            <th>
-                Created
-            </th>
-            <th>
-                Created_by
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-       
-        @foreach(var item in Model)
-        {
-              <tr>
-            <td>  
-                <div data-gtin=@item.GTIN data-column="GTIN" contenteditable="true" id="editor">@item.GTIN</div>
-            </td>
-            <td>
-                @item.Catalog_Num
-            </td>
-            <td>
-                @item.Shelf_Life
-            </td>
-            <td>
-                @item.Label_Spec
-            </td>
-            <td>
-                @item.IFU
-            </td>
-            <td>
-                @item.Edit_Date_Time
-            </td>
-            <td>
-                @item.Edit_By
-            </td>
-            <td>
-                @item.Created
-            </td>
-            <td>
-                @item.Created_by
-            </td>
-        </tr>
-        }
-        
-        
-      
-    </tbody>
-</table>
+
+
+
+<div id="itemsGrid">
+
+</div>
     </div>
 </div>
 
@@ -168,48 +103,44 @@
     }
 </style>
 
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.css" />
-  
-<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.js"></script>
+
 
 <script>
 $(() => {
-  
-  var table = $('#itemsTable').DataTable({
- 
-  });
 
-  document.getElementsByClassName('add-button')[0]
-        .addEventListener('click', function (event) {
+    getItems();
+
+    document.getElementsByClassName('add-button')[0]
+        .addEventListener('click', function(event) {
             console.log("add button clicked");
 
-          var row = $('[data-row-id="1"]'); // Target the row using the custom attribute
+            var row = $('[data-row-id="1"]'); // Target the row using the custom attribute
 
-          var gtin = row.find('[data-new-gtin]'); // Get the GTIN value from the specific div using [data-new-gtin] attribute selector
-          var catalogNo = row.find('td:nth-child(2) div'); // Get the value from the second column div
-          var shelfLife = row.find('td:nth-child(3) div'); 
-          var lableSpec = row.find('td:nth-child(4) div'); 
-          var ifu = row.find('td:nth-child(5) div'); 
-          var editDateTime = row.find('td:nth-child(6) div'); 
-          var editBy = row.find('td:nth-child(7) div'); 
-          var created = row.find('td:nth-child(8) div'); 
-          var createdBy = row.find('td:nth-child(9) div'); 
+            var gtin = row.find('[data-new-gtin]'); // Get the GTIN value from the specific div using [data-new-gtin] attribute selector
+            var catalogNo = row.find('td:nth-child(2) div'); // Get the value from the second column div
+            var shelfLife = row.find('td:nth-child(3) div');
+            var lableSpec = row.find('td:nth-child(4) div');
+            var ifu = row.find('td:nth-child(5) div');
+            var editDateTime = row.find('td:nth-child(6) div');
+            var editBy = row.find('td:nth-child(7) div');
+            var created = row.find('td:nth-child(8) div');
+            var createdBy = row.find('td:nth-child(9) div');
 
             var item = {
-               GTIN : gtin.text(),
-               Catalog_Num : catalogNo.text(),
-               Shelf_Life: shelfLife.text(),
-               Label_Spec: lableSpec.text(),
-               IFU: ifu.text(),
-               Edit_Date_Time: editDateTime.text(),
-               Edit_By: editBy.text(),
-               Created: created.text(),
-               Created_by: createdBy.text()
+                GTIN: gtin.text(),
+                Catalog_Num: catalogNo.text(),
+                Shelf_Life: shelfLife.text(),
+                Label_Spec: lableSpec.text(),
+                IFU: ifu.text(),
+                Edit_Date_Time: editDateTime.text(),
+                Edit_By: editBy.text(),
+                Created: created.text(),
+                Created_by: createdBy.text()
             };
 
             //saveNewItem(item);
 
-              var apiUrl = "https://localhost:7157/SaveNewItem";
+            var apiUrl = "https://localhost:7157/SaveNewItem";
 
             $.ajax({
                 url: apiUrl,
@@ -217,15 +148,16 @@ $(() => {
                 data: item,
                 success: function(response) {
                     console.log("Item saved successfully");
-                   gtin.text(''),
-               catalogNo.text(''),
-               shelfLife.text(''),
-               lableSpec.text(''),
-               ifu.text(''),
-               editDateTime.text(''),
-               editBy.text(''),
-                created.text(''),
-                createdBy.text('')
+                    getItems();
+                    gtin.text(''),
+                        catalogNo.text(''),
+                        shelfLife.text(''),
+                        lableSpec.text(''),
+                        ifu.text(''),
+                        editDateTime.text(''),
+                        editBy.text(''),
+                        created.text(''),
+                        createdBy.text('')
                 },
                 error: function(xhr, status, error) {
                     console.log("An error occurred while saving the data:", error);
@@ -238,81 +170,23 @@ $(() => {
 
         });
 
-$(document).on("keypress", "#editor", function(event) {
-    if (event.which === 13) { // Enter key code
-        event.preventDefault(); // Prevent default Enter key behavior
-         $(this).blur(); 
-        var gtinValue = $(this).data("gtin");
-        var columnName = $(this).data("column");
-        console.log(gtinValue);
-        console.log(columnName);
-        var originalValue = $(this).data("original-value");
-        var newValue = $(this).text(); // Get the new value from the editable div
-        // Perform any additional logic or actions with the new value
-        console.log("New value: " + newValue);
+    function getItems() {
+        console.log("get items called");
+        $.ajax({
+            url: '@Url.Action("RefreshItemsGrid", "Home")',
+            dataType: 'html',
+            method: 'GET',
+            success: function(res) {
+                $("#itemsGrid").html('').html(res);
+            },
+            error: function(err) {
+                console.log(err);
+            }
+        })
     }
+
+
 });
-
-$(document).on("focusout", "#editor", function() {
-    var originalValue = $(this).data("original-value");
-    var currentValue = $(this).text();
-
-    if (originalValue !== currentValue) {
-        // Perform any actions you want with the previous and current values
-        console.log("Previous value: " + originalValue);
-        console.log("Current value: " + currentValue);
-        // You can update the data or make an API call to save the changes here
-
-        // Restore the original value
-        $(this).text(originalValue);
-    }
-});
-
-$(document).on("focusin", "#editor", function() {
-    var currentValue = $(this).text();
-    $(this).data("original-value", currentValue);
-});
-
-
-
-function updateItem(originalValue, newValue) {
-    // Replace the URL below with your API endpoint
-    var apiUrl = "https://localhost:7157/Home/UpdateItem";
-
-    $.ajax({
-        url: apiUrl,
-        method: "POST",
-        data: {
-            originalValue: originalValue,
-            newValue: newValue
-        },
-        success: function(response) {
-            console.log("Item updated successfully");
-        },
-        error: function(xhr, status, error) {
-            console.log("An error occurred while updating the data:", error);
-        }
-    });
-}
-
-function saveNewItem(item){
-     var apiUrl = "https://localhost:7157/SaveNewItem";
-
-    $.ajax({
-        url: apiUrl,
-        method: "POST",
-        data: item,
-        success: function(response) {
-            console.log("Item saved successfully");
-        },
-        error: function(xhr, status, error) {
-            console.log("An error occurred while saving the data:", error);
-        }
-    });
-}
-
-
-})
 
 
 </script>
