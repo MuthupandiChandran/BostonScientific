@@ -104,16 +104,16 @@ namespace BostonScientificAVS.Controllers
 
         // MVC Controller action method to handle file upload
         [HttpPost("/uploadItemsExcel")]
-        public async Task<IActionResult> ImportCSV(IFormFile file)
+        public async Task<string> ImportCSV(IFormFile file)
         {
             try
             {
                 await _itemService.importCsv(file);
-                return Ok();
+                return "file upload Successfully";
             }
             catch(Exception e)
             {
-                return Ok("upload failed");
+                return "file upload failed";
             }
             
             
