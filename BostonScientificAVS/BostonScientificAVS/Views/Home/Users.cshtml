@@ -1,0 +1,253 @@
+﻿@model List<BostonScientificAVS.Models.ApplicationUser>
+
+@{
+    ViewData["Title"] = "Users";
+}
+
+<style>
+    /*.table-custom {
+            width: 60%;
+            float: left;
+            margin-right: 30px;
+        }*/
+
+    /*   table.dataTable {
+            width: 800px;
+            margin: 0 auto;
+            clear: both;
+            border-collapse: separate;
+            border-spacing: 0;
+        }*/
+
+    #myTable {
+        width: 800px;
+        margin: 0 auto;
+        clear: both;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .table-active {
+        background-color: darkblue;
+        color: aliceblue;
+    }
+
+    .right {
+        width: 550px;
+        float: right;
+        margin-left: auto;
+    }
+
+    .left {
+        display: flex;
+        float: left;
+        margin: 0 75px;
+        width: auto;
+    }
+
+    .full {
+        display: flex;
+    }
+
+    .right label {
+        display: inline-block;
+        width: 120px;
+        text-align: right;
+        margin-right: 10px;
+    }
+
+    .right input,
+    .right select {
+        width: 200px;
+        box-sizing: border-box;
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: space-between;
+    }
+
+
+    .btn1 {
+        display: flex;
+        padding-right: 85px;
+        margin: auto;
+    }
+
+    .btn2 {
+        display: flex;
+        padding-left: 30px;
+        padding-right: 30px;
+        margin: 20px 15px;
+    }
+
+    .flex1 {
+        margin: 20px 0;
+    }
+
+    .flex {
+        display: contents;
+    }
+</style>
+
+<h3>@ViewData["Title"]</h3>
+<hr />
+<form id="userForm">
+    <div class="full">
+        <div class="left">
+            <table class="table table-custom table-responsive table-hover" id="myTable">
+                <thead>
+                    <tr class="table-active">
+                        <th>EmpId</th>
+                        <th>Name</th>
+                        <th>Role</th>
+                        <th class="action">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var us in Model)
+                        {
+                            <tr>
+                                <td>@us.EmpID</td>
+                                <td>@us.UserFullName</td>
+                                <td>@us.UserRole</td>
+                                <td>
+                                    <button type="button" class="btn btn-primary" onclick="editUser('@us.EmpID)">Click Here to Edit</button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6">
+                                <div>
+                                    No Records Available at this Moment!
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+
+
+
+        <div class="right">
+            <h3>Add/Edit User</h3>
+            <hr />
+            <div class="flex">
+
+                <div class="flex1">
+                    <label for="EmpID">EmpID:</label>
+                    <input type="text" id="EmpID" name="EmpID" />
+                </div>
+                <div class="flex1">
+                    <label for="UserFullName">UserFullName:</label>
+                    <input type="text" id="UserFullName" name="UserFullName" />
+                </div>
+                <div class="flex1">
+                    <label for="UserRole">UserRole:</label>
+                    <select id="UserRole" name="UserRole">
+                        @foreach (UserRole role in Enum.GetValues(typeof(UserRole)))
+                        {
+                            <option value="@((int)role)">@role</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="button-container">
+                <div class="btn1">
+                    <button type="button" class="btn btn-primary" onclick="saveUser()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.css" />
+<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.js"></script><script type="text/javascript" src="jquery.dataTables.js"></script>
+<script type="text/javascript" src="dataTables.scrollingPagination.js"></script>
+
+<script type="text/javascript">
+
+    var js = jQuery.noConflict(true)
+    js(document).ready(function () {
+        js('#myTable').DataTable({
+
+
+        });
+
+    });
+
+    function editUser(empId) {
+        $.ajax({
+            url: '/Home/GetUser',
+            type: 'GET',
+            data: { empId: empId },
+            success: function (response) {
+                if (response.success) {
+                    var user = response.data;
+                    $('#EmpID').val(user.EmpID);
+                    $('#UserFullName').val(user.UserFullName);
+                    $('#UserRole').val(user.UserRole);
+                } else {
+                    alert("Error retrieving user details!");
+                }
+            },
+            error: function (error) {
+                console.log(error);
+                alert("Error retrieving user details!");
+            }
+        });
+    }
+
+    function saveUser() {
+
+        var empId = document.getElementById("EmpID").value;
+        var fullName = document.getElementById("UserFullName").value;
+        var userRole = document.getElementById("UserRole").value;
+
+
+        var user = {
+            EmpID: empId,
+            UserFullName: fullName,
+            UserRole: userRole
+        }
+
+        submitform(user);
+    }
+
+    //function editUser(user) {
+    //    document.getElementById("EmpID").value = user.EmpID;
+    //    document.getElementById("UserFullName").value = user.UserFullName;
+    //    document.getElementById("UserRole").value = user.UserRole;
+    //}
+
+    function submitform(user) {
+
+        $.ajax({
+            url: '/Home/SaveUser',
+            type: 'POST',
+            data: user,
+            success: function (response) {
+                if (response.success) {
+                    alert("User saved successfully!");
+                    location.reload();
+                } else {
+                    alert("Error saving user!");
+                }
+            },
+            error: function (error) {
+                console.log(error);
+                alert("Error saving user!");
+            }
+        });
+
+    }
+</script>
