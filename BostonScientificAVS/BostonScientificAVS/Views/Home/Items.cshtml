@@ -1,19 +1,24 @@
 ﻿
 <div >
     <div class="p-15" >
-        <div >
+        <div class="items-header">
+            <div >
             <h3>Items</h3>
         </div>
          <div>
      
         
          <form id="uploader">
+    <span class="bulkImportText">Bulk Import:</span>
     <input id="fileInput" type="file" multiple>
     <input type="submit" value="Upload file" />
+    <span class="pl-30">Click to download sample csv file</span>
+           <a href="@Url.Action("DownloadCSV", "Home")" download id="download1"><i class="bi bi-download"></i> Download CSV </a>
 </form>
             
          </div>
-
+        </div>
+        
 
 <div id="itemsGrid">
 
@@ -78,6 +83,21 @@
     </div>
 
 <style>
+    .bulkImportText{
+       vertical-align: -2px;
+       font-size: 27px;
+       font-weight: 400;
+    }
+
+    .pl-30{
+        padding-left:30px;
+    }
+
+    .items-header{
+        display: flex;
+        justify-content: space-between;
+    }
+
     .bg-custom{
         background:#003C71;
     }
@@ -126,7 +146,7 @@ $(() => {
     xhr.send(formdata);
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
-            alert(xhr.responseText);
+            //alert(xhr.responseText);
         }
     }
     return false;
@@ -202,7 +222,7 @@ $(() => {
             dataType: 'html',
             method: 'GET',
             success: function(res) {
-                $("#itemsGrid").html('').html(res);
+                 $("#itemsGrid").html('').html(res);
             },
             error: function(err) {
                 console.log(err);
