@@ -19,6 +19,7 @@ namespace BostonScientificAVS.Models
         public string UserFullName { get; set; }
         [Required]
         public UserRole UserRole { get; set; }
+
     }
 
     public enum UserRole

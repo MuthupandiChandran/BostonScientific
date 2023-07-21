@@ -1,4 +1,6 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -19,6 +21,12 @@
 <div class="error-mockup">
     <a class="login-error-button" asp-area="" asp-controller="Home" asp-action="LoginError"><span class="login-error-text">For Error Scenario</span></a>
 </div>
+
+<div class="container">
+    <a asp-area="" asp-controller="Home" asp-action="Users" class="btn btn-outline-primary me-2 bottom-left-button">Admin Login</a>
+</div>
+
+
 
 @*<div class="text-center">
        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Result">Result</a>
@@ -76,5 +84,20 @@
     .error-mockup{
         position: relative;
         top: 50%;
+    }
+
+
+    .container {
+        position: relative; 
+        width: 300px; 
+        height: 200px; 
+        margin-right:50px;
+        margin-bottom:10px;
+    }
+
+    .bottom-left-button {
+        position: absolute;
+        bottom: 5px; 
+        left: 10px;
     }
 </style>

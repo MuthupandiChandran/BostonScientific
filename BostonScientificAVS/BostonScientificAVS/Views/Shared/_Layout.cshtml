@@ -5,21 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - BostonScientificAVS</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-       <link rel="stylesheet" href="~/lib/bootstrap/dist/js/bootstrap.js" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/js/bootstrap.js" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/BostonScientificAVS.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body style="height:100%">
-            @RenderBody()
-        <footer class="border-top footer text-muted">
-        <div class="footer">
-    <h6 class="footer-text"> ©Boston Scientific</h6>
-</div>
-    </footer>
+    <div class="container-fluid">
+        @RenderBody()
+
+    </div>
+    <br />
+    <br />
+    <br />
+    <br />
+    <div class="footer mt-5">
+        <footer class="border-bottom footer text-muted">
+
+            <h6 class="footer-text"> ©Boston Scientific</h6>
+
+        </footer>
+    </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
+
 </html>

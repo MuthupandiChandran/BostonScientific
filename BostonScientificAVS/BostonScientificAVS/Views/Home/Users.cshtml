@@ -4,27 +4,40 @@
     ViewData["Title"] = "Users";
 }
 
+<link rel="stylesheet" href="~/css/bootstrap.css">
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css">
+
+
 <style>
     /*.table-custom {
-            width: 60%;
-            float: left;
-            margin-right: 30px;
-        }*/
+                                                    width: 60%;
+                                                    float: left;
+                                                    margin-right: 30px;
+                                                }*/
 
     /*   table.dataTable {
-            width: 800px;
-            margin: 0 auto;
-            clear: both;
-            border-collapse: separate;
-            border-spacing: 0;
-        }*/
+                                                    width: 800px;
+                                                    margin: 0 auto;
+                                                    clear: both;
+                                                    border-collapse: separate;
+                                                    border-spacing: 0;
+                                                }*/
 
     #myTable {
-        width: 800px;
+        width: 100%;
         margin: 0 auto;
         clear: both;
         border-collapse: separate;
         border-spacing: 0;
+    }
+
+    div.dataTables_info {
+        position: absolute
+    }
+
+    div.dataTables_wrapper div.dataTables_paginate {
+        float: none;
+        text-align: right;
     }
 
     .table-active {
@@ -88,13 +101,45 @@
     .flex {
         display: contents;
     }
+
+    .bi-filetype-csv::before {
+        content: "\f743";
+        margin: 0 6px;
+    }
+
+    #download {
+        margin-left: 197px;
+    }
+
+    #download1{
+        margin:auto;
+        text-align:center;
+    }
+
+
 </style>
 
-<h3>@ViewData["Title"]</h3>
+
+<div class="download-btn-container">
+    <a title="Download List" class="dropbtn">
+        <i class="bi bi-person-circle"></i>
+    </a>
+    <div id="myDropdown2" class="dropdown-download">
+        <a href="#">Manage Users</a>
+        <a href="#">Manage Database</a>
+        <a href="#">Logout</a>
+    </div>
+</div>
+
+<h3 class="top1">Existing Users</h3>
 <hr />
-<form id="userForm">
-    <div class="full">
-        <div class="left">
+
+@*<form id="userForm">*@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-6">
+            @*  <div class="full">
+            <div class="left">*@
             <table class="table table-custom table-responsive table-hover" id="myTable">
                 <thead>
                     <tr class="table-active">
@@ -110,11 +155,12 @@
                         @foreach (var us in Model)
                         {
                             <tr>
-                                <td>@us.EmpID</td>
-                                <td>@us.UserFullName</td>
-                                <td>@us.UserRole</td>
-                                <td>
-                                    <button type="button" class="btn btn-primary" onclick="editUser('@us.EmpID)">Click Here to Edit</button>
+                                <td width="2px">@us.EmpID</td>
+                                <td width="2px">@us.UserFullName</td>
+                                <td width="2px">@us.UserRole</td>
+                                <td width="2px">
+                                    @*<button type="button" class="btn btn-primary" onclick="editUser(this)">Edit</button>*@
+                                    <i class="bi bi-pencil-square" onclick="editUser(this)"></i>
                                 </td>
                             </tr>
                         }
@@ -122,7 +168,7 @@
                     else
                     {
                         <tr>
-                            <td colspan="6">
+                            <td colspan="4">
                                 <div>
                                     No Records Available at this Moment!
                                 </div>
@@ -133,25 +179,40 @@
             </table>
         </div>
 
+        @*  </div>
+        </div>*@
 
 
-
-        <div class="right">
-            <h3>Add/Edit User</h3>
+        <div class="col-lg-6">
+            <div class="col-lg-2"></div>
+            <h3 class="text-center">Add/Edit User</h3>
             <hr />
-            <div class="flex">
-
-                <div class="flex1">
+            @* <div class="flex">*@
+           
+            <div class="row">
+               
+                <div class="col-lg-4">
                     <label for="EmpID">EmpID:</label>
-                    <input type="text" id="EmpID" name="EmpID" />
                 </div>
-                <div class="flex1">
+                <div class="col-lg-4">
+                    <input type="text" id="EmpID" class="form-control" name="EmpID" />
+                </div>
+
+            </div>
+            <div class="row mt-2">
+                <div class="col-lg-4">
                     <label for="UserFullName">UserFullName:</label>
-                    <input type="text" id="UserFullName" name="UserFullName" />
                 </div>
-                <div class="flex1">
+                <div class="col-lg-4">
+                    <input type="text" id="UserFullName" class="form-control" name="UserFullName" />
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-lg-4">
                     <label for="UserRole">UserRole:</label>
-                    <select id="UserRole" name="UserRole">
+                </div>
+                <div class="col-lg-4">
+                    <select id="UserRole" name="UserRole" class="form-control">
                         @foreach (UserRole role in Enum.GetValues(typeof(UserRole)))
                         {
                             <option value="@((int)role)">@role</option>
@@ -159,20 +220,44 @@
                     </select>
                 </div>
             </div>
-            <div class="button-container">
-                <div class="btn1">
+            <div class="row mt-2">
+                <div class="col-lg-4">
+                    <label for="csvFile"><i class="bi bi-filetype-csv"></i>Upload CSV File:</label>
+                </div>
+                <div class="col-lg-5">
+                    <input type="file" id="csvFile" accept=".csv" />
+                </div>
+                <div class="col-lg-2">
+                    <button type="button" class="btn btn-primary" onclick="importCsv()">Upload</button>
+                </div>
+            </div>
+            <div class="row mt-2" id="download">
+                <div class="col-lg-4">
+                    <label for="download"><b>Download:</b></label><br />
+                    <a href="@Url.Action("DownloadCSV", "Home")" download id="download1"><i class="bi bi-download"></i> Download CSV
+                    </a>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="text-center">
                     <button type="button" class="btn btn-primary" onclick="saveUser()">Save</button>
                 </div>
             </div>
         </div>
+
+        @* </div>*@
     </div>
-</form>
+</div>
+@*
+</form>*@
+
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.css" />
 <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.js"></script><script type="text/javascript" src="jquery.dataTables.js"></script>
 <script type="text/javascript" src="dataTables.scrollingPagination.js"></script>
+
 
 <script type="text/javascript">
 
@@ -182,30 +267,36 @@
 
 
         });
+    
 
     });
 
-    function editUser(empId) {
-        $.ajax({
-            url: '/Home/GetUser',
-            type: 'GET',
-            data: { empId: empId },
-            success: function (response) {
-                if (response.success) {
-                    var user = response.data;
-                    $('#EmpID').val(user.EmpID);
-                    $('#UserFullName').val(user.UserFullName);
-                    $('#UserRole').val(user.UserRole);
-                } else {
-                    alert("Error retrieving user details!");
-                }
-            },
-            error: function (error) {
-                console.log(error);
-                alert("Error retrieving user details!");
+    let isEditing = false;
+
+    function editUser(button) {
+        var row = button.parentNode.parentNode;
+        var empID = row.cells[0].innerText;
+        var userFullName = row.cells[1].innerText;
+        var userRole = row.cells[2].innerText;
+
+
+        document.getElementById("EmpID").value = empID;
+        document.getElementById("UserFullName").value = userFullName;
+
+
+        var select = document.getElementById("UserRole");
+        for (var i = 0; i < select.options.length; i++) {
+            if (select.options[i].text === userRole) {
+                select.selectedIndex = i;
+                break;
             }
-        });
+        }
+
+        isEditing = true;
     }
+
+
+
 
     function saveUser() {
 
@@ -220,14 +311,38 @@
             UserRole: userRole
         }
 
+        if (isEditing) {
+            user.EmpID = parseInt(user.EmpID);
+        }
+
         submitform(user);
     }
 
-    //function editUser(user) {
-    //    document.getElementById("EmpID").value = user.EmpID;
-    //    document.getElementById("UserFullName").value = user.UserFullName;
-    //    document.getElementById("UserRole").value = user.UserRole;
-    //}
+
+    function importCsv() {
+        var fileInput = document.getElementById('csvFile');
+        var file = fileInput.files[0];
+
+        var formData = new FormData();
+        formData.append('file', file);
+
+        $.ajax({
+            url: '/Home/importCsv',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                alert("CSV file uploaded successfully!");
+                location.reload();
+            },
+            error: function (error) {
+                console.log(error);
+                alert("Error uploading CSV file!");
+            }
+        });
+    }
+
 
     function submitform(user) {
 
@@ -236,18 +351,20 @@
             type: 'POST',
             data: user,
             success: function (response) {
-                if (response.success) {
-                    alert("User saved successfully!");
-                    location.reload();
+                if (response.message && response.message === "Updated successfully!") {
+                    alert("User updated successfully!");
                 } else {
-                    alert("Error saving user!");
+                    alert("User saved successfully!");
                 }
+                location.reload();
             },
             error: function (error) {
                 console.log(error);
                 alert("Error saving user!");
             }
         });
+
+        isEditing = false;
 
     }
 </script>
