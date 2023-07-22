@@ -1,7 +1,10 @@
-﻿
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
 namespace BostonScientificAVS.Models
 {
-    public class CsvHeader
+    public class ItemMasterCsvHeader
     {
         public string GTIN { get; set; }
         public string? Catalog_Num { get; set; }
@@ -13,4 +16,17 @@ namespace BostonScientificAVS.Models
         public string? Created { get; set; }
         public string? Created_by { get; set; }
     }
+
+    public class ApplicationUsersCsvHeader
+    {
+
+        public string EmpID { get; set; }
+
+        public string UserFullName { get; set; }
+
+        public string UserRole { get; set; }
+    }
+
+
+
 }
