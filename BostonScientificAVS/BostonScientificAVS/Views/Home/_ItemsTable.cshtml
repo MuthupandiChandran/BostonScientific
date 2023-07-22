@@ -95,7 +95,7 @@
                  <td colspan="1" ><div class="editableDiv" contenteditable="true" placeholder="Created By" ></div></td>
             </tr>
              <tr>
-      <td colspan="9" style="text-align: center;">
+      <td colspan="9" style="text-align: center; border-right: none; border-left: none;">
       <div class="button=div add-button">
           <a class="add-button"><span class="add-item-text">Add Item</span></a>
     </div>*
@@ -144,14 +144,18 @@
             font-size:20px;
             font-weight:500;
         }
+
+        /* targetting the datatables css for aligning the pagination, info, length changing parms in the bottom */
+         div.bottom{
+             display: flex;
+             justify-content: space-between;
+         }
 </style>
 <script>
 $(() => {
   
   new DataTable('#itemsTable', {
-    footerCallback: function (row, data, start, end, display) {
- 
-    }
+     dom: '<"top"f>rt<"bottom"lpi><"clear">'
 });
 
   document.getElementsByClassName('add-button')[0]

@@ -28,8 +28,20 @@
     <div class="scanning-container">
       @*  <h6 class="scanning-text">Scanning ...</h6>*@
      @* added temporarily for mock*@
+     <div class="scanning-text-div">
            <a class="scanning" asp-area="" asp-controller="Home" asp-action="Result"><span class="scanning-text">Scanning...</span></a>
+     </div>   
+        <div class="work-order-scan-submit">
+            <div>
+                <input class="scan-input" placeholder="Enter ID here"/>
+            </div>
+              
+                   <div>
+             <a class="login-button" asp-area="" asp-controller="Home" asp-action="Result"><span class="login-text">Scan ID/Submit</span></a>
+       </div>
+        </div>
     </div>
+
     <div>
     <a class="login-error-button" asp-area="" asp-controller="Home" asp-action="WorkOrderError"><span class="login-error-text">For Error Scenario</span></a>
 </div>
@@ -40,6 +52,13 @@
 
 
 <style>
+
+    .work-order-scan-submit{
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        padding: 10px;
+    }
  
     .pt-15{
         padding-top:15px;
@@ -119,6 +138,30 @@
      .error-mockup{
         position: relative;
         top: 50%;
+    }
+
+    .scanning-text-div{
+        text-align: center;
+    }
+
+    .login-button{
+        display: block;
+        width: 206px;
+        height: 67px;
+        background: #003C71;
+        padding: 10px;
+        text-align: center;
+        border-radius: 12px;
+        color: white;
+        font-weight: bold;
+        line-height: 40px;
+        margin:auto;
+        text-decoration:none;
+    }
+
+     .login-text{
+        font-size:24px;
+        font-weight:500;
     }
 
   
