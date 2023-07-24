@@ -1,0 +1,332 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model List<Entity.ItemMaster>
+
+   <table class="table table-bordered table-striped" id="itemsTable">
+ <thead class="text-white bg-custom">
+        <tr>
+            <th>
+               GTIN
+            </th>
+            <th>
+               Catalog Num
+            </th>
+            <th>
+                Shelf Life
+            </th>
+            <th>
+                Label Spec
+            </th>
+            <th>
+                IFU
+            </th>
+            <th>
+                Edit Date Time
+            </th>
+            <th>
+                Edit By
+            </th>
+            <th>
+                Created
+            </th>
+            <th>
+                Created by
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+       
+        @foreach(var item in Model)
+        {
+              <tr>
+            <td>  
+                <div >@item.GTIN</div>
+            </td>
+            <td>             
+                <div data-gtin=@item.GTIN data-column="Catalog_Num" contenteditable="true" class="editableContent">@item.Catalog_Num</div>
+            </td>
+            <td>
+               
+                <div data-gtin=@item.GTIN data-column="Shelf_Life" contenteditable="true" class="editableContent">@item.Shelf_Life </div>
+            </td>
+            <td>
+                
+                <div data-gtin=@item.GTIN data-column="Label_Spec" contenteditable="true" class="editableContent">@item.Label_Spec</div>
+            </td>
+            <td>
+                
+                <div data-gtin=@item.GTIN data-column="IFU" contenteditable="true" class="editableContent">@item.IFU</div>
+            </td>
+            <td>
+                
+                <div data-gtin=@item.GTIN data-column="Edit_Date_Time" contenteditable="true" class="editableContent">@item.Edit_Date_Time</div>
+            </td>
+            <td>
+                
+                <div data-gtin=@item.GTIN data-column="Edit_By" contenteditable="true" class="editableContent">@item.Edit_By</div>
+            </td>
+            <td>
+                
+                <div data-gtin=@item.GTIN data-column="Created" contenteditable="true" class="editableContent">@item.Created</div>
+            </td>
+            <td>
+                
+                <div data-gtin=@item.GTIN data-column="Created_by" contenteditable="true" class="editableContent">@item.Created_by</div>
+            </td>
+        </tr>
+        }
+        
+      
+      
+    </tbody>
+      <tfoot>
+            <tr data-row-id="1">
+                 <td colspan="1" ><div class="editableDiv" placeholder="GTIN"  data-new-gtin contenteditable="true" /></td>
+                 <td colspan="1"  ><div class="editableDiv" contenteditable="true" placeholder="Catalog Num" ></div></td>
+                 <td colspan="1" ><div class="editableDiv" contenteditable="true" placeholder="Shelf Life" ></div></td>
+                 <td colspan="1" ><div class="editableDiv" contenteditable="true" placeholder="Lable Spec" ></div></td>
+                 <td colspan="1" ><div class="editableDiv" contenteditable="true" placeholder="IFU" ></div></td>
+                 <td colspan="1" ><div class="editableDiv" contenteditable="true" placeholder="Edit Date Time" ></div></td>
+                 <td colspan="1" ><div class="editableDiv" contenteditable="true" placeholder="Edit By" ></div></td>
+                 <td colspan="1" ><div class="editableDiv" contenteditable="true" placeholder="Created" ></div></td>
+                 <td colspan="1" ><div class="editableDiv" contenteditable="true" placeholder="Created By" ></div></td>
+            </tr>
+             <tr>
+      <td colspan="9" style="text-align: center; border-right: none; border-left: none;">
+      <div class="button=div add-button">
+          <a class="add-button"><span class="add-item-text">Add Item</span></a>
+    </div>*
+      </td>
+    </tr>
+        </tfoot>
+      </table>
+
+      <style>
+          .footer-data{
+             border: 0.1px solid;
+          }
+
+          .input-class{
+              border-color: transparent;
+          }
+
+          .custom-input {
+              color: #999; /* Set initial placeholder text color */
+            }
+
+        .editableDiv[contenteditable="true"]:empty:before {
+          content: attr(placeholder)
+        }     
+
+         .add-button{
+            display: block;
+            width: 117px;
+            height: 32px;
+            background: #003C71;
+            text-align: center;
+            border-radius: 12px;
+            color: white;
+            font-weight: bold;
+            margin: auto;
+            text-decoration: none;
+            user-select: none;
+       
+         }
+
+        .button-div{
+            cursor:pointer;
+        }
+
+        .add-item-text{
+            font-size:20px;
+            font-weight:500;
+        }
+
+        /* targetting the datatables css for aligning the pagination, info, length changing parms in the bottom */
+         div.bottom{
+             display: flex;
+             justify-content: space-between;
+         }
+</style>
+<script>
+$(() => {
+  
+  new DataTable('#itemsTable', {
+     dom: '<"top"f>rt<"bottom"lpi><"clear">'
+});
+
+  document.getElementsByClassName('add-button')[0]
+        .addEventListener('click', function(event) {
+            console.log("add button clicked");
+
+            var row = $('[data-row-id="1"]'); // Target the row using the custom attribute
+
+            var gtin = row.find('[data-new-gtin]'); // Get the GTIN value from the specific div using [data-new-gtin] attribute selector
+            var catalogNo = row.find('td:nth-child(2) div'); // Get the value from the second column div
+            var shelfLife = row.find('td:nth-child(3) div');
+            var lableSpec = row.find('td:nth-child(4) div');
+            var ifu = row.find('td:nth-child(5) div');
+            var editDateTime = row.find('td:nth-child(6) div');
+            var editBy = row.find('td:nth-child(7) div');
+            var created = row.find('td:nth-child(8) div');
+            var createdBy = row.find('td:nth-child(9) div');
+
+            var item = {
+                GTIN: gtin.text(),
+                Catalog_Num: catalogNo.text(),
+                Shelf_Life: shelfLife.text(),
+                Label_Spec: lableSpec.text(),
+                IFU: ifu.text(),
+                Edit_Date_Time: editDateTime.text(),
+                Edit_By: editBy.text(),
+                Created: created.text(),
+                Created_by: createdBy.text()
+            };
+
+            //saveNewItem(item);
+            console.log(item);
+            var apiUrl = "https://localhost:7157/SaveNewItem";
+            $.ajax({
+                url: apiUrl,
+                method: "POST",
+                data: item,
+                success: function(response) {
+                    console.log("Item saved successfully");
+                    gtin.text(''),
+                        catalogNo.text(''),
+                        shelfLife.text(''),
+                        lableSpec.text(''),
+                        ifu.text(''),
+                        editDateTime.text(''),
+                        editBy.text(''),
+                        created.text(''),
+                        createdBy.text('')                   
+                },
+                error: function(xhr, status, error) {
+                    console.log("An error occurred while saving the data:", error);
+                }
+            });
+
+            console.log(gtin);
+            console.log(catalogNo);
+            console.log(shelfLife);
+
+        });
+
+    $(document).on("keypress", ".editableContent", function(event) {
+        if (event.which === 13) { // Enter key code
+            console.log("enter hit");
+            event.preventDefault(); // Prevent default Enter key behavior
+            $(this).blur();
+            //var gtinValue = $(this).data("gtin");
+            //var columnName = $(this).data("column");
+            //console.log(gtinValue);
+            //console.log(columnName);
+            //var originalValue = $(this).data("original-value");
+            //var newValue = $(this).text(); // Get the new value from the editable div
+            //// Perform any additional logic or actions with the new value
+            //var itemToUpdate = {
+            //    original_value: originalValue,
+            //    updated_value: newValue,
+            //    column_name: columnName,
+            //    gtin_value: gtinValue
+            //}
+            //updateItem(itemToUpdate);
+            //console.log("New value: " + newValue);
+        }
+    });
+
+    $(document).on("focusout", ".editableContent", function() {
+        var originalValue = $(this).data("original-value");
+        var currentValue = $(this).text();  // Get the new value from the editable div
+        console.log("focus out hit");
+        var gtinValue = $(this).data("gtin");
+        var columnName = $(this).data("column");
+          
+         
+            // Perform any additional logic or actions with the new value
+            var itemToUpdate = {
+                original_value: originalValue,
+                updated_value: currentValue,
+                column_name: columnName,
+                gtin_value: gtinValue
+            }
+               var apiUrl = "https://localhost:7157/UpdateItem";
+
+        $.ajax({
+            url: apiUrl,
+            method: "POST",
+            data: itemToUpdate,
+            success: function(response) {
+                console.log("Item updated successfully");
+            },
+            error: function(xhr, status, error) {
+                console.log("An error occurred while updating the data:", error);
+                  if (originalValue !== currentValue) {
+            // Perform any actions you want with the previous and current values
+            console.log("Previous value: " + originalValue);
+            console.log("Current value: " + currentValue);
+            // You can update the data or make an API call to save the changes here
+            // Restore the original value
+            $(this).text(originalValue);
+        }
+            }
+        });
+          
+      
+    });
+
+    $(document).on("focusin", ".editableContent", function() { 
+        var currentValue = $(this).text();
+        $(this).data("original-value", currentValue);
+    });
+
+    function updateItem(itemToUpdate) {
+        // Replace the URL below with your API endpoint
+        var apiUrl = "https://localhost:7157/UpdateItem";
+
+        $.ajax({
+            url: apiUrl,
+            method: "POST",
+            data: itemToUpdate,
+            success: function(response) {
+                console.log("Item updated successfully");
+            },
+            error: function(xhr, status, error) {
+                console.log("An error occurred while updating the data:", error);
+            }
+        });
+
+    }
+
+    function saveItem(item) {
+        
+            var apiUrl = "https://localhost:7157/SaveNewItem";
+
+            $.ajax({
+                url: apiUrl,
+                method: "POST",
+                data: item,
+                success: function(response) {
+                    console.log("Item saved successfully");
+                    gtin.text(''),
+                    catalogNo.text(''),
+                    shelfLife.text(''),
+                    lableSpec.text(''),
+                    ifu.text(''),
+                    editDateTime.text(''),
+                    editBy.text(''),
+                    created.text(''),
+                    createdBy.text('')         
+                },
+                error: function(xhr, status, error) {
+                    console.log("An error occurred while saving the data:", error);
+                }
+            });
+    }
+
+});
+</script>

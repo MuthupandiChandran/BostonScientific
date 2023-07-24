@@ -27,6 +27,11 @@ html, body {
 }
 
 .footer {
+    position: fixed !important;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 60px;
     display: flex;
     align-items: center;
     background-color: #003C71;
@@ -92,4 +97,13 @@ html, body {
     font-size: 24px;
     font-weight: 500;
     color: orange;
+}
+
+.scan-input {
+    width: 206px;
+    height: 67px;
+    border-radius: 10px;
+    border: 1px solid;
+    font-size: 20px;
+    text-align: center;
 }

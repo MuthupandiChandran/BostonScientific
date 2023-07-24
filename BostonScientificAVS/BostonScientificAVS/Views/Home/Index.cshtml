@@ -11,8 +11,13 @@
     <div>
         <h6 class="app-name-text">Auto Verify System</h6>
     </div>
-    <div>
-        <a class="login-button" asp-area="" asp-controller="Home" asp-action="HomeScreen"><span class="login-text">Scan ID/Login</span></a>
+    <div class="login-div">
+        <div>
+              <input class="scan-input" placeholder="Enter ID here"/>
+        </div>
+       <div>
+             <a class="login-button" asp-area="" asp-controller="Home" asp-action="HomeScreen"><span class="login-text">Scan ID/Login</span></a>
+       </div>
     </div>
 </div>
 
@@ -25,6 +30,8 @@
 </div>*@
 
 <style>
+ 
+
     .logo-image{
         width: 353px;
         height: 71px;
@@ -76,5 +83,11 @@
     .error-mockup{
         position: relative;
         top: 50%;
+    }
+
+    .login-div{
+        display: flex;
+        justify-content: center;
+        gap: 5px;
     }
 </style>
