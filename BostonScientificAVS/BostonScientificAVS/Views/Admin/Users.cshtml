@@ -4,8 +4,8 @@
     ViewData["Title"] = "Users";
 }
 
-<link rel="stylesheet" href="~/css/bootstrap.css">
-<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css">
+@*<link rel="stylesheet" href="~/css/bootstrap.css">
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css">*@
 
 
 <style>
@@ -234,7 +234,7 @@
             <div class="row mt-2" id="download">
                 <div class="col-lg-4">
                     <label for="download"><b>Download:</b></label><br />
-                    <a href="@Url.Action("DownloadCSV", "Home")" download id="download1"><i class="bi bi-download"></i> Download CSV
+                    <a href="@Url.Action("DownloadCSV", "Admin")" download id="download1"><i class="bi bi-download"></i> Download CSV
                     </a>
                 </div>
             </div>
@@ -251,25 +251,20 @@
 @*
 </form>*@
 
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.css" />
+@*<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.css" />
 <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.js"></script><script type="text/javascript" src="jquery.dataTables.js"></script>
-<script type="text/javascript" src="dataTables.scrollingPagination.js"></script>
+<script type="text/javascript" src="dataTables.scrollingPagination.js"></script>*@
 
 
-<script type="text/javascript">
+<script>
 
-    var js = jQuery.noConflict(true)
-    js(document).ready(function () {
-        js('#myTable').DataTable({
+   
 
-
-        });
+      new DataTable('#myTable', {
     
-
-    });
+});
 
     let isEditing = false;
 
@@ -327,7 +322,7 @@
         formData.append('file', file);
 
         $.ajax({
-            url: '/Home/importCsv',
+            url: '/Admin/importCsv',
             type: 'POST',
             data: formData,
             processData: false,
@@ -347,7 +342,7 @@
     function submitform(user) {
 
         $.ajax({
-            url: '/Home/SaveUser',
+            url: '/Admin/SaveUser',
             type: 'POST',
             data: user,
             success: function (response) {

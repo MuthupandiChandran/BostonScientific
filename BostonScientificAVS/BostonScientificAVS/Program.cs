@@ -15,6 +15,7 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(DBConStr);
 });
 builder.Services.AddScoped<ItemService>();
+builder.Services.AddScoped<UserService>();
 
 var app = builder.Build();
 

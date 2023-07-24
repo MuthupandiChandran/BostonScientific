@@ -13,7 +13,7 @@
     <input id="fileInput" type="file" multiple>
     <input type="submit" value="Upload file" />
     <span class="pl-30">Click to download sample csv file</span>
-           <a href="@Url.Action("DownloadCSV", "Home")" download id="download1"><i class="bi bi-download"></i> Download CSV </a>
+           <a href="@Url.Action("DownloadCSV", "Admin")" download id="download1"><i class="bi bi-download"></i> Download CSV </a>
 </form>
             
          </div>
@@ -218,7 +218,7 @@ $(() => {
     function getItems() {
         console.log("get items called");
         $.ajax({
-            url: '@Url.Action("RefreshItemsGrid", "Home")',
+            url: '@Url.Action("RefreshItemsGrid", "Admin")',
             dataType: 'html',
             method: 'GET',
             success: function(res) {
