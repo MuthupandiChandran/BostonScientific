@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 
-namespace BostonScientificAVS.Models
+namespace Entity
 {
     //[Index(nameof(EmpID), IsUnique = true)]
     public class ApplicationUser
