@@ -45,36 +45,38 @@
             <td>  
                 <div >@item.GTIN</div>
             </td>
+
+           @* Content Editable is given false to disable edit functionality can be enabled if needed*@
             <td>             
-                <div data-gtin=@item.GTIN data-column="Catalog_Num" contenteditable="true" class="editableContent">@item.Catalog_Num</div>
+                <div data-gtin=@item.GTIN data-column="Catalog_Num" contenteditable="false" class="editableContent">@item.Catalog_Num</div>
             </td>
             <td>
                
-                <div data-gtin=@item.GTIN data-column="Shelf_Life" contenteditable="true" class="editableContent">@item.Shelf_Life </div>
+                <div data-gtin=@item.GTIN data-column="Shelf_Life" contenteditable="false" class="editableContent">@item.Shelf_Life </div>
             </td>
             <td>
                 
-                <div data-gtin=@item.GTIN data-column="Label_Spec" contenteditable="true" class="editableContent">@item.Label_Spec</div>
+                <div data-gtin=@item.GTIN data-column="Label_Spec" contenteditable="false" class="editableContent">@item.Label_Spec</div>
             </td>
             <td>
                 
-                <div data-gtin=@item.GTIN data-column="IFU" contenteditable="true" class="editableContent">@item.IFU</div>
+                <div data-gtin=@item.GTIN data-column="IFU" contenteditable="false" class="editableContent">@item.IFU</div>
             </td>
             <td>
                 
-                <div data-gtin=@item.GTIN data-column="Edit_Date_Time" contenteditable="true" class="editableContent">@item.Edit_Date_Time</div>
+                <div data-gtin=@item.GTIN data-column="Edit_Date_Time" contenteditable="false" class="editableContent">@item.Edit_Date_Time</div>
             </td>
             <td>
                 
-                <div data-gtin=@item.GTIN data-column="Edit_By" contenteditable="true" class="editableContent">@item.Edit_By</div>
+                <div data-gtin=@item.GTIN data-column="Edit_By" contenteditable="false" class="editableContent">@item.Edit_By</div>
             </td>
             <td>
                 
-                <div data-gtin=@item.GTIN data-column="Created" contenteditable="true" class="editableContent">@item.Created</div>
+                <div data-gtin=@item.GTIN data-column="Created" contenteditable="false" class="editableContent">@item.Created</div>
             </td>
             <td>
                 
-                <div data-gtin=@item.GTIN data-column="Created_by" contenteditable="true" class="editableContent">@item.Created_by</div>
+                <div data-gtin=@item.GTIN data-column="Created_by" contenteditable="false" class="editableContent">@item.Created_by</div>
             </td>
         </tr>
         }
@@ -195,15 +197,16 @@ $(() => {
                 data: item,
                 success: function(response) {
                     console.log("Item saved successfully");
+                     location.reload();
                     gtin.text(''),
-                        catalogNo.text(''),
-                        shelfLife.text(''),
-                        lableSpec.text(''),
-                        ifu.text(''),
-                        editDateTime.text(''),
-                        editBy.text(''),
-                        created.text(''),
-                        createdBy.text('')                   
+                    catalogNo.text(''),
+                    shelfLife.text(''),
+                    lableSpec.text(''),
+                    ifu.text(''),
+                    editDateTime.text(''),
+                    editBy.text(''),
+                    created.text(''),
+                    createdBy.text('')                   
                 },
                 error: function(xhr, status, error) {
                     console.log("An error occurred while saving the data:", error);

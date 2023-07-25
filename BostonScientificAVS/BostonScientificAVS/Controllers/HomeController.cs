@@ -1,18 +1,12 @@
-﻿using BostonScientificAVS.Map;
-using BostonScientificAVS.Models;
-using CsvHelper;
+﻿using BostonScientificAVS.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 using System.Diagnostics;
-using BostonScientificAVS.Services;
-using BostonScientificAVS.DTO;
-using Entity;
-using System.Text;
-using Context;
-using System.Globalization;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace BostonScientificAVS.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
