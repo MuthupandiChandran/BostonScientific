@@ -12,7 +12,7 @@
     <div>
         <h6 class="app-name-text">Auto Verify System</h6>
     </div>
-    <form id="loginForm" asp-controller="Login" asp-action="LoginUser" method="post">
+    <form id="loginForm" asp-controller="Login" asp-action="Login" method="post">
     <div class="login-div">
         <div>
               <input class="scan-input" placeholder="Enter ID here" asp-for="EmpID"/>
@@ -21,12 +21,13 @@
              <a class="login-button" onclick="submitLoginForm()"><span class="login-text">Scan ID/Login</span></a>
        </div>
     </div>
+
     </form>
 </div>
 
-<div class="error-mockup">
+@*<div class="error-mockup">
     <a class="login-error-button" asp-area="" asp-controller="Home" asp-action="LoginError"><span class="login-error-text">For Error Scenario</span></a>
-</div>
+</div>*@
 
 @*<div class="text-center">
        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Result">Result</a>
@@ -93,6 +94,7 @@
         justify-content: center;
         gap: 5px;
     }
+
 </style>
 
 <script>

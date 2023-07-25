@@ -1,5 +1,4 @@
 ﻿using BostonScientificAVS.DTO;
-using BostonScientificAVS.Map;
 using BostonScientificAVS.Models;
 using BostonScientificAVS.Services;
 using Context;
@@ -8,9 +7,11 @@ using Entity;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BostonScientificAVS.Controllers
 {
+    [Authorize(Roles= "Admin")]
     public class AdminController : Controller
     {
         private readonly ItemService _itemService;

@@ -27,7 +27,7 @@ namespace BostonScientificAVS.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> LoginUser(ApplicationUser user)
+        public async Task<IActionResult> Login(ApplicationUser user)
         {
             try
             {
@@ -38,8 +38,8 @@ namespace BostonScientificAVS.Controllers
                     ApplicationUser userInfo = validUser[0];
                     List<Claim> claims = new List<Claim>()
                 {
-                    new Claim(ClaimTypes.NameIdentifier, user.EmpID)
-                    //new Claim(ClaimTypes.Role, userInfo.UserRole.ToString())
+                    new Claim(ClaimTypes.NameIdentifier, user.EmpID),
+                    new Claim(ClaimTypes.Role, userInfo.UserRole.ToString())
                 };
 
 
@@ -58,24 +58,29 @@ namespace BostonScientificAVS.Controllers
                     try
                     {
                         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), properties);
-                    } 
-                    catch(Exception e)
+                    }
+                    catch (Exception e)
                     {
                         Console.WriteLine(e);
                     }
-              
+
                     return RedirectToAction("HomeScreen", "Home");
 
                 }
-                ViewData["ValidateMessage"] = "user not found";
-                return RedirectToAction();
+
+                return RedirectToAction("LoginError");
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e);
                 return BadRequest();
             }
-          
+
+        }
+
+        public IActionResult LoginError()
+        {
+            return View();
         }
 
         public async Task<IActionResult> Logout()
