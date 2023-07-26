@@ -1,4 +1,30 @@
-﻿
+﻿<div class="navigation-header-items">
+        <div class="dropdown">
+  <button class="custom-config-button" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <img class="avatar-image-size" src="~/assets/images/user_avatar.png"/>
+            <span class="user-name-text">Hello, @User.Identity.Name</span>
+  </button>
+  <div class="dropdown-menu custom-config-dropdown" aria-labelledby="dropdownMenuButton">
+
+            @if (User.IsInRole("Admin"))
+            {
+                 <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Users">Manage Users</a>
+                <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Items" >Manage Database</a>
+            }
+                         <a class="dropdown-item text-color-blue"  asp-area="" asp-controller="Login" asp-action="Logout" >Logout</a> 
+  </div>
+</div>
+
+<div class="navigation-back">
+    <div>
+
+    </div>
+    <div>
+          <a class="button" asp-area="" asp-controller="Home" asp-action="HomeScreen"><img class="back-button-img" src="/assets/images/back-arrow.png" /><span class="back-text">Back</span></a>
+    </div>
+</div>
+
+</div>
 <div >
     <div class="p-15" >
         <div class="items-header">
@@ -127,6 +153,13 @@
 
     .p-15{
         padding: 15px 15px 15px 15px;
+    }
+
+    .navigation-header-items{
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        padding-left:0px;
     }
 </style>
 

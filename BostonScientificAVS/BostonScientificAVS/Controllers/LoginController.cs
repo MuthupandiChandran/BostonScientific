@@ -38,15 +38,13 @@ namespace BostonScientificAVS.Controllers
                     ApplicationUser userInfo = validUser[0];
                     List<Claim> claims = new List<Claim>()
                 {
-                    new Claim(ClaimTypes.NameIdentifier, user.EmpID),
+                    new Claim(ClaimTypes.NameIdentifier, userInfo.UserFullName),
+                    new Claim(ClaimTypes.Name, userInfo.UserFullName),
                     new Claim(ClaimTypes.Role, userInfo.UserRole.ToString())
                 };
 
-
-
-
                     ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims,
-                        CookieAuthenticationDefaults.AuthenticationScheme);
+                    CookieAuthenticationDefaults.AuthenticationScheme);
 
                     // Additional properties you can add
 
@@ -80,6 +78,12 @@ namespace BostonScientificAVS.Controllers
 
         public IActionResult LoginError()
         {
+            ClaimsPrincipal claimUser = HttpContext.User;
+
+            if (claimUser.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("HomeScreen", "Home");
+            }
             return View();
         }
 

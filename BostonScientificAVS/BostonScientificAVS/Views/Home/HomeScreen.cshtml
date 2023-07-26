@@ -2,13 +2,17 @@
  <div class="navigation-header">
         <div class="dropdown">
   <button class="custom-config-button" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <img class="image-size" src="~/assets/images/user_avatar.png"/>
-            <span class="user-name-text">Hello, Martha</span>
+            <img class="avatar-image-size" src="~/assets/images/user_avatar.png"/>
+            <span class="user-name-text">Hello, @User.Identity.Name</span>
   </button>
   <div class="dropdown-menu custom-config-dropdown" aria-labelledby="dropdownMenuButton">
-    <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Users">Manage Users</a>
-    <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Items" >Manage Database</a>
-    <a class="dropdown-item text-color-blue"  asp-area="" asp-controller="Login" asp-action="Logout" >Logout</a>
+
+            @if (User.IsInRole("Admin"))
+            {
+                 <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Users">Manage Users</a>
+                <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Items" >Manage Database</a>
+            }
+                         <a class="dropdown-item text-color-blue"  asp-area="" asp-controller="Login" asp-action="Logout" >Logout</a> 
   </div>
 </div>
 
@@ -52,29 +56,8 @@
        gap: 11px;
   }
 
-  .text-color-blue{
-      color:#003C71;
-  }
-
     .btn-secondary:active{
         background-color:white;
-    }
-
-    .custom-config-dropdown{
-        margin-left:17px;
-        border-radius: 10px;
-    }
-
-    .custom-config-button{
-        width: 211px;
-        height: 54px;
-        background-color: white;
-        border: none;
-        white-space: nowrap;   /* Added to remove white space */
-    }
-    .image-size {
-        height: 40px;
-   
     }
 
     .logout{
@@ -157,14 +140,7 @@
         padding-top:10px;
     }
 
-    .user-name-text{
-        font-size:24px;
-        font-weight:500;
-        vertical-align: -4px;
-        color: #003C71;
-    }
+  
 
-    .navigation-header{
-       padding: 20px;
-    }
+ 
 </style>

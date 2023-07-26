@@ -107,3 +107,35 @@ html, body {
     font-size: 20px;
     text-align: center;
 }
+
+.navigation-header {
+    padding: 20px;
+}
+
+.custom-config-dropdown {
+    margin-left: 17px;
+    border-radius: 10px;
+}
+
+.avatar-image-size {
+    height: 40px;
+}
+
+.user-name-text {
+    font-size: 24px;
+    font-weight: 500;
+    vertical-align: -4px;
+    color: #003C71;
+}
+
+.custom-config-button {
+    width: 211px;
+    height: 54px;
+    background-color: white;
+    border: none;
+    white-space: nowrap; /* Added to remove white space */
+}
+
+.text-color-blue {
+    color: #003C71;
+}
