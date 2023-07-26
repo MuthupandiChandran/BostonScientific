@@ -1,28 +1,14 @@
-﻿@using Entity
-@model List<Entity.ApplicationUser>
+﻿@model List<Entity.ApplicationUser>
+@using Entity
 
 @{
     ViewData["Title"] = "Users";
 }
 
-@*<link rel="stylesheet" href="~/css/bootstrap.css">
-<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css">*@
+
 
 
 <style>
-    /*.table-custom {
-                                                    width: 60%;
-                                                    float: left;
-                                                    margin-right: 30px;
-                                                }*/
-
-    /*   table.dataTable {
-                                                    width: 800px;
-                                                    margin: 0 auto;
-                                                    clear: both;
-                                                    border-collapse: separate;
-                                                    border-spacing: 0;
-                                                }*/
 
     #myTable {
         width: 100%;
@@ -42,6 +28,7 @@
     }
 
     .table-active {
+        border: none;
         background-color: darkblue;
         color: aliceblue;
     }
@@ -112,35 +99,33 @@
         margin-left: 197px;
     }
 
-    #download1{
-        margin:auto;
-        text-align:center;
+    #download1 {
+        margin: auto;
+        text-align: center;
     }
 
+    #rightside {
+        bottom: 0;
+        position: relative;
+        margin-bottom: 40px;
+        margin-top: 9px;
+    }
+
+    #shorthand {
+        min-height: 200px;
+    }
 
 </style>
 
 
-<div class="download-btn-container">
-    <a title="Download List" class="dropbtn">
-        <i class="bi bi-person-circle"></i>
-    </a>
-    <div id="myDropdown2" class="dropdown-download">
-        <a href="#">Manage Users</a>
-        <a href="#">Manage Database</a>
-        <a href="#">Logout</a>
-    </div>
-</div>
+
 
 <h3 class="top1">Existing Users</h3>
 <hr />
 
-@*<form id="userForm">*@
 <div class="container-fluid">
     <div class="row">
-        <div class="col-lg-6">
-            @*  <div class="full">
-            <div class="left">*@
+        <div class="col-lg-8" id="tbl">
             <table class="table table-custom table-responsive table-hover" id="myTable">
                 <thead>
                     <tr class="table-active">
@@ -151,121 +136,111 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if (Model != null && Model.Any())
-                    {
-                        @foreach (var us in Model)
-                        {
-                            <tr>
-                                <td width="2px">@us.EmpID</td>
-                                <td width="2px">@us.UserFullName</td>
-                                <td width="2px">@us.UserRole</td>
-                                <td width="2px">
-                                    @*<button type="button" class="btn btn-primary" onclick="editUser(this)">Edit</button>*@
-                                    <i class="bi bi-pencil-square" onclick="editUser(this)"></i>
-                                </td>
-                            </tr>
-                        }
-                    }
-                    else
+                    @foreach (var us in Model)
                     {
                         <tr>
-                            <td colspan="4">
-                                <div>
-                                    No Records Available at this Moment!
-                                </div>
+                            <td width="2px">@us.EmpID</td>
+                            <td width="2px">@us.UserFullName</td>
+                            <td width="2px">@us.UserRole</td>
+                            <td width="2px">
+                                <i class="bi bi-pencil-square" onclick="editUser(this)"></i>
                             </td>
                         </tr>
                     }
+
                 </tbody>
             </table>
         </div>
 
-        @*  </div>
-        </div>*@
 
 
-        <div class="col-lg-6">
-            <div class="col-lg-2"></div>
-            <h3 class="text-center">Add/Edit User</h3>
-            <hr />
-            @* <div class="flex">*@
-           
-            <div class="row">
-               
-                <div class="col-lg-4">
-                    <label for="EmpID">EmpID:</label>
+        <div class="col-sm-4" id="shorthand">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Add/Edit Form</h4>
                 </div>
-                <div class="col-lg-4">
-                    <input type="text" id="EmpID" class="form-control" name="EmpID" />
-                </div>
-
-            </div>
-            <div class="row mt-2">
-                <div class="col-lg-4">
-                    <label for="UserFullName">UserFullName:</label>
-                </div>
-                <div class="col-lg-4">
-                    <input type="text" id="UserFullName" class="form-control" name="UserFullName" />
-                </div>
-            </div>
-            <div class="row mt-2">
-                <div class="col-lg-4">
-                    <label for="UserRole">UserRole:</label>
-                </div>
-                <div class="col-lg-4">
-                    <select id="UserRole" name="UserRole" class="form-control">
-                        @foreach (UserRole role in Enum.GetValues(typeof(UserRole)))
-                        {
-                            <option value="@((int)role)">@role</option>
-                        }
-                    </select>
-                </div>
-            </div>
-            <div class="row mt-2">
-                <div class="col-lg-4">
-                    <label for="csvFile"><i class="bi bi-filetype-csv"></i>Upload CSV File:</label>
-                </div>
-                <div class="col-lg-5">
-                    <input type="file" id="csvFile" accept=".csv" />
-                </div>
-                <div class="col-lg-2">
-                    <button type="button" class="btn btn-primary" onclick="importCsv()">Upload</button>
-                </div>
-            </div>
-            <div class="row mt-2" id="download">
-                <div class="col-lg-4">
-                    <label for="download"><b>Download:</b></label><br />
-                    <a href="@Url.Action("DownloadCSV", "Admin")" download id="download1"><i class="bi bi-download"></i> Download CSV
-                    </a>
-                </div>
-            </div>
-            <div class="row mt-2">
-                <div class="text-center">
-                    <button type="button" class="btn btn-primary" onclick="saveUser()">Save</button>
+                <div class="card-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="empid">EmpID:</label>
+                            <input type="text" class="form-control" id="empid">
+                        </div>
+                        <div class="form-group">
+                            <label for="userfullname">UserFullName:</label>
+                            <input type="text" class="form-control" id="userfullname">
+                        </div>
+                        <div class="form-group">
+                            <label for="userrole">UserRole:</label>
+                            <div class="col-lg-4">
+                                <select id="UserRole" name="UserRole" class="form-control">
+                                    @foreach (UserRole role in Enum.GetValues(typeof(UserRole)))
+                                    {
+                                        <option value="@((int)role)">@role</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="btn-save text-center">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
 
-        @* </div>*@
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-8"></div>
+        <div class="col-md-4" id="rightside">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Import&Download CSV file</h4>
+                </div>
+                <div class="card-body">
+                    <form>
+                        <div class="form-group">
+                            <a href="@Url.Action("DownloadCSV","Admin") download id="download1"><label for="download">Download the CSV file here</label></a>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-lg-5">
+                                <input type="file" id="csvFile" accept=".csv" />
+                            </div>
+                        </div>
+                        <div class="form-group btn-save1">
+                            <button type="button" class="btn btn-light border border-dark" onclick="importCsv(this)">Upload</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
     </div>
 </div>
 @*
 </form>*@
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
-@*<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.css" />
-<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.js"></script><script type="text/javascript" src="jquery.dataTables.js"></script>
-<script type="text/javascript" src="dataTables.scrollingPagination.js"></script>*@
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.css" />
+<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.js"></script>
 
 
-<script>
 
-   
+<script type="text/javascript">
 
-      new DataTable('#myTable', {
-    
-});
+    var js = jQuery.noConflict(true)
+    js(document).ready(function () {
+        js('#myTable').DataTable({
+
+
+        });
+
+
+    });
 
     let isEditing = false;
 
@@ -321,6 +296,12 @@
 
         var formData = new FormData();
         formData.append('file', file);
+        showLoader();
+
+
+        var $btn = $('.btn-light');
+        $btn.button('loading');
+
 
         $.ajax({
             url: '/Admin/importCsv',
@@ -329,10 +310,14 @@
             processData: false,
             contentType: false,
             success: function (response) {
+                hideLoader();
+                $btn.button('reset');
                 alert("CSV file uploaded successfully!");
                 location.reload();
             },
             error: function (error) {
+                hideLoader();
+                $btn.button('reset');
                 console.log(error);
                 alert("Error uploading CSV file!");
             }

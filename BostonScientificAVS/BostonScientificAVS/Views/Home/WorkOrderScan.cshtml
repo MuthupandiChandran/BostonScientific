@@ -30,16 +30,20 @@
      @* added temporarily for mock*@
      <div class="scanning-text-div">
            <a class="scanning" asp-area="" asp-controller="Home" asp-action="Result"><span class="scanning-text">Scanning...</span></a>
-     </div>   
-        <div class="work-order-scan-submit">
-            <div>
-                <input class="scan-input" placeholder="Enter ID here"/>
-            </div>
-              
-                   <div>
-             <a class="login-button" asp-area="" asp-controller="Home" asp-action="Result"><span class="login-text">Scan ID/Submit</span></a>
-       </div>
-        </div>
+     </div>
+
+            <form id="workOrderForm" asp-controller="Home" asp-action="SaveWorkOrder" method="post">
+                <div class="work-order-scan-submit">
+                    <div>
+                        <input class="scan-input" placeholder="Enter ID here" name="input" />
+                    </div>
+                    <div>
+                        <button type="submit" class="login-button" id="submitBtn">
+                            <span class="login-text">Scan ID/Submit</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
     </div>
 
     <div>

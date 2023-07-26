@@ -102,6 +102,24 @@
             </div>
         </div>
 
+            <div>
+                <form id="productlabelform" asp-controller="Home" asp-action="SaveProductLabel" method="post">
+                    <div class="work-order-scan-submit">
+                        <div>
+                            <input class="scan-input" placeholder="Enter ID here" name="input" />
+                        </div>
+                        <div>
+                            <input class="scan-input" placeholder="Enter ID here" name="input1" />
+                        </div>
+                        <div>
+                            <button type="submit" class="login-button" id="submitBtn">
+                                <span class="login-text">Scan ID/Submit</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
         <div id="supervisor-intervention" class="supervisor-container temp-display">
             <div class="data-comparison">
                 <div>
@@ -250,6 +268,7 @@
         </div>
     </div>
 </div>
+
 
 <div class="loading-and-nav">
 <div id="left-part-before-scan" class="left-part ">
