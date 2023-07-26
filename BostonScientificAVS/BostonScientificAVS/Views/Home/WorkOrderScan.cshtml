@@ -1,8 +1,37 @@
 ﻿
+
+<div class="navigation-header-items">
+        <div class="dropdown">
+  <button class="custom-config-button" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <img class="avatar-image-size" src="~/assets/images/user_avatar.png"/>
+            <span class="user-name-text">Hello, @User.Identity.Name</span>
+  </button>
+  <div class="dropdown-menu custom-config-dropdown" aria-labelledby="dropdownMenuButton">
+
+            @if (User.IsInRole("Admin"))
+            {
+                 <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Users">Manage Users</a>
+                <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Items" >Manage Database</a>
+            }
+                         <a class="dropdown-item text-color-blue"  asp-area="" asp-controller="Login" asp-action="Logout" >Logout</a> 
+  </div>
+</div>
+
+<div class="navigation-back">
+    <div class="session-time">
+      <h6 class="session-expires-text text-color-blue">Your Session Expires On</h6>
+      <h6 class="session-expire-time text-color-blue">07:59:59PM</h6>
+      </div>
+    <div>
+          <a class="button" asp-area="" asp-controller="Home" asp-action="HomeScreen"><img class="back-button-img" src="/assets/images/back-arrow.png" /><span class="back-text">Back</span></a>
+    </div>
+</div>
+
+</div>
 <div class="main-container row pt-15">
 
 @*<div class="heading">*@
-    <div class="heading">
+   @* <div class="heading">
     <div >
         <div>
            <img src="/assets/images/abeTechHeading.png" class="image-size" />
@@ -14,7 +43,9 @@
             <a class="button" asp-area="" asp-controller="Home" asp-action="HomeScreen"><img class="back-button-img" src="/assets/images/back-arrow.png" /><span class="back-text">Back</span></a>
         </div>
     </div>
-</div>
+</div>*@
+
+
 
 
     <div class="work-order-scan">
@@ -42,9 +73,9 @@
         </div>
     </div>
 
-    <div>
+@*    <div>
     <a class="login-error-button" asp-area="" asp-controller="Home" asp-action="WorkOrderError"><span class="login-error-text">For Error Scenario</span></a>
-</div>
+</div>*@
     </div>
 @*</div>*@
 </div>
@@ -97,7 +128,7 @@
 
     .work-order-scan{
         position: relative;
-        bottom: 10%;
+        top: 20%;
         display: flex;
         flex-direction: column;
         gap: 22px;

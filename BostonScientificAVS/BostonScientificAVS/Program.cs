@@ -13,7 +13,7 @@ builder.Services.AddAuthentication(
     .AddCookie(option =>
     {
         option.LoginPath = "/Login/Login";
-        option.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+        option.ExpireTimeSpan = TimeSpan.FromMinutes(2);
     });
 
 DotNetEnv.Env.Load();

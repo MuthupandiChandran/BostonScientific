@@ -1,4 +1,6 @@
-﻿<div class="navigation-header-items">
+﻿
+
+<div class="navigation-header-items">
         <div class="dropdown">
   <button class="custom-config-button" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <img class="avatar-image-size" src="~/assets/images/user_avatar.png"/>
@@ -16,9 +18,10 @@
 </div>
 
 <div class="navigation-back">
-    <div>
-
-    </div>
+    <div class="session-time">
+      <h6 class="session-expires-text text-color-blue">Your Session Expires On</h6>
+      <h6 class="session-expire-time text-color-blue">07:59:59PM</h6>
+      </div>
     <div>
           <a class="button" asp-area="" asp-controller="Home" asp-action="HomeScreen"><img class="back-button-img" src="/assets/images/back-arrow.png" /><span class="back-text">Back</span></a>
     </div>
@@ -155,12 +158,7 @@
         padding: 15px 15px 15px 15px;
     }
 
-    .navigation-header-items{
-        padding: 20px;
-        display: flex;
-        justify-content: space-between;
-        padding-left:0px;
-    }
+  
 </style>
 
 

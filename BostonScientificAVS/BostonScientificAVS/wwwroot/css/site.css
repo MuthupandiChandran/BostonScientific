@@ -41,7 +41,7 @@ html, body {
     font-size: 15px;
     font-weight: 300;
     color: white;
-    padding-top: 9px;
+    padding-bottom: 7px;
     padding-left: 15px;
 }
 
@@ -138,4 +138,36 @@ html, body {
 
 .text-color-blue {
     color: #003C71;
+}
+
+.navigation-header-items {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    padding-left: 0px;
+}
+
+.session-time {
+    width: 165px;
+    height: 54px;
+    border: 0.1px solid;
+    text-align: center;
+    border-radius: 5px;
+    border-color: #003C71
+}
+
+.session-expires-text {
+    font-size: 12px;
+    font-weight: 500;
+    padding-top: 2px;
+}
+
+.session-expire-time {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.navigation-back {
+    display: flex;
+    gap: 20px;
 }

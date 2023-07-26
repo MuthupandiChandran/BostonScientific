@@ -1,10 +1,37 @@
 ﻿
 <div class="main-container row pt-15">
 
+<div class="navigation-header-result">
+        <div class="dropdown">
+  <button class="custom-config-button" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <img class="avatar-image-size" src="~/assets/images/user_avatar.png"/>
+            <span class="user-name-text">Hello, @User.Identity.Name</span>
+  </button>
+  <div class="dropdown-menu custom-config-dropdown" aria-labelledby="dropdownMenuButton">
+
+            @if (User.IsInRole("Admin"))
+            {
+                 <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Users">Manage Users</a>
+                <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Items" >Manage Database</a>
+            }
+                         <a class="dropdown-item text-color-blue"  asp-area="" asp-controller="Login" asp-action="Logout" >Logout</a> 
+  </div>
+</div>
+
+<div class="navigation-back">
+    <div class="session-time">
+      <h6 class="session-expires-text text-color-blue">Your Session Expires On</h6>
+      <h6 class="session-expire-time text-color-blue">07:59:59PM</h6>
+      </div>
+    <div>
+          <a class="button" asp-area="" asp-controller="Home" asp-action="HomeScreen"><img class="back-button-img" src="/assets/images/back-arrow.png" /><span class="back-text">Back</span></a>
+    </div>
+</div>
+
+</div>
 
 
-
-<div class="heading">
+<@*div class="heading">
     <div >
         <div>
            <img src="/assets/images/abeTechHeading.png" class="image-size" />
@@ -16,7 +43,7 @@
             <a class="button" asp-area="" asp-controller="Home" asp-action="WorkOrderScan"><img class="back-button-img" src="/assets/images/back-arrow.png" /><span class="back-text">Back</span></a>
         </div>
     </div>
-</div>
+</div>*@
 
 <div class="mid-content">
     <div class="left-content">
@@ -164,10 +191,10 @@
             </div>
             <div class="navigation-container">
               <div >
-                 <a class="approve-button" asp-area="" asp-controller="Home" asp-action=""><span class="approve-text">Approve</span></a>
+                 <a class="approve-button" onclick="reloadPage()"><span class="approve-text">Rescan</span></a>
             </div>
        <div>
-        <a class="reject-button" asp-area="" asp-controller="Home" asp-action=""><span class="reject-text">Reject</span></a>
+        <a class="reject-button" asp-area="" asp-controller="Home" asp-action="WorkOrderScan"><span class="reject-text">New Work Order</span></a>
        </div>
             </div>
         </div>
@@ -647,6 +674,14 @@
         color:white;
     }
 
+    .navigation-header-result{
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        gap: 634px;
+        padding-left: 0px;
+    }
+
 </style>
 
 <script>
@@ -782,4 +817,8 @@ let inFailScenario = false;
             
             document.getElementById("next-scan-button").style.backgroundColor = "#C5C5C5";
       }
+
+       function reloadPage() {
+                location.reload();
+        }
 </script>
