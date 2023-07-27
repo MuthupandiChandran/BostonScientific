@@ -20,7 +20,7 @@
 <div class="navigation-back">
     <div class="session-time">
       <h6 class="session-expires-text text-color-blue">Your Session Expires On</h6>
-      <h6 id="timer" class="session-expire-time text-color-blue">07:59:59PM</h6>
+      <h6 id="timer" class="session-expire-time text-color-blue"></h6>
       </div>
     <div>
           <a class="button" asp-area="" asp-controller="Home" asp-action="HomeScreen"><img class="back-button-img" src="/assets/images/back-arrow.png" /><span class="back-text">Back</span></a>
@@ -197,3 +197,40 @@
 
   
 </style>
+
+<script>
+ 
+    function startTimer(duration) {
+    var timerDisplay = document.getElementById("timer");
+
+    var timer = duration;
+    var hours, minutes, seconds;
+
+    var intervalId = setInterval(function () {
+        hours = parseInt(timer / 3600, 10);
+        minutes = parseInt((timer % 3600) / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+
+        hours = hours < 10 ? "0" + hours : hours;
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        timerDisplay.textContent = hours + ":" + minutes + ":" + seconds;
+
+        if (--timer < 0) {
+            clearInterval(intervalId);
+            // Perform any action you need when the timer reaches 00:00:00
+            alert("Timer has expired!");
+        }
+    }, 1000);
+}
+
+// Local Storage is already set in homescreen so just obtain it here
+var expirationTime = localStorage.getItem("expiration_time"); 
+
+
+// Get the expiration time from localStorage
+var currentTime = Math.floor(Date.now() / 1000);
+var remainingTime = expirationTime - currentTime;
+startTimer(remainingTime);
+</script>

@@ -56,8 +56,9 @@ namespace BostonScientificAVS.Controllers
                     };
                   await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), properties);
 
-                    bool myBooleanValue = true; // Replace this with your desired boolean value
-                    TempData["MyBoolean"] = myBooleanValue;
+                    // instructing the controller that this is the call after immediate login
+                    bool afterLogin = true;
+                    TempData["AfterLogin"] = afterLogin;
                     return RedirectToAction("HomeScreen", "Home");
                 }
                 return RedirectToAction("LoginError");
