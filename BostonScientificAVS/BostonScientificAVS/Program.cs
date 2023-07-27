@@ -18,7 +18,7 @@ builder.Services.AddAuthentication(
     .AddCookie(option =>
     {
         option.LoginPath = "/Login/Login";
-        option.ExpireTimeSpan = TimeSpan.FromMinutes(Time);
+        option.ExpireTimeSpan = TimeSpan.FromHours(Time);
     });
 
 // get the connection string from env

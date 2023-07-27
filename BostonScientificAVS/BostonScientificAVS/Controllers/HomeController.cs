@@ -28,9 +28,18 @@ namespace BostonScientificAVS.Controllers
 
         public IActionResult HomeScreen()
         {
+            //bool myBooleanValue = false; // Default value in case TempData["MyBoolean"] is not set
+            //if (TempData.ContainsKey("MyBoolean") && TempData["MyBoolean"] is bool myBoolean)
+            //{
+            //    myBooleanValue = myBoolean;
+            //}
+            //if (myBooleanValue)
+            //{
+            //    int hoursInput = DotNetEnv.Env.GetInt("EXPIRE_TIME");
+            //    ViewBag.HoursInput = hoursInput;
+            //}
             return View();
         }
-
         public IActionResult WorkOrderScan()
         {
             return View();

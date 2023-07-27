@@ -40,6 +40,7 @@ namespace BostonScientificAVS.Controllers
                 {
                     new Claim(ClaimTypes.NameIdentifier, userInfo.UserFullName),
                     new Claim(ClaimTypes.Name, userInfo.UserFullName),
+                     new Claim("EmpID", userInfo.EmpID),
                     new Claim(ClaimTypes.Role, userInfo.UserRole.ToString())
                 };
 
@@ -53,19 +54,12 @@ namespace BostonScientificAVS.Controllers
                         AllowRefresh = true,
                         IsPersistent = true
                     };
-                    try
-                    {
-                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), properties);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e);
-                    }
+                  await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), properties);
 
+                    bool myBooleanValue = true; // Replace this with your desired boolean value
+                    TempData["MyBoolean"] = myBooleanValue;
                     return RedirectToAction("HomeScreen", "Home");
-
                 }
-
                 return RedirectToAction("LoginError");
             }
             catch (Exception e)
