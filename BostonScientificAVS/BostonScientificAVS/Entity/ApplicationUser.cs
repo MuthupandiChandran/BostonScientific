@@ -10,12 +10,13 @@ namespace Entity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; } 
-        [Required]
+        public int Id { get; set; }
+        [Required(ErrorMessage = "EmpID is required")]
         [MaxLength(100)]
         [Column(TypeName = "nvarchar(100)")]  
         public string EmpID { get; set; }
-        [Required]
+        [Required(ErrorMessage = "UserFullName is required")]
+        [RegularExpression("^[A-Za-z]+$", ErrorMessage = "UserFullName should only contain alphabets")]
         public string UserFullName { get; set; }
         [Required]
         public UserRole UserRole { get; set; }
