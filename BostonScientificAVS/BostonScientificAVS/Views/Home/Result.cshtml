@@ -5,7 +5,7 @@
         <div class="dropdown">
   <button class="custom-config-button" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <img class="avatar-image-size" src="~/assets/images/user_avatar.png"/>
-            <span class="user-name-text">Hello, @User.Identity.Name</span>
+            <span class="user-name-text">Hello, @User.Identity.Name | @User.Claims.FirstOrDefault(c => c.Type == "EmpID")?.Value</span>
   </button>
   <div class="dropdown-menu custom-config-dropdown" aria-labelledby="dropdownMenuButton">
 
@@ -24,7 +24,7 @@
       <h6 class="session-expire-time text-color-blue">07:59:59PM</h6>
       </div>
     <div>
-          <a class="button" asp-area="" asp-controller="Home" asp-action="HomeScreen"><img class="back-button-img" src="/assets/images/back-arrow.png" /><span class="back-text">Back</span></a>
+          <a class="button" asp-area="" asp-controller="Home" asp-action="WorkOrderScan"><img class="back-button-img" src="/assets/images/back-arrow.png" /><span class="back-text">Back</span></a>
     </div>
 </div>
 

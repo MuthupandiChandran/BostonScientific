@@ -3,7 +3,7 @@
         <div class="dropdown">
   <button class="custom-config-button" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <img class="avatar-image-size" src="~/assets/images/user_avatar.png"/>
-            <span class="user-name-text">Hello, @User.Identity.Name</span>
+            <span class="user-name-text">Hello, @User.Identity.Name | @User.Claims.FirstOrDefault(c => c.Type == "EmpID")?.Value</span>
   </button>
   <div class="dropdown-menu custom-config-dropdown" aria-labelledby="dropdownMenuButton">
 

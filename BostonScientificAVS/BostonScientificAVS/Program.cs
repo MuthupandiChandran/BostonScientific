@@ -8,16 +8,21 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// Load the env file
+DotNetEnv.Env.Load();
+
+// get the expire time from env
+int Time = DotNetEnv.Env.GetInt("EXPIRE_TIME");
 builder.Services.AddAuthentication(
     CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(option =>
     {
         option.LoginPath = "/Login/Login";
-        option.ExpireTimeSpan = TimeSpan.FromMinutes(2);
+        option.ExpireTimeSpan = TimeSpan.FromMinutes(Time);
     });
 
-DotNetEnv.Env.Load();
-string DBConStr = Environment.GetEnvironmentVariable("DB_CON_STRING");
+// get the connection string from env
+string DBConStr = DotNetEnv.Env.GetString("DB_CON_STRING");
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseSqlServer(DBConStr);
