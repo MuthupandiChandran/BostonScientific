@@ -71,14 +71,14 @@ namespace BostonScientificAVS.Controllers
 
 
 
-        [HttpPost]
-        public async Task<IActionResult> SaveProductLabel(string input, string input1)
+        [HttpPost("/SaveProductLabel")]
+        public async Task<IActionResult> SaveProductLabel(string productLabel, string productLabelSpec)
         {
             if (ModelState.IsValid)
             {
                 string pattern = @"\((\d+)\)"; // Matches two digits within parentheses
 
-                string[] barcodeParts = Regex.Split(input, pattern);
+                string[] barcodeParts = Regex.Split(productLabel, pattern);
                 var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
                 if (barcodeParts.Length >= 3)
                 {
@@ -100,7 +100,7 @@ namespace BostonScientificAVS.Controllers
                         return RedirectToAction("WorkOrderError", "Home");
                     }
 
-                    transaction.Product_Label_Spec = input1;
+                    transaction.Product_Label_Spec = productLabelSpec;
                 }
 
                 await _dataContext.SaveChangesAsync();
@@ -123,9 +123,9 @@ namespace BostonScientificAVS.Controllers
             {
                
                 Result result = new Result();
-                Mismatches mismatches = null;
-                Lhs lhsData = null;
-                Rhs rhsData = null;
+                Mismatches mismatches = new Mismatches();
+                Lhs lhsData = new Lhs();
+                Rhs rhsData = new Rhs();
                 lhsData.dbGTIN = transaction.DB_GTIN;
                 lhsData.workOrderLotNo = transaction.WO_Lot_Num;
                 lhsData.dbLabelSpec = transaction.DB_Label_Spec;

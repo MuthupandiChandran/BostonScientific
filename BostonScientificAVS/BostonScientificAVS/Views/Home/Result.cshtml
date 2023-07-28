@@ -44,7 +44,21 @@
         </div>
     </div>
 </div>*@
-
+             @*   <form id="productlabelform" asp-controller="Home" asp-action="SaveProductLabel" method="post" class="temp-button">*@
+                    <div class="work-order-scan-submit temp-flex">
+                        <div>
+                            <input id="productLabelInput" class="scan-input" placeholder="Product label" name="input" />
+                        </div>
+                        <div>
+                            <input id="productLabelSpec" class="scan-input" placeholder="Label Spec" name="input1" />
+                        </div>
+                        <div>
+                            <button type="submit" class="login-button" id="submitBtn">
+                                <span class="login-text">Scan ID/Submit</span>
+                            </button>
+                        </div>
+                    </div>
+             @*   </form>*@
 <div class="mid-content">
     <div class="left-content">
         <div class="count-data">
@@ -59,7 +73,7 @@
                     </div>
                     <hr style="color: #003C71;"/>
                     <div class="data-val">
-                        <h6 class="data-val-text">12</h6>
+                        <h6 class="data-val-text">00</h6>
                     </div>
                 </div>
                 <div class="data-card p-10">
@@ -73,7 +87,7 @@
                     </div>
                     <hr style="color: #003C71;"/>
                     <div class="data-val">
-                        <h6 class="data-val-text">09</h6>
+                        <h6 class="data-val-text">00</h6>
                     </div>
                 </div>
                 <div class="data-card p-10">
@@ -87,13 +101,13 @@
                     </div>
                     <hr style="color: #003C71;"/>
                     <div class="data-val">
-                        <h6 class="data-val-text">01</h6>
+                        <h6 class="data-val-text">00</h6>
                     </div>
                 </div>
                 <div class="data-card p-10">
                       <div class="data-heading">
                           <div>
-                              <h6 class="data-heading-text">Approved</h6>
+                              <h6 class="data-heading-text">Rescanned</h6>
                           </div>
                            <div>
                              <img src="/assets/images/approved-icon.png" class="pass-icon"/>
@@ -101,7 +115,7 @@
                     </div>
                     <hr style="color: #003C71;"/>
                     <div class="data-val">
-                        <h6 class="data-val-text">02</h6>
+                        <h6 class="data-val-text">00</h6>
                     </div>
                 </div>
 
@@ -129,23 +143,90 @@
             </div>
         </div>
 
-            <div>
-                <form id="productlabelform" asp-controller="Home" asp-action="SaveProductLabel" method="post" class="temp-button">
-                    <div class="work-order-scan-submit">
+          <div id="scanned-data" class="supervisor-container temp-display">
+            <div class="data-comparison-pass">
+                <div>
+                    <h6 class="mismatch-text">Scanned Details</h6>
+                </div>
+                <div class="data-table-pass">
+                    <div class="product-data">
                         <div>
-                            <input class="scan-input" placeholder="Product label" name="input" />
+                            <h6 class="comparison-lable-text">DB GTIN</h6>
                         </div>
                         <div>
-                            <input class="scan-input" placeholder="Label Spec" name="input1" />
+                           @* <h6 class="comparison-lable-text" >@Model.Product_Label_GTIN</h6>*@
+                            <h6 id="pass-db-gtin" class="comparison-lable-text" >xxxxxxxxxxx</h6>                             
+                        </div>                                
+                        <div>
+                            <h6 class="comparison-lable-text">Work Order Lot No</h6>
                         </div>
                         <div>
-                            <button type="submit" class="login-button" id="submitBtn">
-                                <span class="login-text">Scan ID/Submit</span>
-                            </button>
+                                @*<h6 class="comparison-lable-text">@Model.Product_Label_Spec</h6>*@
+                                 <h6 id="pass-wo-lot-no" class="comparison-lable-text" >xxxxxxxxxxx</h6>
                         </div>
-                    </div>
-                </form>
+                        <div>
+                            <h6 class="comparison-lable-text">DB Label Spec</h6>
+                        </div>
+                        <div>
+                              @*  <h6 class="comparison-lable-text">@Model.WO_Catalog_Num </h6>*@
+                                   <h6 id="pass-db-label-spec" class="comparison-lable-text" >xxxxxxxxxxx</h6>
+                        </div>
+                        <div>
+                            <h6 class="comparison-lable-text">Calculated Use By</h6>
+                        </div>
+                        <div>
+                             @*   <h6 class="comparison-lable-text">@Model.WO_Lot_Num</h6>*@
+                                <h6 id="pass-calc-use-by" class="comparison-lable-text" >xxxxxxxxxxx</h6>
+                        </div>
+                        <div>
+                            <h6 class="comparison-lable-text">DB Catalog Num</h6>
+                        </div>
+                        <div>
+                             @*   <h6 class="comparison-lable-text">@Model.WO_Lot_Num</h6>*@
+                                <h6 id="pass-db-catalog-num" class="comparison-lable-text" >xxxxxxxxxxx</h6>
+                        </div>
+                   </div>
+                   <div class="data-from-db">
+                       <div>
+                           <h6 class="comparison-lable-text" > Product Label GTIN </h6>
+                     </div>
+                     <div>
+                         @*       <h6 class="comparison-lable-text">@Model.DB_GTIN</h6>*@
+                            <h6 id="pass-product-gtin" class="comparison-lable-text" >xxxxxxxxxxx</h6>
+                     </div>
+                       <div>
+                           <h6 class="comparison-lable-text" > Product Lot Num </h6>
+                     </div>
+                     <div>
+                                @*<h6 class="comparison-lable-text">@Model.DB_Label_Spec</h6>*@
+                                   <h6 id="pass-product-lot-no" class="comparison-lable-text" >xxxxxxxxxxx</h6>
+                     </div>
+                       <div>
+                           <h6 class="comparison-lable-text" > Product Label Spec</h6>
+                     </div>
+                     <div>
+                             @*   <h6 class="comparison-lable-text">@Model.DB_Catalog_Num </h6>*@
+                                <h6 id="pass-product-label-spec" class="comparison-lable-text" >xxxxxxxxxxx</h6>
+                             </div>
+                             <div>
+                           <h6 class="comparison-lable-text" > Product Use By </h6>
+                     </div>
+                     <div>
+                              @*  <h6 class="comparison-lable-text">@Model.Product_Lot_Num </h6>*@
+                                 <h6 id="pass-product-use-by" class="comparison-lable-text" >xxxxxxxxxxx</h6>
+                     </div>
+   
+                        <div>
+                           <h6 class="comparison-lable-text" > Work Order Catalog Num</h6>
+                     </div>
+                     <div>
+                              @*  <h6 class="comparison-lable-text">@Model.Product_Lot_Num </h6>*@
+                                 <h6 id="pass-wo-catalog-no" class="comparison-lable-text" >xxxxxxxxxxx</h6>
+                     </div>
+                   </div>
+                </div>
             </div>
+        </div>
 
         <div id="supervisor-intervention" class="supervisor-container temp-display">
             <div class="data-comparison">
@@ -407,6 +488,12 @@
         justify-content: space-around;
     }
 
+    .data-table-pass{
+        display: flex;
+        padding-left: 42px;
+        gap: 250px;
+    }
+
     .mismatch-text{
         color:#003C71;
         font-size:20px;
@@ -424,6 +511,12 @@
 
     .data-comparison{
         width:542px;
+        height:319px;
+        background-color:#EAF5FF;
+        border-radius:10px;
+    }
+
+     .data-comparison-pass{
         height:319px;
         background-color:#EAF5FF;
         border-radius:10px;
@@ -721,6 +814,14 @@
         padding-left: 0px;
     }
 
+    .temp-flex{
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        padding: 10px;
+        align-items: center;
+    }
+
 </style>
 
 <script type="text/javascript">
@@ -737,20 +838,21 @@
 let inPassScenario = false;
 let inFailScenario = false;
 
-    document.getElementsByClassName('temp-button')[0]
-        .addEventListener('click', function (event) {
-            beforeToDuringScan();
-              setTimeout(duringToScanPass, 3000);
+    //document.getElementsByClassName('temp-button')[0]
+    //    .addEventListener('click', function (event) {
+    //        beforeToDuringScan();
+    //          setTimeout(duringToScanPass, 3000);
 
-        });
+    //    });
 
      document.getElementsByClassName('temp-reset-button')[0]
         .addEventListener('click', function (event) {
-              if (inPassScenario) {
-                  inPassScenario = false;
-                  resetPassScenario();
-              }
-       
+              //if (inPassScenario) {
+              //    inPassScenario = false;
+              //    resetPassScenario();
+              //}
+            var targetUrl = "https://localhost:7157/Home/WorkOrderScan";
+            window.location.href = targetUrl;
 
         });
 
@@ -810,6 +912,9 @@ let inFailScenario = false;
             document.getElementById("left-part-after-scan-pass").style.display = "block";
             
             document.getElementById("next-scan-button").style.backgroundColor = "#003C71";
+
+          document.getElementById("scanning-icon-div").style.display = "none";
+          document.getElementById("scanned-data").style.display = "block";
       }
 
       function duringToScanFail(){
@@ -868,26 +973,19 @@ let inFailScenario = false;
       }
 
 
-        $(document).on("click", "#validateTransactionButton", function () {
-            var woBarcode = "your-wo-barcode-value"; // Replace with the actual value of the woBarcode
-            var productBarcode = "your-product-barcode-value"; // Replace with the actual value of the productBarcode
+        $(document).on("click", "#submitBtn", function () {
+            var productLabel = document.getElementById("productLabelInput").value;
+            var productLabelSpec = document.getElementById("productLabelSpec").value;
 
-            var apiUrl = "https://localhost:7157/ValidateTransaction";
+            var apiUrl = "https://localhost:7157/SaveProductLabel";
 
             $.ajax({
                 url: apiUrl,
                 method: "POST",
-                data: { woBarcode: woBarcode, productBarcode: productBarcode },
+                data: { productLabel: productLabel, productLabelSpec: productLabelSpec },
                 success: function (response) {
-                    if (response.success) {
-                        // Handle the success response and call the success AJAX method
-                        // You can perform additional actions here if needed
-                         duringToScanPass();
-                    } else {
-                        // Handle the error response and call the error AJAX method
-                        // You can display the error message or perform other actions here
-                       duringToScanFail();
-                    }
+                        console.log(response);
+                    processResponse(response);
                 },
                 error: function (xhr, status, error) {
                     console.log("An error occurred while making the AJAX call:", error);
@@ -896,6 +994,23 @@ let inFailScenario = false;
                 
             });
         });
+
+
+        function processResponse(response) {
+            console.log("response hit");
+            console.log(response.allMatch);
+            if (response.allMatch == true) {
+              beforeToDuringScan();
+              setTimeout(duringToScanPass, 3000);
+                setPassScannedData(response);
+            } else {
+
+            }
+        }
+
+        function setPassScannedData(response) {
+            documen
+        }
 
       //code for session counter
           function startTimer(duration) {
