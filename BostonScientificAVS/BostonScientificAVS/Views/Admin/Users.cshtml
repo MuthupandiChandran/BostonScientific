@@ -158,33 +158,33 @@
                     <h4>Add/Edit Form</h4>
                 </div>
                 <div class="card-body">
-                    <form id="myForm">
-                        <div class="form-group">
-                            <label for="empid">EmpID:</label>
-                            <input type="text" class="form-control" id="empid">
-                            <span class="text-danger" id="empidError"></span>                        
+                    
+                    <div class="form-group">
+                        <label for="empid">EmpID:</label>
+                        <input type="text" class="form-control" id="empid" name="empid">
+                        <span class="text-danger" id="empidError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="userfullname">UserFullName:</label>
+                        <input type="text" class="form-control" id="userfullname" name="userfullname">
+                        <span class="text-danger" id="userfullnameError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="userrole">UserRole:</label>
+                        <div class="col-lg-4">
+                            <select id="UserRole" name="UserRole" class="form-control">
+                                @foreach (UserRole role in Enum.GetValues(typeof(UserRole)))
+                                {
+                                    <option value="@((int)role)">@role</option>
+                                }
+                            </select>
                         </div>
-                        
-                        <div class="form-group">
-                            <label for="userfullname">UserFullName:</label>
-                            <input type="text" class="form-control" id="userfullname">
-                            <span class="text-danger" id="userfullnameError"></span>
-                        </div>
-                        <div class="form-group">
-                            <label for="userrole">UserRole:</label>
-                            <div class="col-lg-4">
-                                <select id="UserRole" name="UserRole" class="form-control">
-                                    @foreach (UserRole role in Enum.GetValues(typeof(UserRole)))
-                                    {
-                                        <option value="@((int)role)">@role</option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                        <div class="btn-save text-center">
-                            <button type="submit" class="btn btn-primary" id="myForm">Save</button>
-                        </div>
-                    </form>
+                    </div>
+                    <div class="btn-save text-center">
+                        <button type="submit" class="btn btn-primary" id="btnSave">Save</button>
+                    </div>
+                   
                 </div>
             </div>
         </div>
@@ -223,159 +223,160 @@
 @*
 </form>*@
 
-
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.css" />
-<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.js"></script>
+@section scripts{
 
 
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.css" />
+    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.js"></script>
 
-<script type="text/javascript">
+    <script type="text/javascript">
 
-    var js = jQuery.noConflict(true)
-    js(document).ready(function () {
-        js('#myTable').DataTable({
+
+        var js = jQuery.noConflict(true)
+        js(document).ready(function () {
+            js('#myTable').DataTable({
+
+
+            });
 
 
         });
-
-        $("#myForm").submit(function (event) {
-            event.preventDefault();
-            validateForm();
-        });
-    });
-
-  
-
-
-
-
-        function validateForm() {
-            var empid = $("#empid").val().trim();
-            var userfullname = $("#userfullname").val().trim();
-            
-
+        $("#btnSave").click(function () {
+            var empid = $("#empid").val();
             // Validate EmpID
-            if (empid === '') {
-                $("#empidError").text("EmpID is required.");
-                return false;
+            if (empid == '') {
+                $('#empidError').text("EmpID is required.");
+
             } else {
-                $("#empidError").text("");
+                $('#empidError').text("");
             }
+
+            var username = $("#userfullname").val();
+
 
             // Validate UserFullName
-            if (userfullname === '') {
-                $("#userfullnameError").text("UserFullName is required.");
-                return false;
-            } else if (!/^[A-Za-z]+$/.test(userfullname)) {
-                $("#userfullnameError").text("UserFullName should only contain alphabets.");
-                return false;
-            } else {
-                $("#userfullnameError").text("");
-            }
+            if (username == '') {
 
-            // If there are no errors, call saveUser() function
+                alert('hi userfullname');;
+                $('#userfullnameError').text("UserFullName is required.");
+                return false;
+            }
+            else if (/^[A-Za-z]+$/.test(userfullname)) {
+                $('#userfullnameError').text("UserFullName should only contain alphabets.");
+                return false;
+            }
+            else {
+                $('#userfullnameError').text("");
+            }
             saveUser();
-            return true;
-        }
-  
+            return True;
 
-    
-
-
-    function editUser(button) {
-        var row = button.parentNode.parentNode;
-        var empID = row.cells[0].innerText;
-        var userFullName = row.cells[1].innerText;
-        var userRole = row.cells[2].innerText;
-
-
-        document.getElementById("EmpID").value = empID;
-        document.getElementById("UserFullName").value = userFullName;
-
-
-        var select = document.getElementById("UserRole");
-        for (var i = 0; i < select.options.length; i++) {
-            if (select.options[i].text === userRole) {
-                select.selectedIndex = i;
-                break;
-            }
-        }
-
-        isEditing = true;
-    }
+        })
 
 
 
 
-    function saveUser() {
-
-        var empId = document.getElementById("EmpID").value;
-        var fullName = document.getElementById("UserFullName").value;
-        var userRole = document.getElementById("UserRole").value;
 
 
-        var user = {
-            EmpID: empId,
-            UserFullName: fullName,
-            UserRole: userRole
-        }
 
-        if (isEditing) {
-            user.EmpID = parseInt(user.EmpID);
-        }
+        let isEditing = false;
 
-        submitform(user);
-    }
+        function editUser(button) {
+            var row = button.parentNode.parentNode;
+            var empID = row.cells[0].innerText;
+            var userFullName = row.cells[1].innerText;
+            var userRole = row.cells[2].innerText;
 
 
-    function importCsv() {
-        var fileInput = document.getElementById('csvFile');
-        var file = fileInput.files[0];
-
-        var formData = new FormData();
-        formData.append('file', file);
+            document.getElementById("empid").value = empID;
+            document.getElementById("userfullname").value = userFullName;
 
 
-        $.ajax({
-            url: '/Admin/importCsv',
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (response) {    
-                alert("CSV file uploaded successfully!");
-                location.reload();
-            },
-            error: function (error) {
-                console.log(error);
-                alert("Error uploading CSV file!");
-            }
-        });
-    }
-
-
-    function submitform(user) {
-
-        $.ajax({
-            url: '/Admin/SaveUser',
-            type: 'POST',
-            data: user,
-            success: function (response) {
-                if (response.message && response.message === "Updated successfully!") {
-                    alert("User updated successfully!");
-                } else {
-                    alert("User saved successfully!");
+            var select = document.getElementById("UserRole");
+            for (var i = 0; i < select.options.length; i++) {
+                if (select.options[i].text === userRole) {
+                    select.selectedIndex = i;
+                    break;
                 }
-                location.reload();
-            },
-            error: function (error) {
-                console.log(error);
-                alert("Error saving user!");
             }
-        });
 
-        isEditing = false;
+            isEditing = true;
+        }
 
-    }
-</script>
+
+
+
+        function saveUser() {
+
+            var empId = document.getElementById("empid").value;
+            var fullName = document.getElementById("userfullname").value;
+            var userRole = document.getElementById("UserRole").value;
+
+
+            var user = {
+                EmpID: empId,
+                UserFullName: fullName,
+                UserRole: userRole
+            }
+
+            if (isEditing) {
+                user.EmpID = parseInt(user.EmpID);
+            }
+
+            submitform(user);
+        }
+
+
+        function importCsv() {
+            var fileInput = document.getElementById('csvFile');
+            var file = fileInput.files[0];
+
+            var formData = new FormData();
+            formData.append('file', file);
+
+
+            $.ajax({
+                url: '/Admin/importCsv',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    alert("CSV file uploaded successfully!");
+                    location.reload();
+                },
+                error: function (error) {
+                    console.log(error);
+                    alert("Error uploading CSV file!");
+                }
+            });
+        }
+
+
+        function submitform(user) {
+
+            $.ajax({
+                url: '/Admin/SaveUser',
+                type: 'POST',
+                data: user,
+                success: function (response) {
+                    if (response.message && response.message === "Updated successfully!") {
+                        alert("User updated successfully!");
+                    } else {
+                        alert("User saved successfully!");
+                    }
+                    location.reload();
+                },
+                error: function (error) {
+                    console.log(error);
+                    alert("Error saving user!");
+                }
+            });
+
+            isEditing = false;
+
+        }
+    </script>
+
+}

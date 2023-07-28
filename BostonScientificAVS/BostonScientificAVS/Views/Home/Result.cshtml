@@ -131,25 +131,25 @@
                             <h6 class="comparison-lable-text">Product Label GTIN</h6>
                         </div>
                         <div>
-                            <h6 class="comparison-lable-text" >xxxxxxxxxxxxxxxxxxxx</h6>
+                            <h6 class="comparison-lable-text" >@Model.Product_Label_GTIN</h6>
                         </div>
                         <div>
                             <h6 class="comparison-lable-text">Product Lable Specification</h6>
                         </div>
                         <div>
-                            <h6 class="comparison-lable-text" >xxxxxxxxxxxxxxxxxxxx</h6>
+                                <h6 class="comparison-lable-text">@Model.Product_Label_Spec</h6>
                         </div>
                         <div>
                             <h6 class="comparison-lable-text">Work Order Catalog No</h6>
                         </div>
                         <div>
-                            <h6 class="comparison-lable-text" >xxxxxxxxxxxxxxxxxxxx</h6>
+                                <h6 class="comparison-lable-text">@Model.WO_Catalog_Num </h6>
                         </div>
                         <div>
                             <h6 class="comparison-lable-text">Work Order Lot No</h6>
                         </div>
                         <div>
-                            <h6 class="comparison-lable-text" >xxxxxxxxxxxxxxxxxxxx</h6>
+                                <h6 class="comparison-lable-text">@Model.WO_Lot_Num</h6>
                         </div>
                    </div>
                    <div class="data-from-db">
@@ -157,25 +157,25 @@
                            <h6 class="comparison-lable-text" > Database GTIN </h6>
                      </div>
                      <div>
-                          <h6 class="comparison-lable-text" > xxxxxxxxxxxxxxxxxxxx </h6>
+                                <h6 class="comparison-lable-text">@Model.DB_GTIN</h6>
                      </div>
                        <div>
                            <h6 class="comparison-lable-text" > Database Lable Specification </h6>
                      </div>
                      <div>
-                          <h6 class="comparison-lable-text" > xxxxxxxxxxxxxxxxxxxx </h6>
+                                <h6 class="comparison-lable-text">@Model.DB_Label_Spec</h6>
                      </div>
                        <div>
                            <h6 class="comparison-lable-text" > Database Catalog No</h6>
                      </div>
                      <div>
-                          <h6 class="comparison-lable-text" > xxxxxxxxxxxxxxxxxxxx </h6>
+                                <h6 class="comparison-lable-text">@Model.DB_Catalog_Num </h6>
                      </div>
                        <div>
                            <h6 class="comparison-lable-text" > Database Lot No </h6>
                      </div>
                      <div>
-                          <h6 class="comparison-lable-text" > xxxxxxxxxxxxxxxxxxxx </h6>
+                                <h6 class="comparison-lable-text">@Model.Product_Lot_Num </h6>
                      </div>
                    </div>
                 </div>
@@ -770,9 +770,8 @@ let inFailScenario = false;
       }
 
       function duringToScanFail(){
-          debugger;
           document.getElementById("scanning-icon-div").style.backgroundColor = "#FFB5B5";
-       
+     
           document.getElementById("before-scan-text").style.display = "none";
           document.getElementById("after-scan-fail-text").style.display = "flex";
 
