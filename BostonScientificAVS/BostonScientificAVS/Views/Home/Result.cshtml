@@ -129,6 +129,24 @@
             </div>
         </div>
 
+            <div>
+                <form id="productlabelform" asp-controller="Home" asp-action="SaveProductLabel" method="post" class="temp-button">
+                    <div class="work-order-scan-submit">
+                        <div>
+                            <input class="scan-input" placeholder="Product label" name="input" />
+                        </div>
+                        <div>
+                            <input class="scan-input" placeholder="Label Spec" name="input1" />
+                        </div>
+                        <div>
+                            <button type="submit" class="login-button" id="submitBtn">
+                                <span class="login-text">Scan ID/Submit</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
         <div id="supervisor-intervention" class="supervisor-container temp-display">
             <div class="data-comparison">
                 <div>
@@ -140,25 +158,29 @@
                             <h6 class="comparison-lable-text">Product Label GTIN</h6>
                         </div>
                         <div>
-                            <h6 class="comparison-lable-text" >xxxxxxxxxxxxxxxxxxxx</h6>
+                           @* <h6 class="comparison-lable-text" >@Model.Product_Label_GTIN</h6>*@
+                            <h6 class="comparison-lable-text" >xxxxxxxxxxx</h6>
                         </div>
                         <div>
                             <h6 class="comparison-lable-text">Product Lable Specification</h6>
                         </div>
                         <div>
-                            <h6 class="comparison-lable-text" >xxxxxxxxxxxxxxxxxxxx</h6>
+                                @*<h6 class="comparison-lable-text">@Model.Product_Label_Spec</h6>*@
+                                 <h6 class="comparison-lable-text" >xxxxxxxxxxx</h6>
                         </div>
                         <div>
                             <h6 class="comparison-lable-text">Work Order Catalog No</h6>
                         </div>
                         <div>
-                            <h6 class="comparison-lable-text" >xxxxxxxxxxxxxxxxxxxx</h6>
+                              @*  <h6 class="comparison-lable-text">@Model.WO_Catalog_Num </h6>*@
+                                   <h6 class="comparison-lable-text" >xxxxxxxxxxx</h6>
                         </div>
                         <div>
                             <h6 class="comparison-lable-text">Work Order Lot No</h6>
                         </div>
                         <div>
-                            <h6 class="comparison-lable-text" >xxxxxxxxxxxxxxxxxxxx</h6>
+                             @*   <h6 class="comparison-lable-text">@Model.WO_Lot_Num</h6>*@
+                                <h6 class="comparison-lable-text" >xxxxxxxxxxx</h6>
                         </div>
                    </div>
                    <div class="data-from-db">
@@ -166,25 +188,29 @@
                            <h6 class="comparison-lable-text" > Database GTIN </h6>
                      </div>
                      <div>
-                          <h6 class="comparison-lable-text" > xxxxxxxxxxxxxxxxxxxx </h6>
+                         @*       <h6 class="comparison-lable-text">@Model.DB_GTIN</h6>*@
+                            <h6 class="comparison-lable-text" >xxxxxxxxxxx</h6>
                      </div>
                        <div>
                            <h6 class="comparison-lable-text" > Database Lable Specification </h6>
                      </div>
                      <div>
-                          <h6 class="comparison-lable-text" > xxxxxxxxxxxxxxxxxxxx </h6>
+                                @*<h6 class="comparison-lable-text">@Model.DB_Label_Spec</h6>*@
+                                   <h6 class="comparison-lable-text" >xxxxxxxxxxx</h6>
                      </div>
                        <div>
                            <h6 class="comparison-lable-text" > Database Catalog No</h6>
                      </div>
                      <div>
-                          <h6 class="comparison-lable-text" > xxxxxxxxxxxxxxxxxxxx </h6>
+                             @*   <h6 class="comparison-lable-text">@Model.DB_Catalog_Num </h6>*@
+                                <h6 class="comparison-lable-text" >xxxxxxxxxxx</h6>
                      </div>
                        <div>
                            <h6 class="comparison-lable-text" > Database Lot No </h6>
                      </div>
                      <div>
-                          <h6 class="comparison-lable-text" > xxxxxxxxxxxxxxxxxxxx </h6>
+                              @*  <h6 class="comparison-lable-text">@Model.Product_Lot_Num </h6>*@
+                                 <h6 class="comparison-lable-text" >xxxxxxxxxxx</h6>
                      </div>
                    </div>
                 </div>
@@ -211,6 +237,9 @@
                  <div class="temp-display" id="after-scan-pass-lot-no">
                     <img src="/assets/images/after-scanned-pass-icon.png" class="scanning-stage-img-size"/>
                 </div>
+                <div class="temp-display" id="after-scan-fail-lot-no">
+                    <img src="/assets/images/after-scanned-fail-icon.png" class="scanning-stage-img-size" />              
+                    </div>
                 <div>
                     <h6 class="product-spec-text">Lot Number</h6>
                 </div>
@@ -242,6 +271,9 @@
                  <div class="temp-display" id="after-scan-pass-cat-no">
                     <img src="/assets/images/after-scanned-pass-icon.png" class="scanning-stage-img-size"/>
                 </div>
+                    <div class="temp-display" id="after-scan-fail-cat-no">
+                        <img src="/assets/images/after-scanned-fail-icon.png" class="scanning-stage-img-size" />
+                    </div>          
                 <div>
                     <h6 class="product-spec-text">Catalogue Number</h6>
                 </div>
@@ -256,7 +288,10 @@
                  <div class="temp-display" id="after-scan-pass-label-spec">
                     <img src="/assets/images/after-scanned-pass-icon.png" class="scanning-stage-img-size"/>
                 </div>
-                <div>
+                    <div class="temp-display" id="after-scan-fail-label-spec">
+                        <img src="/assets/images/after-scanned-fail-icon.png" class="scanning-stage-img-size" />
+                    </div>
+                    <div>
                     <h6 class="product-spec-text">Label Specification</h6>
                 </div>
             </div>
@@ -270,13 +305,17 @@
                  <div class="temp-display" id="after-scan-pass-use-date">
                     <img src="/assets/images/after-scanned-pass-icon.png" class="scanning-stage-img-size"/>
                 </div>
-                <div>
+                    <div class="temp-display" id="after-scan-fail-use-date">
+                        <img src="/assets/images/after-scanned-fail-icon.png" class="scanning-stage-img-size" />
+                    </div>
+                    <div>
                      <h6 class="product-spec-text">Use Date</h6>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 
 <div class="loading-and-nav">
 <div id="left-part-before-scan" class="left-part ">
@@ -684,7 +723,17 @@
 
 </style>
 
-<script>
+<script type="text/javascript">
+  
+    //$(document).ready(function (){
+    //    ("#productlabelform").submit(function(e) {
+    //        e.preventDefault();
+    //        beforeToDuringScan()
+    //    });
+    //    });
+
+
+
 let inPassScenario = false;
 let inFailScenario = false;
 
@@ -765,7 +814,7 @@ let inFailScenario = false;
 
       function duringToScanFail(){
           document.getElementById("scanning-icon-div").style.backgroundColor = "#FFB5B5";
-       
+     
           document.getElementById("before-scan-text").style.display = "none";
           document.getElementById("after-scan-fail-text").style.display = "flex";
 
@@ -818,12 +867,37 @@ let inFailScenario = false;
             document.getElementById("next-scan-button").style.backgroundColor = "#C5C5C5";
       }
 
-       function reloadPage() {
-                location.reload();
-        }
 
+        $(document).on("click", "#validateTransactionButton", function () {
+            var woBarcode = "your-wo-barcode-value"; // Replace with the actual value of the woBarcode
+            var productBarcode = "your-product-barcode-value"; // Replace with the actual value of the productBarcode
 
-        //code for session counter
+            var apiUrl = "https://localhost:7157/ValidateTransaction";
+
+            $.ajax({
+                url: apiUrl,
+                method: "POST",
+                data: { woBarcode: woBarcode, productBarcode: productBarcode },
+                success: function (response) {
+                    if (response.success) {
+                        // Handle the success response and call the success AJAX method
+                        // You can perform additional actions here if needed
+                         duringToScanPass();
+                    } else {
+                        // Handle the error response and call the error AJAX method
+                        // You can display the error message or perform other actions here
+                       duringToScanFail();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log("An error occurred while making the AJAX call:", error);
+                }
+
+                
+            });
+        });
+
+      //code for session counter
           function startTimer(duration) {
     var timerDisplay = document.getElementById("timer");
 
@@ -857,4 +931,11 @@ var expirationTime = localStorage.getItem("expiration_time");
 var currentTime = Math.floor(Date.now() / 1000);
 var remainingTime = expirationTime - currentTime;
 startTimer(remainingTime);
+
+
+
+
+
+
+
 </script>

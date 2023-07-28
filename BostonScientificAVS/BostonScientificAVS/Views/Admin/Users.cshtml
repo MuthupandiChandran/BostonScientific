@@ -183,38 +183,39 @@
             </table>
         </div>
 
-
-
         <div class="col-sm-4" id="shorthand">
             <div class="card">
                 <div class="card-header">
                     <h4>Add/Edit Form</h4>
                 </div>
                 <div class="card-body">
-                    <form>
-                        <div class="form-group">
-                            <label for="empid">EmpID:</label>
-                            <input type="text" class="form-control" id="empid">
+                    
+                    <div class="form-group">
+                        <label for="empid">EmpID:</label>
+                        <input type="text" class="form-control" id="empid" name="empid">
+                        <span class="text-danger" id="empidError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="userfullname">UserFullName:</label>
+                        <input type="text" class="form-control" id="userfullname" name="userfullname">
+                        <span class="text-danger" id="userfullnameError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="userrole">UserRole:</label>
+                        <div class="col-lg-4">
+                            <select id="UserRole" name="UserRole" class="form-control">
+                                @foreach (UserRole role in Enum.GetValues(typeof(UserRole)))
+                                {
+                                    <option value="@((int)role)">@role</option>
+                                }
+                            </select>
                         </div>
-                        <div class="form-group">
-                            <label for="userfullname">UserFullName:</label>
-                            <input type="text" class="form-control" id="userfullname">
-                        </div>
-                        <div class="form-group">
-                            <label for="userrole">UserRole:</label>
-                            <div class="col-lg-4">
-                                <select id="UserRole" name="UserRole" class="form-control">
-                                    @foreach (UserRole role in Enum.GetValues(typeof(UserRole)))
-                                    {
-                                        <option value="@((int)role)">@role</option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                        <div class="btn-save text-center">
-                            <button type="submit" class="btn btn-primary">Save</button>
-                        </div>
-                    </form>
+                    </div>
+                    <div class="btn-save text-center">
+                        <button type="submit" class="btn btn-primary" id="btnSave">Save</button>
+                    </div>
+                   
                 </div>
             </div>
                <div class="card">
@@ -238,7 +239,8 @@
                     </form>
                 </div>
 
-            </div>
+        @* </div>*@
+    </div>
         </div>
 
     </div>
@@ -248,8 +250,6 @@
         <div class="col-md-8"></div>
         <div class="col-md-4" id="rightside">
          
-        </div>
-    </div>
 </div>
 @*
 </form>*@
@@ -264,120 +264,148 @@
 
 <script type="text/javascript">
 
-    var js = jQuery.noConflict(true)
-    js(document).ready(function () {
-        js('#myTable').DataTable({
+        var js = jQuery.noConflict(true)
+        js(document).ready(function () {
+            js('#myTable').DataTable({
+
+
+            });
 
 
         });
+        $("#btnSave").click(function () {
+            var empid = $("#empid").val();
+            // Validate EmpID
+            if (empid == '') {
+                $('#empidError').text("EmpID is required.");
 
-
-    });
-
-    let isEditing = false;
-
-    function editUser(button) {
-        var row = button.parentNode.parentNode;
-        var empID = row.cells[0].innerText;
-        var userFullName = row.cells[1].innerText;
-        var userRole = row.cells[2].innerText;
-
-
-        document.getElementById("EmpID").value = empID;
-        document.getElementById("UserFullName").value = userFullName;
-
-
-        var select = document.getElementById("UserRole");
-        for (var i = 0; i < select.options.length; i++) {
-            if (select.options[i].text === userRole) {
-                select.selectedIndex = i;
-                break;
+            } else {
+                $('#empidError').text("");
             }
-        }
 
-        isEditing = true;
-    }
+            var username = $("#userfullname").val();
 
 
+            // Validate UserFullName
+            if (username == '') {
 
-
-    function saveUser() {
-
-        var empId = document.getElementById("EmpID").value;
-        var fullName = document.getElementById("UserFullName").value;
-        var userRole = document.getElementById("UserRole").value;
-
-
-        var user = {
-            EmpID: empId,
-            UserFullName: fullName,
-            UserRole: userRole
-        }
-
-        if (isEditing) {
-            user.EmpID = parseInt(user.EmpID);
-        }
-
-        submitform(user);
-    }
-
-
-    function importCsv() {
-        var fileInput = document.getElementById('csvFile');
-        var file = fileInput.files[0];
-
-        var formData = new FormData();
-        formData.append('file', file);
-        showLoader();
-
-
-        var $btn = $('.btn-light');
-        $btn.button('loading');
-
-
-        $.ajax({
-            url: '/Admin/importCsv',
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (response) {
-                hideLoader();
-                $btn.button('reset');
-                alert("CSV file uploaded successfully!");
-                location.reload();
-            },
-            error: function (error) {
-                hideLoader();
-                $btn.button('reset');
-                console.log(error);
-                alert("Error uploading CSV file!");
+                alert('hi userfullname');;
+                $('#userfullnameError').text("UserFullName is required.");
+                return false;
             }
-        });
-    }
+            else if (/^[A-Za-z]+$/.test(userfullname)) {
+                $('#userfullnameError').text("UserFullName should only contain alphabets.");
+                return false;
+            }
+            else {
+                $('#userfullnameError').text("");
+            }
+            saveUser();
+            return True;
+
+        })
 
 
-    function submitform(user) {
 
-        $.ajax({
-            url: '/Admin/SaveUser',
-            type: 'POST',
-            data: user,
-            success: function (response) {
-                if (response.message && response.message === "Updated successfully!") {
-                    alert("User updated successfully!");
-                } else {
-                    alert("User saved successfully!");
+
+
+
+
+        let isEditing = false;
+
+        function editUser(button) {
+            var row = button.parentNode.parentNode;
+            var empID = row.cells[0].innerText;
+            var userFullName = row.cells[1].innerText;
+            var userRole = row.cells[2].innerText;
+
+
+            document.getElementById("empid").value = empID;
+            document.getElementById("userfullname").value = userFullName;
+
+
+            var select = document.getElementById("UserRole");
+            for (var i = 0; i < select.options.length; i++) {
+                if (select.options[i].text === userRole) {
+                    select.selectedIndex = i;
+                    break;
                 }
-                location.reload();
-            },
-            error: function (error) {
-                console.log(error);
-                alert("Error saving user!");
             }
-        });
 
-        isEditing = false;
+            isEditing = true;
+        }
+
+
+
+
+        function saveUser() {
+
+            var empId = document.getElementById("empid").value;
+            var fullName = document.getElementById("userfullname").value;
+            var userRole = document.getElementById("UserRole").value;
+
+
+            var user = {
+                EmpID: empId,
+                UserFullName: fullName,
+                UserRole: userRole
+            }
+
+            if (isEditing) {
+                user.EmpID = parseInt(user.EmpID);
+            }
+
+            submitform(user);
+        }
+
+
+        function importCsv() {
+            var fileInput = document.getElementById('csvFile');
+            var file = fileInput.files[0];
+
+            var formData = new FormData();
+            formData.append('file', file);
+
+
+            $.ajax({
+                url: '/Admin/importCsv',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    alert("CSV file uploaded successfully!");
+                    location.reload();
+                },
+                error: function (error) {
+                    console.log(error);
+                    alert("Error uploading CSV file!");
+                }
+            });
+        }
+
+
+        function submitform(user) {
+
+            $.ajax({
+                url: '/Admin/SaveUser',
+                type: 'POST',
+                data: user,
+                success: function (response) {
+                    if (response.message && response.message === "Updated successfully!") {
+                        alert("User updated successfully!");
+                    } else {
+                        alert("User saved successfully!");
+                    }
+                    location.reload();
+                },
+                error: function (error) {
+                    console.log(error);
+                    alert("Error saving user!");
+                }
+            });
+
+            isEditing = false;
 
     }
 
