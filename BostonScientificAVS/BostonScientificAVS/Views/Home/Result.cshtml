@@ -231,67 +231,82 @@
         <div id="supervisor-intervention" class="supervisor-container temp-display">
             <div class="data-comparison">
                 <div>
-                    <h6 class="mismatch-text">Mismatch Found</h6>
+                    <h6 class="mismatch-text">Scanned Details</h6>
                 </div>
-                <div class="data-table">
+                <div class="data-table-pass">
                     <div class="product-data">
                         <div>
-                            <h6 class="comparison-lable-text">Product Label GTIN</h6>
+                            <h6 class="comparison-lable-text">DB GTIN</h6>
                         </div>
                         <div>
                            @* <h6 class="comparison-lable-text" >@Model.Product_Label_GTIN</h6>*@
-                            <h6 class="comparison-lable-text" >xxxxxxxxxxx</h6>
-                        </div>
-                        <div>
-                            <h6 class="comparison-lable-text">Product Lable Specification</h6>
-                        </div>
-                        <div>
-                                @*<h6 class="comparison-lable-text">@Model.Product_Label_Spec</h6>*@
-                                 <h6 class="comparison-lable-text" >xxxxxxxxxxx</h6>
-                        </div>
-                        <div>
-                            <h6 class="comparison-lable-text">Work Order Catalog No</h6>
-                        </div>
-                        <div>
-                              @*  <h6 class="comparison-lable-text">@Model.WO_Catalog_Num </h6>*@
-                                   <h6 class="comparison-lable-text" >xxxxxxxxxxx</h6>
-                        </div>
+                            <h6 id="pass-db-gtin" class="comparison-lable-text" >xxxxxxxxxxx</h6>                             
+                        </div>                                
                         <div>
                             <h6 class="comparison-lable-text">Work Order Lot No</h6>
                         </div>
                         <div>
+                                @*<h6 class="comparison-lable-text">@Model.Product_Label_Spec</h6>*@
+                                 <h6 id="pass-wo-lot-no" class="comparison-lable-text" >xxxxxxxxxxx</h6>
+                        </div>
+                        <div>
+                            <h6 class="comparison-lable-text">DB Label Spec</h6>
+                        </div>
+                        <div>
+                              @*  <h6 class="comparison-lable-text">@Model.WO_Catalog_Num </h6>*@
+                                   <h6 id="pass-db-label-spec" class="comparison-lable-text" >xxxxxxxxxxx</h6>
+                        </div>
+                        <div>
+                            <h6 class="comparison-lable-text">Calculated Use By</h6>
+                        </div>
+                        <div>
                              @*   <h6 class="comparison-lable-text">@Model.WO_Lot_Num</h6>*@
-                                <h6 class="comparison-lable-text" >xxxxxxxxxxx</h6>
+                                <h6 id="pass-calc-use-by" class="comparison-lable-text" >xxxxxxxxxxx</h6>
+                        </div>
+                        <div>
+                            <h6 class="comparison-lable-text">DB Catalog Num</h6>
+                        </div>
+                        <div>
+                             @*   <h6 class="comparison-lable-text">@Model.WO_Lot_Num</h6>*@
+                                <h6 id="pass-db-catalog-num" class="comparison-lable-text" >xxxxxxxxxxx</h6>
                         </div>
                    </div>
                    <div class="data-from-db">
                        <div>
-                           <h6 class="comparison-lable-text" > Database GTIN </h6>
+                           <h6 class="comparison-lable-text" > Product Label GTIN </h6>
                      </div>
                      <div>
                          @*       <h6 class="comparison-lable-text">@Model.DB_GTIN</h6>*@
-                            <h6 class="comparison-lable-text" >xxxxxxxxxxx</h6>
+                            <h6 id="pass-product-gtin" class="comparison-lable-text" >xxxxxxxxxxx</h6>
                      </div>
                        <div>
-                           <h6 class="comparison-lable-text" > Database Lable Specification </h6>
+                           <h6 class="comparison-lable-text" > Product Lot Num </h6>
                      </div>
                      <div>
                                 @*<h6 class="comparison-lable-text">@Model.DB_Label_Spec</h6>*@
-                                   <h6 class="comparison-lable-text" >xxxxxxxxxxx</h6>
+                                   <h6 id="pass-product-lot-no" class="comparison-lable-text" >xxxxxxxxxxx</h6>
                      </div>
                        <div>
-                           <h6 class="comparison-lable-text" > Database Catalog No</h6>
+                           <h6 class="comparison-lable-text" > Product Label Spec</h6>
                      </div>
                      <div>
                              @*   <h6 class="comparison-lable-text">@Model.DB_Catalog_Num </h6>*@
-                                <h6 class="comparison-lable-text" >xxxxxxxxxxx</h6>
-                     </div>
-                       <div>
-                           <h6 class="comparison-lable-text" > Database Lot No </h6>
+                                <h6 id="pass-product-label-spec" class="comparison-lable-text" >xxxxxxxxxxx</h6>
+                             </div>
+                             <div>
+                           <h6 class="comparison-lable-text" > Product Use By </h6>
                      </div>
                      <div>
                               @*  <h6 class="comparison-lable-text">@Model.Product_Lot_Num </h6>*@
-                                 <h6 class="comparison-lable-text" >xxxxxxxxxxx</h6>
+                                 <h6 id="pass-product-use-by" class="comparison-lable-text" >xxxxxxxxxxx</h6>
+                     </div>
+   
+                        <div>
+                           <h6 class="comparison-lable-text" > Work Order Catalog Num</h6>
+                     </div>
+                     <div>
+                              @*  <h6 class="comparison-lable-text">@Model.Product_Lot_Num </h6>*@
+                                 <h6 id="pass-wo-catalog-no" class="comparison-lable-text" >xxxxxxxxxxx</h6>
                      </div>
                    </div>
                 </div>
@@ -498,7 +513,7 @@
         color:#003C71;
         font-size:20px;
         font-weight:700;
-        padding: 20px 0px 20px 38px;
+        padding: 7px 0px 5px 38px;
     }
 
     .supervisor-container{
@@ -917,7 +932,7 @@ let inFailScenario = false;
           document.getElementById("scanned-data").style.display = "block";
       }
 
-      function duringToScanFail(){
+      function duringToScanFail(response){
           document.getElementById("scanning-icon-div").style.backgroundColor = "#FFB5B5";
      
           document.getElementById("before-scan-text").style.display = "none";
@@ -927,22 +942,43 @@ let inFailScenario = false;
           document.getElementById("after-scan-fail-image").style.display = "block";
 
           document.getElementById("during-scan-lot-no").style.display = "none";
+          if (response.mismatches.lotNoMismatch) {
+          document.getElementById("after-scan-fail-lot-no").style.display = "block";
+          } else {
           document.getElementById("after-scan-pass-lot-no").style.display = "block";
+          }
 
-            document.getElementById("during-scan-gtin").style.display = "none";
-            document.getElementById("after-scan-fail-gtin").style.display = "block";
+          document.getElementById("during-scan-gtin").style.display = "none";
+          if (response.mismatches.GTINMismatch) {
+          document.getElementById("after-scan-fail-gtin").style.display = "block";
+          } else {
+          document.getElementById("after-scan-pass-gtin").style.display = "block";
+          }
+           
 
-            document.getElementById("during-scan-cat-no").style.display = "none";
+          document.getElementById("during-scan-cat-no").style.display = "none";
+          if (response.mismatches.catalogNumMismatch) {
+            document.getElementById("after-scan-fail-cat-no").style.display = "block";
+          } else {
             document.getElementById("after-scan-pass-cat-no").style.display = "block";
+          }
 
-            document.getElementById("during-scan-label-spec").style.display = "none";
-            document.getElementById("after-scan-pass-label-spec").style.display = "block";
+          document.getElementById("during-scan-label-spec").style.display = "none";
+          if (response.mismatches.labelSpecMismatch) {
+          document.getElementById("after-scan-fail-label-spec").style.display = "block";
+          } else {
+          document.getElementById("after-scan-pass-label-spec").style.display = "block";
+          }
 
-            document.getElementById("during-scan-use-date").style.display = "none";
-            document.getElementById("after-scan-pass-use-date").style.display = "block";
+          document.getElementById("during-scan-use-date").style.display = "none";
+          if (response.mismatches.calculatedUseByMismatch) {
+          document.getElementById("after-scan-fail-use-date").style.display = "block";
+          } else {
+          document.getElementById("after-scan-pass-use-date").style.display = "block";
+          }
 
-            document.getElementById("left-part-during-scan").style.display = "none";
-            document.getElementById("left-part-after-scan-fail").style.display = "block";
+          document.getElementById("left-part-during-scan").style.display = "none";
+          document.getElementById("left-part-after-scan-fail").style.display = "block";
       }
 
       function ScanFailToSupervisor() {
@@ -978,7 +1014,7 @@ let inFailScenario = false;
             var productLabelSpec = document.getElementById("productLabelSpec").value;
 
             var apiUrl = "https://localhost:7157/SaveProductLabel";
-
+            beforeToDuringScan();
             $.ajax({
                 url: apiUrl,
                 method: "POST",
@@ -1000,16 +1036,29 @@ let inFailScenario = false;
             console.log("response hit");
             console.log(response.allMatch);
             if (response.allMatch == true) {
-              beforeToDuringScan();
-              setTimeout(duringToScanPass, 3000);
-                setPassScannedData(response);
+              //setTimeout(duringToScanPass, 3000);
+               duringToScanPass();
             } else {
-
+              //setTimeout(duringToScanFail, 3000);
+                duringToScanFail(response);
             }
+              setScannedData(response);
         }
 
-        function setPassScannedData(response) {
-            documen
+        function setScannedData(response) {
+            console.log("set data called");
+            document.getElementById("pass-db-gtin").innerHTML = response.lhsData.dbGTIN;
+            document.getElementById("pass-wo-lot-no").innerHTML = response.lhsData.workOrderLotNo;
+            document.getElementById("pass-db-label-spec").innerHTML = response.lhsData.dbLabelSpec;
+            document.getElementById("pass-calc-use-by").innerHTML = response.lhsData.calculatedUseBy;
+            document.getElementById("pass-db-catalog-num").innerHTML = response.lhsData.dbCatalogNo;
+
+            document.getElementById("pass-product-gtin").innerHTML = response.rhsData.productLabelGTIN;
+            document.getElementById("pass-product-lot-no").innerHTML = response.rhsData.productLotNo;
+            document.getElementById("pass-product-label-spec").innerHTML = response.rhsData.productLabelSpec;
+            document.getElementById("pass-product-use-by").innerHTML = response.rhsData.productUseBy;
+            document.getElementById("pass-wo-catalog-no").innerHTML = response.rhsData.workOrderCatalogNo;
+
         }
 
       //code for session counter
