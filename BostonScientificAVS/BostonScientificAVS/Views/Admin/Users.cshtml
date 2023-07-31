@@ -4,7 +4,7 @@
 @{
     ViewData["Title"] = "Users";
 }
-
+<partial name="_Loader" />
 
 
 
@@ -17,6 +17,12 @@
         border-collapse: separate;
         border-spacing: 0;
     }
+
+    .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter, .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_processing, .dataTables_wrapper .dataTables_paginate {
+        color: inherit;
+        margin-bottom: 13px;
+    }
+
 
     div.dataTables_info {
         position: absolute
@@ -99,18 +105,23 @@
         margin-left: 197px;
     }
 
-    #download1 {
-        margin: auto;
-        text-align: center;
-    }
-
     #rightside {
         bottom: 0;
         position: relative;
         margin-bottom: 40px;
         margin-top: 9px;
     }
-
+    .btn-save1{
+        margin-top:5px;
+        margin-right:10px;
+        float:right;
+        margin-bottom:40px;
+    }
+    .btn-save2{
+        margin-top:5px;
+        float:left;
+        margin-bottom:40px;
+    }
     #shorthand {
         min-height: 200px;
     }
@@ -119,7 +130,19 @@
         padding-left: 10px;
     }
 
-</style>
+    .card1{
+        margin-top: 13px;
+        border: 1px solid rgba(0,0,0,.125);
+        border-radius: 0.25rem;
+    }
+    .card{
+        margin-top:10px;
+    }
+    #download1{
+        margin-left:20px;
+    }
+    
+        </style>
 
 <div class="navigation-header-items">
         <div class="dropdown">
@@ -144,14 +167,14 @@
       <h6 id="timer" class="session-expire-time text-color-blue">07:59:59PM</h6>
       </div>
     <div>
-          <a class="button" asp-area="" asp-controller="Home" asp-action="HomeScreen"><img class="back-button-img" src="/assets/images/back-arrow.png" /><span class="back-text">Back</span></a>
+            <a class="button" href="javascript:history.go(-1)" @*asp-area="" asp-controller="Home" asp-action="HomeScreen"*@><img class="back-button-img" src="/assets/images/back-arrow.png" /><span class="back-text">Back</span></a>
     </div>
 </div>
 
 </div>
 
 
-<h3 class="top1">Existing Users</h3>
+<h3 class="top1"> @ViewData["Title"]</h3>
 <hr />
 
 <div class="container-fluid">
@@ -194,11 +217,13 @@
                     <form>
                         <div class="form-group">
                             <label for="empid">EmpID:</label>
-                            <input type="text" class="form-control" id="empid">
+                            <input type="text" class="form-control" id="empid" name="empid">
+                            <span class="text-danger" id="empidError"></span>
                         </div>
                         <div class="form-group">
                             <label for="userfullname">UserFullName:</label>
-                            <input type="text" class="form-control" id="userfullname">
+                            <input type="text" class="form-control" id="userfullname" name="userfullname">
+                            <span class="text-danger" id="userfullnameError"></span>
                         </div>
                         <div class="form-group">
                             <label for="userrole">UserRole:</label>
@@ -212,28 +237,27 @@
                             </div>
                         </div>
                         <div class="btn-save text-center">
-                            <button type="submit" class="btn btn-primary">Save</button>
+                            <button type="submit" class="btn btn-primary" id="btnSave">Save</button>
                         </div>
                     </form>
                 </div>
             </div>
-               <div class="card">
+               <div class="card1">
                 <div class="card-header">
-                    <h4>Import&Download CSV file</h4>
+                    <h4>Import Users</h4>
                 </div>
                 <div class="card-body">
                     <form>
-                        <div class="form-group">
-                            <a href="@Url.Action("DownloadCSV","Admin") download id="download1"><label for="download">Download the CSV file here</label></a>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="col-lg-5">
+                        <div class="form-group" id="upload">
+                            <div class="col-lg-5 btn-save2">
                                 <input type="file" id="csvFile" accept=".csv" />
                             </div>
-                        </div>
-                        <div class="form-group btn-save1">
-                            <button type="button" class="btn btn-light border border-dark" onclick="importCsv(this)">Upload</button>
+                            <div class="form-group btn-save1">
+                                <button type="button" class="btn btn-light border border-dark" onclick="importCsv(this)">Upload</button>
+                            </div>
+                        </div>                       
+                        <div class="text-center" id="downloadcsv">
+                            <a href="@Url.Action("DownloadCSV","Admin")" download id="download1" onclick="downloadCSV()"><label for="download">Please Download The Reference CSV</label></a>
                         </div>
                     </form>
                 </div>
@@ -254,7 +278,7 @@
 @*
 </form>*@
 
-
+@section scripts{
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.css" />
@@ -274,6 +298,75 @@
 
     });
 
+        $(function () {
+
+            $('#userfullname').keydown(function (e) {
+
+                if (e.shiftKey || e.ctrlKey || e.altKey) {
+
+                    e.preventDefault();
+
+                } else {
+                    var key = e.keyCode;
+
+                    if (!((key == 8) || (key == 32) || (key == 46) || (key >= 35 && key <= 40) || (key >= 65 && key <= 90))) {
+
+                        e.preventDefault();
+
+                    }
+
+                }
+
+            });
+
+        });
+
+        function showLoader() {
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        // Function to hide the loader and overlay
+        function hideLoader() {
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+
+    $("#btnSave").click(function () {
+       
+        var empid = $("#empid").val();
+            var username = $("#userfullname").val();
+            var hasErrors = false;
+        // Validate EmpID
+        if (empid == '') {
+            $('#empidError').text("EmpID is required.");
+            hasErrors=true;
+            
+            
+
+        } else {
+            $('#empidError').text("");
+        }
+
+        // Validate UserFullName
+        if (username == '') {         
+            $('#userfullnameError').text("UserFullName is required.");
+                hasErrors = true;          
+        }
+        else {
+            $('#userfullnameError').text("");
+        }
+
+            if (hasErrors) {
+                return false; 
+            }
+        saveUser();
+        return True;
+
+    })
+
+
     let isEditing = false;
 
     function editUser(button) {
@@ -283,8 +376,8 @@
         var userRole = row.cells[2].innerText;
 
 
-        document.getElementById("EmpID").value = empID;
-        document.getElementById("UserFullName").value = userFullName;
+            document.getElementById("empid").value = empID;
+            document.getElementById("userfullname").value = userFullName;
 
 
         var select = document.getElementById("UserRole");
@@ -294,6 +387,8 @@
                 break;
             }
         }
+        $('#empidError').text("");
+        $('#userfullnameError').text("");
 
         isEditing = true;
     }
@@ -303,8 +398,8 @@
 
     function saveUser() {
 
-        var empId = document.getElementById("EmpID").value;
-        var fullName = document.getElementById("UserFullName").value;
+        var empId = document.getElementById("empid").value;
+            var fullName = document.getElementById("userfullname").value;
         var userRole = document.getElementById("UserRole").value;
 
 
@@ -323,17 +418,13 @@
 
 
     function importCsv() {
+            showLoader();
         var fileInput = document.getElementById('csvFile');
         var file = fileInput.files[0];
 
         var formData = new FormData();
         formData.append('file', file);
-        showLoader();
-
-
-        var $btn = $('.btn-light');
-        $btn.button('loading');
-
+      
 
         $.ajax({
             url: '/Admin/importCsv',
@@ -342,19 +433,38 @@
             processData: false,
             contentType: false,
             success: function (response) {
-                hideLoader();
-                $btn.button('reset');
+                    hideLoader();
                 alert("CSV file uploaded successfully!");
                 location.reload();
             },
-            error: function (error) {
-                hideLoader();
-                $btn.button('reset');
+            error: function (error) {         
                 console.log(error);
                 alert("Error uploading CSV file!");
             }
         });
     }
+
+        function downloadCSV() {
+            // Show loader here
+            showLoader();
+
+            // Perform the CSV download
+            $.ajax({
+                url: '/Admin/DownloadCSV', // The URL for CSV download (update it as per your actual URL)
+                type: 'GET',
+                success: function (response) {
+                    // Hide loader after successful download
+                    hideLoader();
+                    //alert("CSV file downloaded successfully!");
+                },
+                error: function (error) {
+                    // Hide loader after download error
+                    hideLoader();
+                    console.log(error);
+                    alert("Error downloading CSV file!");
+                }
+            });
+        }
 
 
     function submitform(user) {
@@ -366,7 +476,8 @@
             success: function (response) {
                 if (response.message && response.message === "Updated successfully!") {
                     alert("User updated successfully!");
-                } else {
+                } 
+                else {
                     alert("User saved successfully!");
                 }
                 location.reload();
@@ -417,3 +528,4 @@ var currentTime = Math.floor(Date.now() / 1000);
 var remainingTime = expirationTime - currentTime;
 startTimer(remainingTime);
 </script>
+}

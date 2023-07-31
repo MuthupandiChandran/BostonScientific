@@ -1,5 +1,5 @@
 ﻿
-
+<div class="container1">
 <div class="navigation-header-items">
         <div class="dropdown">
   <button class="custom-config-button" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -23,7 +23,7 @@
       <h6 id="timer" class="session-expire-time text-color-blue"></h6>
       </div>
     <div>
-          <a class="button" asp-area="" asp-controller="Home" asp-action="HomeScreen"><img class="back-button-img" src="/assets/images/back-arrow.png" /><span class="back-text">Back</span></a>
+                <a class="button" href="javascript:history.go(-1)" @*asp-area="" asp-controller="Home" asp-action="HomeScreen"*@><img class="back-button-img" src="/assets/images/back-arrow.png" /><span class="back-text">Back</span></a>
     </div>
 </div>
 
@@ -79,6 +79,7 @@
     </div>
 @*</div>*@
 </div>
+</div>
 
 
 
@@ -102,6 +103,9 @@
 
     .main-container{
         height:100%;
+    }
+    .container1{
+        overflow: hidden;
     }
 
      .heading-text {
