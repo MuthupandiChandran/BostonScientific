@@ -1,4 +1,4 @@
-﻿
+﻿@model BostonScientificAVS.Models.WorkOrderInfo
 <div class="main-container row pt-15">
 
 <div class="navigation-header-result">
@@ -63,7 +63,7 @@
     <div class="left-content">
         <div class="count-data">
             <div class="p-10">
-                <h6 class="processing-lot-text">Processing Lot No. : <span class="processing-lot-no">AAA1234 AA1</span></h6>
+                <h6 class="processing-lot-text">Processing Lot No. : <span id="work-order-lot-no" class="processing-lot-no">@Model.workOrderLotNo</span></h6>
             </div>
             <div class="data-stat">
                 <div class="data-card p-10">
@@ -73,7 +73,7 @@
                     </div>
                     <hr style="color: #003C71;"/>
                     <div class="data-val">
-                        <h6 class="data-val-text">00</h6>
+                        <h6 id="total-val" class="data-val-text">@Model.totalCount</h6>
                     </div>
                 </div>
                 <div class="data-card p-10">
@@ -87,7 +87,7 @@
                     </div>
                     <hr style="color: #003C71;"/>
                     <div class="data-val">
-                        <h6 class="data-val-text">00</h6>
+                        <h6 id="total-passed-val" class="data-val-text">@Model.passedCount</h6>
                     </div>
                 </div>
                 <div class="data-card p-10">
@@ -101,7 +101,7 @@
                     </div>
                     <hr style="color: #003C71;"/>
                     <div class="data-val">
-                        <h6 class="data-val-text">00</h6>
+                        <h6 id="total-failed-val" class="data-val-text">@Model.failedCount</h6>
                     </div>
                 </div>
                 <div class="data-card p-10">
@@ -115,7 +115,7 @@
                     </div>
                     <hr style="color: #003C71;"/>
                     <div class="data-val">
-                        <h6 class="data-val-text">00</h6>
+                        <h6 id="total-rescanned-val" class="data-val-text">@Model.scannedCount</h6>
                     </div>
                 </div>
 
@@ -135,7 +135,7 @@
                 <h6 class="scanning-text-1">under the scanner</h6>
                 </div>
             </div>
-             <div id="after-scan-fail-text" style="display:none;" class="scanning-failed-instruction">
+             <div id="after-scan-fail-text" style="display:none;" class="scanning-failed-instruction temp-supervisor-call-button">
                 <div class="scanning-text-container">
                  <h6 class="scanning-text-1">supervisor required to </h6>
                 <h6 class="scanning-text-1"> approve mismatch </h6>
@@ -149,7 +149,7 @@
                     <h6 class="mismatch-text">Scanned Details</h6>
                 </div>
                 <div class="data-table-pass">
-                    <div class="product-data">
+                    <div class="product-data" >
                         <div>
                             <h6 class="comparison-lable-text">DB GTIN</h6>
                         </div>
@@ -233,42 +233,42 @@
                 <div>
                     <h6 class="mismatch-text">Scanned Details</h6>
                 </div>
-                <div class="data-table-pass">
-                    <div class="product-data">
+                <div class="data-table-pass-supervisor">
+                    <div class="product-data" style="width:200px">
                         <div>
                             <h6 class="comparison-lable-text">DB GTIN</h6>
                         </div>
                         <div>
                            @* <h6 class="comparison-lable-text" >@Model.Product_Label_GTIN</h6>*@
-                            <h6 id="pass-db-gtin" class="comparison-lable-text" >xxxxxxxxxxx</h6>                             
+                            <h6 id="fail-db-gtin" class="comparison-lable-text" >xxxxxxxxxxx</h6>                             
                         </div>                                
                         <div>
                             <h6 class="comparison-lable-text">Work Order Lot No</h6>
                         </div>
                         <div>
                                 @*<h6 class="comparison-lable-text">@Model.Product_Label_Spec</h6>*@
-                                 <h6 id="pass-wo-lot-no" class="comparison-lable-text" >xxxxxxxxxxx</h6>
+                                 <h6 id="fail-wo-lot-no" class="comparison-lable-text" >xxxxxxxxxxx</h6>
                         </div>
                         <div>
                             <h6 class="comparison-lable-text">DB Label Spec</h6>
                         </div>
                         <div>
                               @*  <h6 class="comparison-lable-text">@Model.WO_Catalog_Num </h6>*@
-                                   <h6 id="pass-db-label-spec" class="comparison-lable-text" >xxxxxxxxxxx</h6>
+                                   <h6 id="fail-db-label-spec" class="comparison-lable-text" >xxxxxxxxxxx</h6>
                         </div>
                         <div>
                             <h6 class="comparison-lable-text">Calculated Use By</h6>
                         </div>
                         <div>
                              @*   <h6 class="comparison-lable-text">@Model.WO_Lot_Num</h6>*@
-                                <h6 id="pass-calc-use-by" class="comparison-lable-text" >xxxxxxxxxxx</h6>
+                                <h6 id="fail-calc-use-by" class="comparison-lable-text" >xxxxxxxxxxx</h6>
                         </div>
                         <div>
                             <h6 class="comparison-lable-text">DB Catalog Num</h6>
                         </div>
                         <div>
                              @*   <h6 class="comparison-lable-text">@Model.WO_Lot_Num</h6>*@
-                                <h6 id="pass-db-catalog-num" class="comparison-lable-text" >xxxxxxxxxxx</h6>
+                                <h6 id="fail-db-catalog-num" class="comparison-lable-text" >xxxxxxxxxxx</h6>
                         </div>
                    </div>
                    <div class="data-from-db">
@@ -277,28 +277,28 @@
                      </div>
                      <div>
                          @*       <h6 class="comparison-lable-text">@Model.DB_GTIN</h6>*@
-                            <h6 id="pass-product-gtin" class="comparison-lable-text" >xxxxxxxxxxx</h6>
+                            <h6 id="fail-product-gtin" class="comparison-lable-text" >xxxxxxxxxxx</h6>
                      </div>
                        <div>
                            <h6 class="comparison-lable-text" > Product Lot Num </h6>
                      </div>
                      <div>
                                 @*<h6 class="comparison-lable-text">@Model.DB_Label_Spec</h6>*@
-                                   <h6 id="pass-product-lot-no" class="comparison-lable-text" >xxxxxxxxxxx</h6>
+                                   <h6 id="fail-product-lot-no" class="comparison-lable-text" >xxxxxxxxxxx</h6>
                      </div>
                        <div>
                            <h6 class="comparison-lable-text" > Product Label Spec</h6>
                      </div>
                      <div>
                              @*   <h6 class="comparison-lable-text">@Model.DB_Catalog_Num </h6>*@
-                                <h6 id="pass-product-label-spec" class="comparison-lable-text" >xxxxxxxxxxx</h6>
+                                <h6 id="fail-product-label-spec" class="comparison-lable-text" >xxxxxxxxxxx</h6>
                              </div>
                              <div>
                            <h6 class="comparison-lable-text" > Product Use By </h6>
                      </div>
                      <div>
                               @*  <h6 class="comparison-lable-text">@Model.Product_Lot_Num </h6>*@
-                                 <h6 id="pass-product-use-by" class="comparison-lable-text" >xxxxxxxxxxx</h6>
+                                 <h6 id="fail-product-use-by" class="comparison-lable-text" >xxxxxxxxxxx</h6>
                      </div>
    
                         <div>
@@ -306,14 +306,14 @@
                      </div>
                      <div>
                               @*  <h6 class="comparison-lable-text">@Model.Product_Lot_Num </h6>*@
-                                 <h6 id="pass-wo-catalog-no" class="comparison-lable-text" >xxxxxxxxxxx</h6>
+                                 <h6 id="fail-wo-catalog-no" class="comparison-lable-text" >xxxxxxxxxxx</h6>
                      </div>
                    </div>
                 </div>
             </div>
             <div class="navigation-container">
               <div >
-                 <a class="approve-button" onclick="reloadPage()"><span class="approve-text">Rescan</span></a>
+                 <a id="rescanBtn" class="approve-button" onclick="reloadPage()"><span class="approve-text">Rescan</span></a>
             </div>
        <div>
         <a class="reject-button" asp-area="" asp-controller="Home" asp-action="WorkOrderScan"><span class="reject-text">New Work Order</span></a>
@@ -507,6 +507,12 @@
         display: flex;
         padding-left: 42px;
         gap: 250px;
+    }
+
+    .data-table-pass-supervisor{
+        display: flex;
+        padding-left: 42px;
+        gap: 110px;
     }
 
     .mismatch-text{
@@ -852,13 +858,20 @@
 
 let inPassScenario = false;
 let inFailScenario = false;
-
+let responseData = null;
     //document.getElementsByClassName('temp-button')[0]
     //    .addEventListener('click', function (event) {
     //        beforeToDuringScan();
     //          setTimeout(duringToScanPass, 3000);
 
     //    });
+
+     document.getElementsByClassName('temp-supervisor-call-button')[0]
+        .addEventListener('click', function (event) {
+            ScanFailToSupervisor();
+            setScannedFailData(responseData);
+        });
+
 
      document.getElementsByClassName('temp-reset-button')[0]
         .addEventListener('click', function (event) {
@@ -1021,6 +1034,31 @@ let inFailScenario = false;
                 data: { productLabel: productLabel, productLabelSpec: productLabelSpec },
                 success: function (response) {
                         console.log(response);
+                    responseData = response;
+                    processResponse(response);
+                },
+                error: function (xhr, status, error) {
+                    console.log("An error occurred while making the AJAX call:", error);
+                }
+
+                
+            });
+        });
+
+         $(document).on("click", "#rescanBtn", function () {
+            var productLabel = document.getElementById("productLabelInput").value;
+            var productLabelSpec = document.getElementById("productLabelSpec").value;
+
+            var apiUrl = "https://localhost:7157/SaveProductLabel";
+            beforeToDuringScan();
+            $.ajax({
+                url: apiUrl,
+                method: "POST",
+                data: { productLabel: productLabel, productLabelSpec: productLabelSpec },
+                success: function (response) {
+                        console.log(response);
+                    location.reload();
+                    responseData = response;
                     processResponse(response);
                 },
                 error: function (xhr, status, error) {
@@ -1042,6 +1080,7 @@ let inFailScenario = false;
               //setTimeout(duringToScanFail, 3000);
                 duringToScanFail(response);
             }
+            setWorkOrderInfo(response);
               setScannedData(response);
         }
 
@@ -1059,6 +1098,31 @@ let inFailScenario = false;
             document.getElementById("pass-product-use-by").innerHTML = response.rhsData.productUseBy;
             document.getElementById("pass-wo-catalog-no").innerHTML = response.rhsData.workOrderCatalogNo;
 
+        }
+
+           function setScannedFailData(response) {
+            console.log("set data for fail called");
+            document.getElementById("fail-db-gtin").innerHTML = response.lhsData.dbGTIN;
+            document.getElementById("fail-wo-lot-no").innerHTML = response.lhsData.workOrderLotNo;
+            document.getElementById("fail-db-label-spec").innerHTML = response.lhsData.dbLabelSpec;
+            document.getElementById("fail-calc-use-by").innerHTML = response.lhsData.calculatedUseBy;
+            document.getElementById("fail-db-catalog-num").innerHTML = response.lhsData.dbCatalogNo;
+
+            document.getElementById("fail-product-gtin").innerHTML = response.rhsData.productLabelGTIN;
+            document.getElementById("fail-product-lot-no").innerHTML = response.rhsData.productLotNo;
+            document.getElementById("fail-product-label-spec").innerHTML = response.rhsData.productLabelSpec;
+            document.getElementById("fail-product-use-by").innerHTML = response.rhsData.productUseBy;
+            document.getElementById("fail-wo-catalog-no").innerHTML = response.rhsData.workOrderCatalogNo;
+
+        }
+
+        function setWorkOrderInfo(response) {
+              document.getElementById("total-val").innerHTML = response.workOrderInfo.totalCount != null ? response.workOrderInfo.totalCount : 0;
+              document.getElementById("total-passed-val").innerHTML = response.workOrderInfo.passedCount != null ? response.workOrderInfo.passedCount : 0;
+              document.getElementById("total-failed-val").innerHTML = response.workOrderInfo.failedCount != null ? response.workOrderInfo.failedCount: 0;
+              document.getElementById("total-rescanned-val").innerHTML = response.workOrderInfo.scannedCount != null ? response.workOrderInfo.scannedCount: 0;
+            console.log(response.workOrderInfo.scannedCount);
+              document.getElementById("work-order-lot-no").innerHTML = response.lhsData.workOrderLotNo;
         }
 
       //code for session counter
@@ -1082,7 +1146,8 @@ let inFailScenario = false;
         if (--timer < 0) {
             clearInterval(intervalId);
             // Perform any action you need when the timer reaches 00:00:00
-            alert("Timer has expired!");
+            window.location.href = "/Login/Logout";
+            //alert("Timer has expired!");
         }
     }, 1000);
 }

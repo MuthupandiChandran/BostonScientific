@@ -6,6 +6,7 @@
         public Mismatches mismatches { get; set; }
         public Lhs lhsData { get; set; }
         public Rhs rhsData { get; set; }
+        public WorkOrderInfo workOrderInfo { get; set; }
     
     }
 
@@ -35,5 +36,16 @@
 
         public string calculatedUseBy { get; set; }
         public string dbCatalogNo { get; set; }
+    }
+
+    public class WorkOrderInfo
+    {
+        public int? totalCount { get; set; }
+        public int? passedCount { get; set; }
+        public int? failedCount { get; set; }
+        public int? scannedCount { get; set; }
+
+        public string workOrderLotNo { get; set; }
+
     }
 }

@@ -287,7 +287,8 @@ $(() => {
         if (--timer < 0) {
             clearInterval(intervalId);
             // Perform any action you need when the timer reaches 00:00:00
-            alert("Timer has expired!");
+            window.location.href = "/Login/Logout";
+            //alert("Timer has expired!");
         }
     }, 1000);
 }

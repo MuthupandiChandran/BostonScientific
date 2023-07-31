@@ -25,9 +25,9 @@ namespace Entity
         public string? DB_Catalog_Num { get; set; }
         [MaxLength(4)]
         public int Shelf_Life { get; set; }
-        public string? WO_Mfg_Date { get; set; }
-        public string? Calculated_Use_By { get; set; }
-        public string? Product_Use_By { get; set; }
+        public DateTime? WO_Mfg_Date { get; set; }
+        public DateTime? Calculated_Use_By { get; set; }
+        public DateTime? Product_Use_By { get; set; }
         public string? Carton_Use_By { get; set; }
         [MaxLength(30)]
         public string? DB_Label_Spec { get; set; }
