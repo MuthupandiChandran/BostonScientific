@@ -23,7 +23,7 @@
       <h6 id="timer" class="session-expire-time text-color-blue"></h6>
       </div>
     <div>
-          <a class="button" asp-area="" asp-controller="Home" asp-action="HomeScreen"><img class="back-button-img" src="/assets/images/back-arrow.png" /><span class="back-text">Back</span></a>
+            <a class="button" href="javascript:history.go(-1)" @*asp-area="" asp-controller="Home" asp-action="HomeScreen"*@><img class="back-button-img" src="/assets/images/back-arrow.png" /><span class="back-text">Back</span></a>
     </div>
 </div>
 
@@ -31,24 +31,17 @@
 <div >
     <div class="p-15" >
         <div class="items-header">
-            <div >
             <h3>Items</h3>
         </div>
-         <div>
-     
-        
+           <hr />            
          <form id="uploader">
-    <span class="bulkImportText">Bulk Import:</span>
     <input id="fileInput" type="file" multiple>
-    <input type="submit" value="Upload file" />
-    <span class="pl-30">Click to download sample csv file</span>
-           <a href="@Url.Action("DownloadCSV", "Admin")" download id="download1"><i class="bi bi-download"></i> Download CSV </a>
+    <input type="submit" value="Import" id="import"/>
+           <a href="@Url.Action("DownloadCSV", "Admin")" download id="download1">Please Download The Reference CSV</a>
 </form>
             
-         </div>
-        </div>
+       
         
-
 <div id="itemsGrid">
 
 </div>
@@ -112,10 +105,34 @@
     </div>
 
 <style>
+
+    .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter, .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_processing, .dataTables_wrapper .dataTables_paginate {
+    color: inherit;
+    float: left;  
+
+}
+
+    .dataTables_wrapper {
+        position: relative;
+        clear: both;
+        bottom: 78px;
+    }
+
+    hr {
+        margin-top:0;
+        color: black;
+        background-color: currentColor;
+        border: 0;
+        opacity: .25;
+    }
     .bulkImportText{
        vertical-align: -2px;
        font-size: 27px;
        font-weight: 400;
+    }
+
+    #fileInput{
+       margin-left: 15px;
     }
 
     .pl-30{
@@ -125,6 +142,7 @@
     .items-header{
         display: flex;
         justify-content: space-between;
+        margin-top:10px;
     }
 
     .bg-custom{
@@ -156,6 +174,21 @@
 
     .p-15{
         padding: 15px 15px 15px 15px;
+    }
+
+    #uploader {
+        float: right;
+        border: 1px solid rgba(0,0,0,.125);
+        border-radius: 0.25rem;
+        padding-bottom: 6px;
+        padding-top: 10px;
+        max-height: 60px;
+        margin-bottom: 40px;
+    }
+
+    #download1{
+        margin-left:50px;
+        margin-right:10px;
     }
 
   

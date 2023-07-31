@@ -4,6 +4,7 @@
 @{
 }
 @model List<Entity.ItemMaster>
+<partial name="_Loader" />
 
    <table class="table table-bordered table-striped" id="itemsTable">
  <thead class="text-white bg-custom">
@@ -86,15 +87,35 @@
     </tbody>
       <tfoot>
             <tr data-row-id="1">
-                 <td colspan="1" ><div class="editableDiv" placeholder="GTIN"  data-new-gtin contenteditable="true" /></td>
-                 <td colspan="1"  ><div class="editableDiv" contenteditable="true" placeholder="Catalog Num" ></div></td>
-                 <td colspan="1" ><div class="editableDiv" contenteditable="true" placeholder="Shelf Life" ></div></td>
-                 <td colspan="1" ><div class="editableDiv" contenteditable="true" placeholder="Lable Spec" ></div></td>
-                 <td colspan="1" ><div class="editableDiv" contenteditable="true" placeholder="IFU" ></div></td>
-                 <td colspan="1" ><div class="editableDiv" contenteditable="true" placeholder="Edit Date Time" ></div></td>
-                 <td colspan="1" ><div class="editableDiv" contenteditable="true" placeholder="Edit By" ></div></td>
-                 <td colspan="1" ><div class="editableDiv" contenteditable="true" placeholder="Created" ></div></td>
-                 <td colspan="1" ><div class="editableDiv" contenteditable="true" placeholder="Created By" ></div></td>
+            <td colspan="1">
+                <div class="editableDiv"  data-new-gtin contenteditable="true" placeholder="GTIN" id="gtin"></div>
+                     <span class="text-danger" id="gtinerror"></span>
+                     </td>
+                 <td colspan="1"  ><div class="editableDiv" contenteditable="true" placeholder="Catalog Num" id="catalognum" ></div>
+                <span class="text-danger" id="catalognumerror"></span>
+                  </td>
+            <td colspan="1">
+                <div class="editableDiv" contenteditable="true" placeholder="Shelf Life" id="shelflife" onkeypress="return /[0-9]/i.test(event.key)"></div>
+                <span class="text-danger" id="shelflifeerror"></span>
+                 </td>
+                 <td colspan="1" ><div class="editableDiv" contenteditable="true" placeholder="Lable Spec" id="labelspec"></div>
+                <span class="text-danger" id="labelspecerror"></span>
+            </td>
+                 <td colspan="1" ><div class="editableDiv" contenteditable="true" placeholder="IFU" id="ifu" ></div>
+                <span class="text-danger" id="ifuerror"></span>
+            </td>
+                 <td colspan="1" ><div class="editableDiv" contenteditable="true" placeholder="Edit Date Time" id="editdate"></div>
+                <span class="text-danger" id="editdateerror"></span>
+                 </td>
+                 <td colspan="1" ><div class="editableDiv" contenteditable="true" placeholder="Edit By" id="editby" ></div>
+                <span class="text-danger" id="editbyerror"></span>
+                 </td>
+                 <td colspan="1" ><div class="editableDiv" contenteditable="true" placeholder="Created" id="created"></div>
+                <span class="text-danger" id="createderror"></span>
+                 </td>
+                 <td colspan="1" ><div class="editableDiv" contenteditable="true" placeholder="Created By" id="createdby"></div>
+                <span class="text-danger" id="createdbyerror"></span>
+            </td>
             </tr>
              <tr>
       <td colspan="9" style="text-align: center; border-right: none; border-left: none;">
@@ -164,14 +185,84 @@ $(() => {
      dom: '<"top"f>rt<"bottom"lpi><"clear">'
 });
 
-  document.getElementsByClassName('add-button')[0]
-        .addEventListener('click', function(event) {
-            console.log("add button clicked");
+        document.getElementsByClassName('add-button')[0]
+            .addEventListener('click', function (event) {
+                event.preventDefault();
+                console.log("Add button clicked");
 
-            var row = $('[data-row-id="1"]'); // Target the row using the custom attribute
+                $(".text-danger").text("");
 
-            var gtin = row.find('[data-new-gtin]'); // Get the GTIN value from the specific div using [data-new-gtin] attribute selector
-            var catalogNo = row.find('td:nth-child(2) div'); // Get the value from the second column div
+                var GTIN = $("#gtin").text().trim();
+                var CatalogNo = $("#catalognum").text().trim();
+                var ShelfLife = $("#shelflife").text().trim();
+                var LabelLife = $("#labelspec").text().trim();
+                var Ifu = $("#ifu").text().trim();
+                var EditDateTime = $("#editdate").text().trim();
+                var Editby = $("#editby").text().trim();
+                var Created = $("#created").text().trim();
+                var CreatedBy = $("#createdby").text().trim();
+
+                var hasErrors = false;
+
+                if (GTIN === '') {
+                    $("#gtinerror").text("GTIN is required.");
+                    hasErrors = true;
+                }
+
+                if (CatalogNo === '') {
+                    $("#catalognumerror").text("Catalog Number is required.");
+                    hasErrors = true;
+                }
+
+                if (ShelfLife === '') {
+                    $("#shelflifeerror").text("Shelf Life is required.");
+                    hasErrors = true;
+                }
+
+                if (LabelLife === '') {
+                    $("#labelspecerror").text("Label Spec is required.");
+                    hasErrors = true;
+                }
+
+                if (Ifu === '') {
+                    $("#ifuerror").text("IFU is required.");
+                    hasErrors = true;
+                }
+
+                if (EditDateTime === '') {
+                    $("#editdateerror").text("Edit Date is required.");
+                    hasErrors = true;
+                }
+
+                if (Editby === '') {
+                    $("#editbyerror").text("Edited By is required.");
+                    hasErrors = true;
+                }
+
+                if (Created === '') {
+                    $("#createderror").text("Created is required.");
+                    hasErrors = true;
+                }
+
+                if (CreatedBy === '') {
+                    $("#createdbyerror").text("Created By is required.");
+                    hasErrors = true;
+                }
+
+                if (hasErrors) {
+                    return false;
+                }
+
+                SubmitForm();
+                return true;
+            });
+
+        function SubmitForm() {
+            showLoader();
+            var row = $('[data-row-id="1"]');
+
+            var gtin = row.find('[data-new-gtin]');
+            var catalogNo = row.find('td:nth-child(2) div');
             var shelfLife = row.find('td:nth-child(3) div');
             var lableSpec = row.find('td:nth-child(4) div');
             var ifu = row.find('td:nth-child(5) div');
@@ -192,36 +283,34 @@ $(() => {
                 Created_by: createdBy.text()
             };
 
-            //saveNewItem(item);
             console.log(item);
             var apiUrl = "https://localhost:7157/SaveNewItem";
             $.ajax({
                 url: apiUrl,
                 method: "POST",
                 data: item,
-                success: function(response) {
+                success: function (response) {
+                    hideLoader();
                     console.log("Item saved successfully");
-                     location.reload();
-                    gtin.text(''),
-                    catalogNo.text(''),
-                    shelfLife.text(''),
-                    lableSpec.text(''),
-                    ifu.text(''),
-                    editDateTime.text(''),
-                    editBy.text(''),
-                    created.text(''),
-                    createdBy.text('')                   
+                    location.reload();
                 },
                 error: function(xhr, status, error) {
                     console.log("An error occurred while saving the data:", error);
                 }
             });
 
-            console.log(gtin);
-            console.log(catalogNo);
-            console.log(shelfLife);
+            // Reset the div elements after successful submission
+            gtin.text('');
+            catalogNo.text('');
+            shelfLife.text('');
+            lableSpec.text('');
+            ifu.text('');
+            editDateTime.text('');
+            editBy.text('');
+            created.text('');
+            createdBy.text('');
+        }
 
-        });
 
     $(document).on("keypress", ".editableContent", function(event) {
         if (event.which === 13) { // Enter key code
@@ -335,5 +424,15 @@ $(() => {
             });
     }
 
+        function showLoader() {
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+ 
+        function hideLoader() {
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
 });
 </script>
