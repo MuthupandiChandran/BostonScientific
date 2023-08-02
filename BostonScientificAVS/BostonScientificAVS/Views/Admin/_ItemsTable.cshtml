@@ -6,14 +6,14 @@
 @model List<Entity.ItemMaster>
 <partial name="_Loader" />
 
-   <table class="table table-bordered table-striped" id="itemsTable">
- <thead class="text-white bg-custom">
+<table class="table table-bordered table-striped" id="itemsTable">
+    <thead class="text-white bg-custom">
         <tr>
             <th>
-               GTIN
+                GTIN
             </th>
             <th>
-               Catalog Num
+                Catalog Num
             </th>
             <th>
                 Shelf Life
@@ -31,7 +31,7 @@
                 Edit By
             </th>
             <th>
-                Created
+                Created On
             </th>
             <th>
                 Created by
@@ -39,93 +39,100 @@
         </tr>
     </thead>
     <tbody>
-       
-        @foreach(var item in Model)
-        {
-              <tr>
-            <td>  
-                <div >@item.GTIN</div>
-            </td>
 
-           @* Content Editable is given false to disable edit functionality can be enabled if needed*@
-            <td>             
-                <div data-gtin=@item.GTIN data-column="Catalog_Num" contenteditable="false" class="editableContent">@item.Catalog_Num</div>
-            </td>
-            <td>
-               
-                <div data-gtin=@item.GTIN data-column="Shelf_Life" contenteditable="false" class="editableContent">@item.Shelf_Life </div>
-            </td>
-            <td>
-                
-                <div data-gtin=@item.GTIN data-column="Label_Spec" contenteditable="false" class="editableContent">@item.Label_Spec</div>
-            </td>
-            <td>
-                
-                <div data-gtin=@item.GTIN data-column="IFU" contenteditable="false" class="editableContent">@item.IFU</div>
-            </td>
-            <td>
-                
-                <div data-gtin=@item.GTIN data-column="Edit_Date_Time" contenteditable="false" class="editableContent">@item.Edit_Date_Time</div>
-            </td>
-            <td>
-                
-                <div data-gtin=@item.GTIN data-column="Edit_By" contenteditable="false" class="editableContent">@item.Edit_By</div>
-            </td>
-            <td>
-                
-                <div data-gtin=@item.GTIN data-column="Created" contenteditable="false" class="editableContent">@item.Created</div>
-            </td>
-            <td>
-                
-                <div data-gtin=@item.GTIN data-column="Created_by" contenteditable="false" class="editableContent">@item.Created_by</div>
-            </td>
-        </tr>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <div>@item.GTIN</div>
+                </td>
+
+                @* Content Editable is given false to disable edit functionality can be enabled if needed*@
+                <td>
+                    <div data-gtin=@item.GTIN data-column="Catalog_Num" contenteditable="true" class="editableContent">@item.Catalog_Num</div>
+                </td>
+                <td>
+
+                    <div data-gtin=@item.GTIN data-column="Shelf_Life" contenteditable="true" class="editableContent">@item.Shelf_Life </div>
+                </td>
+                <td>
+
+                    <div data-gtin=@item.GTIN data-column="Label_Spec" contenteditable="true" class="editableContent">@item.Label_Spec</div>
+                </td>
+                <td>
+
+                    <div data-gtin=@item.GTIN data-column="IFU" contenteditable="true" class="editableContent">@item.IFU</div>
+                </td>
+                <td>
+
+                    <div data-gtin=@item.GTIN data-column="Edit_Date_Time" contenteditable="false" class="editableContent">@item.Edit_Date_Time</div>
+                </td>
+                <td>
+
+                    <div data-gtin=@item.GTIN data-column="Edit_By" contenteditable="false" class="editableContent">@item.Edit_By</div>
+                </td>
+                <td>
+
+                    <div data-gtin=@item.GTIN data-column="Created" contenteditable="false" class="editableContent">@item.Created</div>
+                </td>
+                <td>
+
+                    <div data-gtin=@item.GTIN data-column="Created_by" contenteditable="false" class="editableContent">@item.Created_by</div>
+                </td>
+            </tr>
         }
-        
-      
-      
+
+
+
     </tbody>
-      <tfoot>
-            <tr data-row-id="1">
+    <tfoot>
+        <tr data-row-id="1">
             <td colspan="1">
-                <div class="editableDiv"  data-new-gtin contenteditable="true" placeholder="GTIN" id="gtin"></div>
-                     <span class="text-danger" id="gtinerror"></span>
-                     </td>
-                 <td colspan="1"  ><div class="editableDiv" contenteditable="true" placeholder="Catalog Num" id="catalognum" ></div>
+                <div class="editableDiv" data-new-gtin contenteditable="true" placeholder="GTIN" id="gtin"></div>
+                <span class="text-danger" id="gtinerror"></span>
+            </td>
+            <td colspan="1">
+                <div class="editableDiv" contenteditable="true" placeholder="Catalog Num" id="catalognum"></div>
                 <span class="text-danger" id="catalognumerror"></span>
-                  </td>
+            </td>
             <td colspan="1">
                 <div class="editableDiv" contenteditable="true" placeholder="Shelf Life" id="shelflife" onkeypress="return /[0-9]/i.test(event.key)"></div>
                 <span class="text-danger" id="shelflifeerror"></span>
-                 </td>
-                 <td colspan="1" ><div class="editableDiv" contenteditable="true" placeholder="Lable Spec" id="labelspec"></div>
+            </td>
+            <td colspan="1">
+                <div class="editableDiv" contenteditable="true" placeholder="Lable Spec" id="labelspec"></div>
                 <span class="text-danger" id="labelspecerror"></span>
             </td>
-                 <td colspan="1" ><div class="editableDiv" contenteditable="true" placeholder="IFU" id="ifu" ></div>
-                <span class="text-danger" id="ifuerror"></span>
+            <td colspan="1">
+                <div class="editableDiv" contenteditable="true">
+                    <input type="number" class="editable-input" id="ifu" placeholder="IFU" value="0" />
+                    <span class="text-danger" id="ifuerror"></span>
+                </div>
             </td>
-                 <td colspan="1" ><div class="editableDiv" contenteditable="true" placeholder="Edit Date Time" id="editdate"></div>
-                <span class="text-danger" id="editdateerror"></span>
-                 </td>
-                 <td colspan="1" ><div class="editableDiv" contenteditable="true" placeholder="Edit By" id="editby" ></div>
-                <span class="text-danger" id="editbyerror"></span>
-                 </td>
-                 <td colspan="1" ><div class="editableDiv" contenteditable="true" placeholder="Created" id="created"></div>
-                <span class="text-danger" id="createderror"></span>
-                 </td>
-                 <td colspan="1" ><div class="editableDiv" contenteditable="true" placeholder="Created By" id="createdby"></div>
-                <span class="text-danger" id="createdbyerror"></span>
+
+            <td colspan="1">
+                <div class="editableDiv" contenteditable="false" placeholder="Edit Date Time" id="editdate"></div>
             </td>
-            </tr>
-             <tr>
-      <td colspan="9" style="text-align: center; border-right: none; border-left: none;">
+            <td colspan="1">
+                <div class="editableDiv" contenteditable="false" placeholder="Edit By" id="editby"></div>
+            </td>
+            <td colspan="1">
+                <div class="editableDiv" contenteditable="false" placeholder="Created On" id="created"></div>
+            </td>
+            <td colspan="1">
+                <div class="editableDiv" contenteditable="false" placeholder="Created By" id="createdby"></div>
+
+            </td>
+        </tr>
+        <tr>
+            <td colspan="9" style="text-align: center; border-right: none; border-left: none;">
       <div class="button-div add-button">
-          <a class="add-button"><span class="add-item-text">Add Item</span></a>
-    </div>*
-      </td>
-    </tr>
-        </tfoot>
-      </table>
+                    <a class="add-button"><span class="add-item-text">Add Item</span></a>
+                </div>*
+            </td>
+        </tr>
+    </tfoot>
+</table>
 
       <style>
           .footer-data{
@@ -184,7 +191,7 @@ $(() => {
   new DataTable('#itemsTable', {
      dom: '<"top"f>rt<"bottom"lpi><"clear">'
 });
-
+                   
         document.getElementsByClassName('add-button')[0]
             .addEventListener('click', function (event) {
                 event.preventDefault();
@@ -196,11 +203,8 @@ $(() => {
                 var CatalogNo = $("#catalognum").text().trim();
                 var ShelfLife = $("#shelflife").text().trim();
                 var LabelLife = $("#labelspec").text().trim();
-                var Ifu = $("#ifu").text().trim();
-                var EditDateTime = $("#editdate").text().trim();
-                var Editby = $("#editby").text().trim();
-                var Created = $("#created").text().trim();
-                var CreatedBy = $("#createdby").text().trim();
+                var Ifu = $("#ifu").val().trim();
+                
 
                 var hasErrors = false;
 
@@ -224,31 +228,12 @@ $(() => {
                     hasErrors = true;
                 }
 
-                if (Ifu === '') {
+                if (Ifu === '0') {
                     $("#ifuerror").text("IFU is required.");
                     hasErrors = true;
                 }
 
-                if (EditDateTime === '') {
-                    $("#editdateerror").text("Edit Date is required.");
-                    hasErrors = true;
-                }
-
-                if (Editby === '') {
-                    $("#editbyerror").text("Edited By is required.");
-                    hasErrors = true;
-                }
-
-                if (Created === '') {
-                    $("#createderror").text("Created is required.");
-                    hasErrors = true;
-                }
-
-                if (CreatedBy === '') {
-                    $("#createdbyerror").text("Created By is required.");
-                    hasErrors = true;
-                }
-
+               
                 if (hasErrors) {
                     return false;
                 }
@@ -265,19 +250,20 @@ $(() => {
             var catalogNo = row.find('td:nth-child(2) div');
             var shelfLife = row.find('td:nth-child(3) div');
             var lableSpec = row.find('td:nth-child(4) div');
-            var ifu = row.find('td:nth-child(5) div');
+            var ifu = $("#ifu").val().trim();
             var editDateTime = row.find('td:nth-child(6) div');
             var editBy = row.find('td:nth-child(7) div');
             var created = row.find('td:nth-child(8) div');
             var createdBy = row.find('td:nth-child(9) div');
 
+            var editDateTimeValue = editDateTime.text().trim() === '01-01-0001 00:00:00' || editDateTime.text().trim() === '' ? null : editDateTime.text();
             var item = {
                 GTIN: gtin.text(),
                 Catalog_Num: catalogNo.text(),
                 Shelf_Life: shelfLife.text(),
                 Label_Spec: lableSpec.text(),
-                IFU: ifu.text(),
-                Edit_Date_Time: editDateTime.text(),
+                IFU: ifu,
+                Edit_Date_Time: editDateTimeValue,
                 Edit_By: editBy.text(),
                 Created: created.text(),
                 Created_by: createdBy.text()
@@ -304,7 +290,7 @@ $(() => {
             catalogNo.text('');
             shelfLife.text('');
             lableSpec.text('');
-            ifu.text('');
+            ifu.text('0');
             editDateTime.text('');
             editBy.text('');
             created.text('');
@@ -390,6 +376,7 @@ $(() => {
             data: itemToUpdate,
             success: function(response) {
                 console.log("Item updated successfully");
+                location.reload();
             },
             error: function(xhr, status, error) {
                 console.log("An error occurred while updating the data:", error);
@@ -433,6 +420,6 @@ $(() => {
         function hideLoader() {
             document.getElementById('loader').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
-        }
+        }   
 });
 </script>

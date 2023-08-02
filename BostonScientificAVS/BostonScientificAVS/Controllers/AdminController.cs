@@ -42,7 +42,8 @@ namespace BostonScientificAVS.Controllers
             {
                 if (itemToEdit != null)
                 {
-                    _itemService.updateItem(itemToEdit);
+                    string currentUserName = HttpContext.Session.GetString("CurrentUserName");
+                    _itemService.updateItem(itemToEdit, currentUserName);
                 }
                 return Ok("Successfully updated item");
             }
@@ -51,8 +52,8 @@ namespace BostonScientificAVS.Controllers
                 Console.WriteLine(e);
                 return Ok("Error While updating item");
             }
-
         }
+
 
         [HttpPost("/SaveNewItem")]
         public ActionResult SaveNewItem(ItemMaster item)
@@ -61,9 +62,34 @@ namespace BostonScientificAVS.Controllers
             {
                 if (item != null)
                 {
-                    _itemService.saveNewItem(item);
+                    // Get the "CurrentUserName" session string
+                    string currentUserName = HttpContext.Session.GetString("CurrentUserName");
+
+                    // If the value is not null or empty, proceed with saving the item
+                    if (!string.IsNullOrEmpty(currentUserName))
+                    {
+                        // Assign the current user name to the "Created_by" property only if it's a new item
+                        if (!string.IsNullOrEmpty(item.GTIN))
+                        {
+                            // Assign the current date and time to the "Created" property for new items
+                            item.Created = DateTime.Now;
+                            item.Created_by = currentUserName;
+                            //if (item.Edit_Date_Time == default(DateTime))
+                            //{
+                            //    item.Edit_Date_Time = null;
+                            //}
+
+                            _itemService.saveNewItem(item);
+                            return Ok("success");
+                        }
+                    }
+                    else
+                    {
+
+                        return BadRequest("User not authenticated or session expired.");
+                    }
                 }
-                return Ok("success");
+                return BadRequest("Item data is null.");
             }
             catch (Exception e)
             {
@@ -72,13 +98,16 @@ namespace BostonScientificAVS.Controllers
             }
         }
 
+
+
         // MVC Controller action method to handle file upload
         [HttpPost("/uploadItemsExcel")]
         public async Task<string> ImportCSV(IFormFile file)
         {
             try
             {
-                await _itemService.importCsv(file);
+                string currentUserName = HttpContext.Session.GetString("CurrentUserName");
+                await _itemService.importCsv(file,currentUserName);
                 return "file upload Successfully";
             }
             catch (Exception e)
@@ -99,11 +128,7 @@ namespace BostonScientificAVS.Controllers
                 Catalog_Num = "Catalog_Num",
                 Shelf_Life = "Shelf_Life",
                 Label_Spec = "Label_Spec",
-                IFU = "IFU",
-                Edit_Date_Time = "Edit_Date_Time",
-                Edit_By = "Edit_By",
-                Created = "Created",
-                Created_by = "Created_By"
+                IFU = "IFU"
                 // Add more header column values as needed
             };
 

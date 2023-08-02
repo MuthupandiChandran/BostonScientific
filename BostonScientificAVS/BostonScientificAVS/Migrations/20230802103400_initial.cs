@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BostonScientificAVS.Migrations
 {
     /// <inheritdoc />
-    public partial class transactionlatest : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -20,9 +20,9 @@ namespace BostonScientificAVS.Migrations
                     Shelf_Life = table.Column<int>(type: "int", nullable: true),
                     Label_Spec = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
                     IFU = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
-                    Edit_Date_Time = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Edit_Date_Time = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Edit_By = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Created = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Created_by = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>

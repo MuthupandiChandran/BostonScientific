@@ -59,6 +59,7 @@ namespace BostonScientificAVS.Controllers
                     // instructing the controller that this is the call after immediate login
                     bool afterLogin = true;
                     TempData["AfterLogin"] = afterLogin;
+                    HttpContext.Session.SetString("CurrentUserName", userInfo.UserFullName);
                     return RedirectToAction("HomeScreen", "Home");
                 }
                 return RedirectToAction("LoginError");

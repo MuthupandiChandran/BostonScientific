@@ -181,7 +181,7 @@ namespace BostonScientificAVS.Controllers
                     }
                     if (transaction.Calculated_Use_By != transaction.Product_Use_By)
                     {
-                        mismatches.calculatedUseByMismatch = true;
+                        mismatches.calculatedUseByMismatch = false;
                     }
                     if (transaction.DB_Catalog_Num != transaction.WO_Catalog_Num)
                     {

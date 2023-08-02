@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BostonScientificAVS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230731123141_transaction-latest")]
-    partial class transactionlatest
+    [Migration("20230802103400_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -63,8 +63,8 @@ namespace BostonScientificAVS.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
-                    b.Property<string>("Created")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Created_by")
                         .HasColumnType("nvarchar(max)");
@@ -72,8 +72,8 @@ namespace BostonScientificAVS.Migrations
                     b.Property<string>("Edit_By")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Edit_Date_Time")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime?>("Edit_Date_Time")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("IFU")
                         .HasMaxLength(30)

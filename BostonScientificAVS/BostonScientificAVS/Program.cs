@@ -21,6 +21,13 @@ builder.Services.AddAuthentication(
         option.ExpireTimeSpan = TimeSpan.FromHours(Time);
     });
 
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options => {
+    options.IdleTimeout = TimeSpan.FromHours(Time);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;//You can set Time   
+});
+
 // get the connection string from env
 string DBConStr = DotNetEnv.Env.GetString("DB_CON_STRING");
 builder.Services.AddDbContext<DataContext>(options =>
@@ -43,8 +50,10 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseRouting();
 app.UseAuthentication();
+app.UseSession();
+app.UseRouting();
+
 
 app.UseAuthorization();
 
