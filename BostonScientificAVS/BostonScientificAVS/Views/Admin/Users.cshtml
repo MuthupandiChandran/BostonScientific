@@ -212,7 +212,6 @@
                     <h4>Add/Edit Form</h4>
                 </div>
                 <div class="card-body">
-                    <form>
                         <div class="form-group">
                             <label for="empid">EmpID:</label>
                             <input type="text" class="form-control" id="empid" name="empid">
@@ -237,15 +236,13 @@
                         <div class="btn-save text-center">
                             <button type="submit" class="btn btn-primary" id="btnSave">Save</button>
                         </div>
-                    </form>
                 </div>
             </div>
                <div class="card1">
                 <div class="card-header">
                     <h4>Import Users</h4>
                 </div>
-                <div class="card-body">
-                    <form>
+                <div class="card-body">             
                         <div class="form-group" id="upload">
                             <div class="col-lg-5 btn-save2">
                                 <input type="file" id="csvFile" accept=".csv" />
@@ -256,8 +253,7 @@
                         </div>                       
                         <div class="text-center" id="downloadcsv">
                             <a href="@Url.Action("DownloadCSV","Admin")" download id="download1" onclick="downloadCSV()"><label for="download">Please Download The Reference CSV</label></a>
-                        </div>
-                    </form>
+                        </div>                   
                 </div>
 
         @* </div>*@
@@ -267,9 +263,6 @@
     </div>
 
 
-    <div class="row">
-        <div class="col-md-8"></div>
-        <div class="col-md-4" id="rightside">
          
 </div>
 @*
@@ -359,7 +352,6 @@
                 return false; 
             }
         saveUser();
-        return True;
 
     })
 
@@ -394,6 +386,7 @@
 
 
         function saveUser() {
+            showLoader();
 
         var empId = document.getElementById("empid").value;
             var fullName = document.getElementById("userfullname").value;
@@ -467,9 +460,9 @@
         function submitform(user) {
 
         $.ajax({
-            url: '/Admin/SaveUser',
-            type: 'POST',
-            data: user,
+                url: '/Admin/SaveUser',
+                type: 'POST',
+                data: user,
             success: function (response) {
                 if (response.message && response.message === "Updated successfully!") {
                     alert("User updated successfully!");
@@ -477,6 +470,7 @@
                 else {
                     alert("User saved successfully!");
                 }
+                hideLoader();
                 location.reload();
             },
             error: function (error) {

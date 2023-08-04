@@ -129,6 +129,9 @@
             <div id="after-scan-fail-image" class="scanning-gif temp-display">
                 <img class="barcode-img-size" src="/assets/images/fail-image.png" />
             </div>
+            <div id="after-scan-pass-image" class="scanning-gif temp-display">
+                <img class="barcode-img-size" src="/assets/images/passed-icon.png" />
+            </div>
             <div id="before-scan-text" class="scanning-instruction temp-button">
                 <div class="scanning-text-container">
                  <h6 class="scanning-text-1">place the product label </h6>
@@ -411,6 +414,17 @@
         </div>
     </div>
 </div>
+
+
+<div id="popupContainer">
+        <div id="popupContent">
+            <img src="~/assets/images/Barcode image 2.png" alt="Barcode Icon">
+            <h5>Place Your Supervisor Badge under</h5>
+             <h5 style="margin-right: 69px;text-align:center;">The Scanner</h5>
+            <button id="greenButton" class="greenButton">Continue</button>
+        </div>
+    </div>
+
 
 
 <div class="loading-and-nav">
@@ -843,6 +857,40 @@
         align-items: center;
     }
 
+    /* Styles for the popup container */
+    #popupContainer {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
+
+    /* Styles for the popup content */
+    #popupContent {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Style for the green button inside the popup */
+    #greenButton {
+        background-color: green;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-left:72px;
+    }
 </style>
 
 <script type="text/javascript">
@@ -859,18 +907,28 @@
 let inPassScenario = false;
 let inFailScenario = false;
 let responseData = null;
-    //document.getElementsByClassName('temp-button')[0]
-    //    .addEventListener('click', function (event) {
-    //        beforeToDuringScan();
-    //          setTimeout(duringToScanPass, 3000);
+    document.getElementsByClassName('temp-button')[0]
+        .addEventListener('click', function (event) {
+            beforeToDuringScan();
+              setTimeout(duringToScanPass, 3000);
 
-    //    });
+        });
 
      document.getElementsByClassName('temp-supervisor-call-button')[0]
         .addEventListener('click', function (event) {
-            ScanFailToSupervisor();
-            setScannedFailData(responseData);
+            showPopup();
         });
+    //document.getElementByClassName('greenButton')[0]
+    //    .addEventListener('click',function(event)
+    //    {
+    //        ScanFailToSupervisor();
+    //        setScannedFailData(responseData);
+    //    })
+    $('#greenButton').click(function(){
+        closePopup();
+        ScanFailToSupervisor();
+           setScannedFailData(responseData);
+    });
 
 
      document.getElementsByClassName('temp-reset-button')[0]
@@ -884,20 +942,20 @@ let responseData = null;
 
         });
 
-       document.getElementsByClassName('temp-fail-button')[0]
-        .addEventListener('click', function (event) {
-            // do something
-              console.log("fail button clicked");
-              inFailScenario = true;
-              if (inFailScenario) {
-                  inFailScenario = false;
-                   beforeToDuringScan();
-                   setTimeout(duringToScanFail, 3000);
-                   setTimeout(ScanFailToSupervisor, 5000);
-              }
+       //document.getElementsByClassName('temp-fail-button')[0]
+       // .addEventListener('click', function (event) {
+       //     // do something
+       //       console.log("fail button clicked");
+       //       inFailScenario = true;
+       //       if (inFailScenario) {
+       //           inFailScenario = false;
+       //            beforeToDuringScan();
+       //            setTimeout(duringToScanFail, 3000);
+       //            setTimeout(ScanFailToSupervisor, 5000);
+       //       }
        
 
-        });
+       // });
 
       function beforeToDuringScan() {
             document.getElementById("before-scan-lot-no").style.display = "none";
@@ -917,6 +975,7 @@ let responseData = null;
 
             document.getElementById("left-part-before-scan").style.display = "none";
             document.getElementById("left-part-during-scan").style.display = "block";
+            document.getElementById("popupContainer").style.display = "none";
       }
 
       function duringToScanPass(){
@@ -940,12 +999,13 @@ let responseData = null;
             document.getElementById("left-part-after-scan-pass").style.display = "block";
             
             document.getElementById("next-scan-button").style.backgroundColor = "#003C71";
+            document.getElementById("before-scan-text").style.display = "block";
 
-          document.getElementById("scanning-icon-div").style.display = "none";
-          document.getElementById("scanned-data").style.display = "block";
+        document.getElementById("popupContainer").style.display = "none";
       }
 
       function duringToScanFail(response){
+        document.getElementById("popupContainer").style.display = "none";
           document.getElementById("scanning-icon-div").style.backgroundColor = "#FFB5B5";
      
           document.getElementById("before-scan-text").style.display = "none";
@@ -995,11 +1055,13 @@ let responseData = null;
       }
 
       function ScanFailToSupervisor() {
+        document.getElementById("popupContainer").style.display = "none";
           document.getElementById("scanning-icon-div").style.display = "none";
            document.getElementById("supervisor-intervention").style.display = "flex";
       }
 
       function resetPassScenario() {
+        document.getElementById("popupContainer").style.display = "none";
             document.getElementById("after-scan-pass-lot-no").style.display = "none";
             document.getElementById("before-scan-lot-no").style.display = "block";
 
@@ -1019,6 +1081,15 @@ let responseData = null;
             document.getElementById("left-part-before-scan").style.display = "block";
             
             document.getElementById("next-scan-button").style.backgroundColor = "#C5C5C5";
+      }
+
+      function showPopup(){
+        document.getElementById("scanning-icon-div").style.display = "none";
+        document.getElementById("popupContainer").style.display = "block";
+      }
+
+      function closePopup(){
+        document.getElementById("popupContainer").style.display = "none";
       }
 
 

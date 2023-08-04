@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace BostonScientificAVS.Controllers
 {
@@ -173,22 +174,19 @@ namespace BostonScientificAVS.Controllers
         }
 
         [HttpPost]
-        public JsonResult SaveUser(ApplicationUser user)
+        public async Task<JsonResult> SaveUser(ApplicationUser user)
         {
+            var existingRecord = await _context.Users.FirstOrDefaultAsync(u => u.EmpID == user.EmpID);
 
-            var existingRecord = _context.Users.FirstOrDefault(u => u.EmpID == user.EmpID);
             if (existingRecord != null)
             {
                 existingRecord.UserFullName = user.UserFullName;
                 existingRecord.UserRole = user.UserRole;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return Json(new { success = true, message = "Updated successfully!" });
-
             }
-
             else
             {
-
                 var newRecord = new ApplicationUser()
                 {
                     EmpID = user.EmpID,
@@ -196,7 +194,7 @@ namespace BostonScientificAVS.Controllers
                     UserRole = user.UserRole
                 };
                 _context.Users.Add(newRecord);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return Json(new { success = true });
             }
         }
