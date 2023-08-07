@@ -12,6 +12,7 @@
             {
                  <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Users">Manage Users</a>
                 <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Items" >Manage Database</a>
+                    <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="TransactionTable">Transaction</a>
             }
                          <a class="dropdown-item text-color-blue"  asp-area="" asp-controller="Login" asp-action="Logout" >Logout</a> 
   </div>
@@ -63,18 +64,25 @@
            <a class="scanning" asp-area="" asp-controller="Home" asp-action="Result"><span class="scanning-text">Scanning...</span></a>
      </div>
 
-            <form id="workOrderForm" asp-controller="Home" asp-action="SaveWorkOrder" method="post">
-                <div class="work-order-scan-submit">
-                    <div>
-                        <input class="scan-input" placeholder="Enter ID here" name="input" />
+                <form id="workOrderForm" asp-controller="Home" asp-action="SaveWorkOrder" method="post">
+                    <div class="work-order-scan-submit">
+                        <div>
+                            <input class="scan-input" placeholder="Enter ID here" name="input" id="input" />
+                        </div>
+                        <div>
+                            <button type="submit" class="login-button" id="submitBtn">
+                                <span class="login-text">Scan ID/Submit</span>
+                            </button>
+                        </div>
                     </div>
-                    <div>
-                        <button type="submit" class="login-button" id="submitBtn">
-                            <span class="login-text">Scan ID/Submit</span>
-                        </button>
-                    </div>
+                </form>
+                <div class="text-danger">
+                    @if (TempData.ContainsKey("ErrorMessage"))
+                    {
+                        <span>@TempData["ErrorMessage"]</span>
+                        TempData.Remove("ErrorMessage");
+                    }
                 </div>
-            </form>
     </div>
 
 @*    <div>
@@ -205,8 +213,15 @@
 
   
 </style>
+@section Scripts{
 
-<script>
+<script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            var inputField = document.getElementById("input");
+            if (inputField) {
+                inputField.value = "";
+            }
+        });
  
     function startTimer(duration) {
     var timerDisplay = document.getElementById("timer");
@@ -243,3 +258,4 @@ var currentTime = Math.floor(Date.now() / 1000);
 var remainingTime = expirationTime - currentTime;
 startTimer(remainingTime);
 </script>
+}

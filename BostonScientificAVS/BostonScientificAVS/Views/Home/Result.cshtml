@@ -1,5 +1,6 @@
 ﻿@model BostonScientificAVS.Models.WorkOrderInfo
-<div class="main-container row pt-15">
+
+<div class="main-container">
 
 <div class="navigation-header-result">
         <div class="dropdown">
@@ -13,6 +14,7 @@
             {
                  <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Users">Manage Users</a>
                 <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Items" >Manage Database</a>
+                    <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="TransactionTable">Transaction</a>
             }
                          <a class="dropdown-item text-color-blue"  asp-area="" asp-controller="Login" asp-action="Logout" >Logout</a> 
   </div>
@@ -31,7 +33,7 @@
 </div>
 
 
-<@*div class="heading">
+@*<div class="heading">
     <div >
         <div>
            <img src="/assets/images/abeTechHeading.png" class="image-size" />
@@ -66,7 +68,7 @@
                 <h6 class="processing-lot-text">Processing Lot No. : <span id="work-order-lot-no" class="processing-lot-no">@Model.workOrderLotNo</span></h6>
             </div>
             <div class="data-stat">
-                <div class="data-card p-10">
+                <div class="data-card p-10" id="total">
                     <div class="data-heading">
                         <h6 class="data-heading-text">Total</h6>
 
@@ -76,7 +78,7 @@
                         <h6 id="total-val" class="data-val-text">@Model.totalCount</h6>
                     </div>
                 </div>
-                <div class="data-card p-10">
+                <div class="data-card p-10" id="pass">
                       <div class="data-heading">
                         <div>
                              <h6 class="data-heading-text">Passed</h6>
@@ -90,7 +92,7 @@
                         <h6 id="total-passed-val" class="data-val-text">@Model.passedCount</h6>
                     </div>
                 </div>
-                <div class="data-card p-10">
+                <div class="data-card p-10" id="fail">
                       <div class="data-heading">
                           <div>
                               <h6 class="data-heading-text">Failed</h6>
@@ -104,7 +106,7 @@
                         <h6 id="total-failed-val" class="data-val-text">@Model.failedCount</h6>
                     </div>
                 </div>
-                <div class="data-card p-10">
+                <div class="data-card p-10" id="rescan">
                       <div class="data-heading">
                           <div>
                               <h6 class="data-heading-text">Rescanned</h6>
@@ -232,86 +234,118 @@
         </div>
 
         <div id="supervisor-intervention" class="supervisor-container temp-display">
-            <div class="data-comparison">
+            <div class="border">
+            <div class="data-comparison">              
                 <div>
                     <h6 class="mismatch-text">Scanned Details</h6>
                 </div>
                 <div class="data-table-pass-supervisor">
                     <div class="product-data" style="width:200px">
                         <div>
+                        <div>
                             <h6 class="comparison-lable-text">DB GTIN</h6>
                         </div>
                         <div>
-                           @* <h6 class="comparison-lable-text" >@Model.Product_Label_GTIN</h6>*@
+                          
                             <h6 id="fail-db-gtin" class="comparison-lable-text" >xxxxxxxxxxx</h6>                             
-                        </div>                                
+                        </div>  
+                        <hr />
+                        </div>
+                        <div>
                         <div>
                             <h6 class="comparison-lable-text">Work Order Lot No</h6>
                         </div>
                         <div>
-                                @*<h6 class="comparison-lable-text">@Model.Product_Label_Spec</h6>*@
+                                
                                  <h6 id="fail-wo-lot-no" class="comparison-lable-text" >xxxxxxxxxxx</h6>
                         </div>
+                        <hr/>
+                        </div>
+                        <div>
                         <div>
                             <h6 class="comparison-lable-text">DB Label Spec</h6>
                         </div>
                         <div>
-                              @*  <h6 class="comparison-lable-text">@Model.WO_Catalog_Num </h6>*@
+                              
                                    <h6 id="fail-db-label-spec" class="comparison-lable-text" >xxxxxxxxxxx</h6>
                         </div>
+                        <hr/>
+                        </div>
+                        <div>
                         <div>
                             <h6 class="comparison-lable-text">Calculated Use By</h6>
                         </div>
                         <div>
-                             @*   <h6 class="comparison-lable-text">@Model.WO_Lot_Num</h6>*@
+                            
                                 <h6 id="fail-calc-use-by" class="comparison-lable-text" >xxxxxxxxxxx</h6>
                         </div>
+                        <hr/>
+                        </div>
+                        <div>
                         <div>
                             <h6 class="comparison-lable-text">DB Catalog Num</h6>
                         </div>
                         <div>
-                             @*   <h6 class="comparison-lable-text">@Model.WO_Lot_Num</h6>*@
+                             
                                 <h6 id="fail-db-catalog-num" class="comparison-lable-text" >xxxxxxxxxxx</h6>
+                        </div>
+                        <hr/>
                         </div>
                    </div>
                    <div class="data-from-db">
                        <div>
-                           <h6 class="comparison-lable-text" > Product Label GTIN </h6>
+                       <div>
+                           <h6 class="comparison-lable-text" id="p-gtin"> Product Label GTIN </h6>
                      </div>
                      <div>
-                         @*       <h6 class="comparison-lable-text">@Model.DB_GTIN</h6>*@
+                         
                             <h6 id="fail-product-gtin" class="comparison-lable-text" >xxxxxxxxxxx</h6>
                      </div>
+                     <hr/>
+                     </div>
                        <div>
-                           <h6 class="comparison-lable-text" > Product Lot Num </h6>
+                           <div>
+                           <h6 class="comparison-lable-text" id="p-lotnum" > Product Lot Num </h6>
                      </div>
                      <div>
-                                @*<h6 class="comparison-lable-text">@Model.DB_Label_Spec</h6>*@
+                               
                                    <h6 id="fail-product-lot-no" class="comparison-lable-text" >xxxxxxxxxxx</h6>
                      </div>
-                       <div>
-                           <h6 class="comparison-lable-text" > Product Label Spec</h6>
+                     <hr/>
                      </div>
                      <div>
-                             @*   <h6 class="comparison-lable-text">@Model.DB_Catalog_Num </h6>*@
+                       <div>
+                           <h6 class="comparison-lable-text" id="p-labelspec"> Product Label Spec</h6>
+                     </div>
+                     <div>
+                            
                                 <h6 id="fail-product-label-spec" class="comparison-lable-text" >xxxxxxxxxxx</h6>
                              </div>
+                             <hr/>
+                             </div>
                              <div>
-                           <h6 class="comparison-lable-text" > Product Use By </h6>
+                             <div>
+                           <h6 class="comparison-lable-text" id="p-useby"> Product Use By </h6>
                      </div>
                      <div>
-                              @*  <h6 class="comparison-lable-text">@Model.Product_Lot_Num </h6>*@
+                              
                                  <h6 id="fail-product-use-by" class="comparison-lable-text" >xxxxxxxxxxx</h6>
                      </div>
-   
+                     <hr/>
+                     </div>
+                           <div>
                         <div>
-                           <h6 class="comparison-lable-text" > Work Order Catalog Num</h6>
+                           <h6 class="comparison-lable-text" id="w-catlognum" > Work Order Catalog Num</h6>
                      </div>
                      <div>
-                              @*  <h6 class="comparison-lable-text">@Model.Product_Lot_Num </h6>*@
+                            
                                  <h6 id="fail-wo-catalog-no" class="comparison-lable-text" >xxxxxxxxxxx</h6>
                      </div>
+                     <hr/>
+                     </div>
                    </div>
+                   </div>
+                        
                 </div>
             </div>
             <div class="navigation-container">
@@ -425,7 +459,7 @@
         </div>
     </div>
 
-
+   
 
 <div class="loading-and-nav">
 <div id="left-part-before-scan" class="left-part ">
@@ -465,15 +499,19 @@
 
 <style>
 
+    hr{
+        color:black;
+    }
+
     .next-button-align{
         padding-left: 27px;
         padding-top: 8px;
     }
 
-      .approve-button{
+    .approve-button{
         display: block;
-        width: 206px;
-        height: 67px;
+        width: 150px;
+        height: 60px;
         background: #FFB246;
         padding: 10px;
         text-align: center;
@@ -487,8 +525,8 @@
 
     .reject-button{
         display: block;
-        width: 206px;
-        height: 67px;
+        width: 155px;
+        height: 56px;
         background: #FF0000;
         padding: 10px;
         text-align: center;
@@ -497,7 +535,7 @@
         font-weight: bold;
         line-height: 40px;
         margin:auto;
-        text-decoration:none;
+        text-decoration: none;
     }
 
     .next-img{
@@ -544,11 +582,12 @@
         gap: 20px;
     }
 
-    .data-comparison{
-        width:542px;
-        height:319px;
-        background-color:#EAF5FF;
-        border-radius:10px;
+    .data-comparison {
+        width: 542px;
+        max-height: 196px;
+        background-color: #EAF5FF;
+        border-radius: 10px;
+        overflow: auto;
     }
 
      .data-comparison-pass{
@@ -561,7 +600,7 @@
         width:211px;
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 10px;       
     }
 
     .temp-display{
@@ -575,6 +614,7 @@
 
     .main-container{
         height:100%;
+        overflow:hidden;
     }
 
     .image-div{
@@ -608,56 +648,60 @@
        justify-content:center;
    }
 
-   .left-content{
-       display:flex;
-       flex-direction: column;
-       width: 772px;
-       color: red;
-   }
+    .left-content {
+        /* max-height: 116px; */
+        display: flex;
+        flex-direction: column;
+        width: 746px;
+        color: red;
+    }
 
-   .right-content {
-       width: 402px;
-       color: blue;
-       padding-left:10px;
-   }
 
-   .count-data {
-      height: 201px;
-      background-color: #003C71;
-      border-radius: 10px;
-   }
+    .right-content {
+        /* margin-top: 79px; */
+        width: 476px;
+        color: blue;
+        padding-left: 10px;
+    }
+
+    .count-data {
+        height: 187px;
+        background-color: #003C71;
+        border-radius: 6px;
+    }
 
    .scanning-icon {
       height: 322px;
    }
 
-   .processing-lot-text{
-       font-size: 24px;
-       font-weight: 300;
-       color: white;
-   }
+    .processing-lot-text {
+        padding-left: 17px;
+        font-size: 21px;
+        font-weight: 300;
+        color: white;
+    }
 
    .processing-lot-no{
        font-weight: 700;
    }
 
-   .p-10 {
-       padding: 10px;
-   }
+    .p-10 {
+        padding: 1px;
+    }
+    .data-stat{
+        height: 121px;
+        display: flex;
+        gap: 5px;
+        justify-content: center;
+    }
 
-   .data-stat{
-      height: 135px;
-      display: flex;
-      gap: 5px;
-      justify-content: center;
-   }
-
-   .data-card{
+    .data-card{
         background-color: white;
         width: 24%;
         height: 135px;
-        border-radius:10px;
-      }
+        border-radius: 5px;
+    }
+
    
     .data-heading{
         height:21px;
@@ -689,13 +733,15 @@
 
     .barcode-img-size{
         height: 100%;
-        width: 100%;
+        width: 210%;
         vertical-align: -17px;
         object-fit: contain;
+        background-color: aliceblue;
     }
 
-    .scanning-icon{
-        display:flex;
+    .scanning-icon {
+        max-height: 203px;
+        display: flex;
         justify-content: space-between;
         padding-top:10px;
     }
@@ -738,15 +784,15 @@
         width:50px;
     }
 
-    .product-spec-container{
-        height: 533px;
+    .product-spec-container {
+        height: 393px;
         background-color: #EAF5FF;
         display: flex;
         flex-direction: column;
-        gap: 25px;
-        padding-top: 20px;
+        gap: 20px;
+        padding-bottom: 20px;
         border-radius: 10px;
-}
+    }
 
     .product-spec-text{
         font-size: 30px;
@@ -755,36 +801,51 @@
         padding-top:5px;
     }
 
-    .loading-and-nav{
-        display:flex;
-        padding-top:10px;
-        justify-content:center; }
+    .loading-and-nav {
+        position: relative;
+        display: flex;
+        padding-top: 10px;
+        justify-content: center;
+        bottom: 17px;
+    }
 
     .left-part{
-        border:1px solid;
-        border-color:#003C71;
-        width:772px;
-        height:54px;
-        border-radius:10px;
+        margin-top: 17px;
+        border: 1px solid;
+        border-color: #003C71;
+        width: 744px;
+        height: 47px;
+        border-radius: 10px;
     }
+
 
     .right-part{
-        width: 402px;
-        padding-left:10px;
+        /* padding-top: 26px; */
+        width: 473px;
+        padding-left: 10px;
+        margin-top: 13px;
     }
-
-    .right-part-container{
-         background-color:#C5C5C5;
-         height:54px;
-         border-radius:10px;
-    }
+   .right-part-container{
+    background-color: #C5C5C5;
+    height: 51px;
+    border-radius: 10px;
+}
 
     .scanning-loading-text{
-       font-size:24px;
-       font-weight:700;
-       color:#003C71;
-       padding-left: 15px;
-       padding-top:10px;
+        font-size: 24px;
+        font-weight: 700;
+        color: #003C71;
+        padding-left: 15px;
+        padding-top: 4px;
+    }
+
+    .scan-input {
+        width: 147px;
+        height: 44px;
+        border-radius: 10px;
+        border: 1px solid;
+        font-size: 20px;
+        text-align: center;
     }
 
     .scanning-next-text{
@@ -800,11 +861,11 @@
         padding-right:70px;
     }
 
-    .scanning-icon{
-        margin-top: 10px;
-        padding: 14px;
-        background-color: #EAEAEA;
-        border-radius:10px;
+    .scanning-icon {
+        max-height: 190px;
+        display: flex;
+        justify-content: space-between;
+        padding-top: 10px;
     }
 
     .left-part-pass{
@@ -814,19 +875,20 @@
         background-color: #00E13F;
     }
 
-     .left-part-fail{
-        width: 772px;
-        height: 54px;
-        border-radius: 10px;
+    .left-part-fail{
+        margin-top: 20px;
+        width: 773px;
+        height: 44px;
+        border-radius: 7px;
         background-color: #FF0000;
     }
 
     .pass-text{
         font-size: 24px;
-        font-weight: 700;
+        font-weight: 600;
         color: white;
         padding-left: 15px;
-        padding-top: 10px;
+        padding-top: 7px;
     }
 
     .approve-text{
@@ -842,18 +904,19 @@
     }
 
     .navigation-header-result{
-        padding: 20px;
+        /* padding: 20px; */
         display: flex;
         justify-content: center;
         gap: 634px;
         padding-left: 0px;
+        padding-top: 10px;
     }
 
     .temp-flex{
         display: flex;
         justify-content: center;
         gap: 10px;
-        padding: 10px;
+        padding-bottom: 10px;
         align-items: center;
     }
 
@@ -891,6 +954,55 @@
         cursor: pointer;
         margin-left:72px;
     }
+    #total{
+        background-color: #EAF5FF;
+    }
+    #pass{
+        background-color: #BEF8A7;
+    }
+    #fail{
+        background-color: #F09785;
+    }
+    #rescan{
+        background-color: #F9EFC6;
+    }
+    .border{
+        border:2px solid #0AC5F3;
+    }
+
+
+   /* .product-data, .data-from-db {
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}*/
+
+/* Add the underline after each pair of comparison values */
+/*.product-data div, .data-from-db div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  position: relative;
+}*/
+
+/*.product-data div::after, .data-from-db div::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 1px;
+  background-color: #ccc;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}*/
+
+    .box {
+        width: 200px;
+        height: 200px;
+        border: 2px solid #0AC5F3;
+    }
+
 </style>
 
 <script type="text/javascript">
@@ -927,7 +1039,7 @@ let responseData = null;
     $('#greenButton').click(function(){
         closePopup();
         ScanFailToSupervisor();
-           setScannedFailData(responseData);
+           setScannedFailData(responseData,responseData.mismatches);
     });
 
 
@@ -1004,55 +1116,54 @@ let responseData = null;
         document.getElementById("popupContainer").style.display = "none";
       }
 
-      function duringToScanFail(response){
+    function duringToScanFail(response){
         document.getElementById("popupContainer").style.display = "none";
-          document.getElementById("scanning-icon-div").style.backgroundColor = "#FFB5B5";
-     
-          document.getElementById("before-scan-text").style.display = "none";
-          document.getElementById("after-scan-fail-text").style.display = "flex";
+        document.getElementById("scanning-icon-div").style.backgroundColor = "#FFB5B5";
 
-          document.getElementById("before-scan-image").style.display = "none";
-          document.getElementById("after-scan-fail-image").style.display = "block";
+        document.getElementById("before-scan-text").style.display = "none";
+        document.getElementById("after-scan-fail-text").style.display = "flex";
 
-          document.getElementById("during-scan-lot-no").style.display = "none";
-          if (response.mismatches.lotNoMismatch) {
-          document.getElementById("after-scan-fail-lot-no").style.display = "block";
-          } else {
-          document.getElementById("after-scan-pass-lot-no").style.display = "block";
-          }
+        document.getElementById("before-scan-image").style.display = "none";
+        document.getElementById("after-scan-fail-image").style.display = "block";
 
-          document.getElementById("during-scan-gtin").style.display = "none";
-          if (response.mismatches.GTINMismatch) {
-          document.getElementById("after-scan-fail-gtin").style.display = "block";
-          } else {
-          document.getElementById("after-scan-pass-gtin").style.display = "block";
-          }
-           
+        document.getElementById("during-scan-lot-no").style.display = "none";
+        if (response.mismatches.lotNoMismatch) {
+            document.getElementById("after-scan-fail-lot-no").style.display = "block";
+        } else {
+            document.getElementById("after-scan-pass-lot-no").style.display = "block";
+        }
 
-          document.getElementById("during-scan-cat-no").style.display = "none";
-          if (response.mismatches.catalogNumMismatch) {
+        document.getElementById("during-scan-gtin").style.display = "none";
+        if (response.mismatches.GTINMismatch) {
+            document.getElementById("after-scan-fail-gtin").style.display = "block";
+        } else {
+            document.getElementById("after-scan-pass-gtin").style.display = "block";
+        }
+
+        document.getElementById("during-scan-cat-no").style.display = "none";
+        if (response.mismatches.catalogNumMismatch) {
             document.getElementById("after-scan-fail-cat-no").style.display = "block";
-          } else {
+        } else {
             document.getElementById("after-scan-pass-cat-no").style.display = "block";
-          }
+        }
 
-          document.getElementById("during-scan-label-spec").style.display = "none";
-          if (response.mismatches.labelSpecMismatch) {
-          document.getElementById("after-scan-fail-label-spec").style.display = "block";
-          } else {
-          document.getElementById("after-scan-pass-label-spec").style.display = "block";
-          }
+        document.getElementById("during-scan-label-spec").style.display = "none";
+        if (response.mismatches.labelSpecMismatch) {
+            document.getElementById("after-scan-fail-label-spec").style.display = "block";
+        } else {
+            document.getElementById("after-scan-pass-label-spec").style.display = "block";
+        }
 
-          document.getElementById("during-scan-use-date").style.display = "none";
-          if (response.mismatches.calculatedUseByMismatch) {
-          document.getElementById("after-scan-fail-use-date").style.display = "block";
-          } else {
-          document.getElementById("after-scan-pass-use-date").style.display = "block";
-          }
+        document.getElementById("during-scan-use-date").style.display = "none";
+        if (response.mismatches.calculatedUseByMismatch) {
+            document.getElementById("after-scan-fail-use-date").style.display = "block";
+        } else {
+            document.getElementById("after-scan-pass-use-date").style.display = "block";
+        }
 
-          document.getElementById("left-part-during-scan").style.display = "none";
-          document.getElementById("left-part-after-scan-fail").style.display = "block";
-      }
+        document.getElementById("left-part-during-scan").style.display = "none";
+        document.getElementById("left-part-after-scan-fail").style.display = "block";
+    }
 
       function ScanFailToSupervisor() {
         document.getElementById("popupContainer").style.display = "none";
@@ -1141,19 +1252,19 @@ let responseData = null;
         });
 
 
-        function processResponse(response) {
-            console.log("response hit");
-            console.log(response.allMatch);
-            if (response.allMatch == true) {
-              //setTimeout(duringToScanPass, 3000);
-               duringToScanPass();
-            } else {
-              //setTimeout(duringToScanFail, 3000);
-                duringToScanFail(response);
-            }
-            setWorkOrderInfo(response);
-              setScannedData(response);
+    function processResponse(response) {
+        console.log("response hit");
+        console.log(response.allMatch);
+        if (response.allMatch == true) {
+            //setTimeout(duringToScanPass, 3000);
+            duringToScanPass();
+        } else {
+            //setTimeout(duringToScanFail, 3000);
+            duringToScanFail(response);
         }
+        setWorkOrderInfo(response);
+        setScannedData(response);
+    }
 
         function setScannedData(response) {
             console.log("set data called");
@@ -1171,19 +1282,54 @@ let responseData = null;
 
         }
 
-           function setScannedFailData(response) {
-            console.log("set data for fail called");
+    function setScannedFailData(response,mismatches) {
+            console.log("set data for fail called");     
             document.getElementById("fail-db-gtin").innerHTML = response.lhsData.dbGTIN;
             document.getElementById("fail-wo-lot-no").innerHTML = response.lhsData.workOrderLotNo;
             document.getElementById("fail-db-label-spec").innerHTML = response.lhsData.dbLabelSpec;
             document.getElementById("fail-calc-use-by").innerHTML = response.lhsData.calculatedUseBy;
             document.getElementById("fail-db-catalog-num").innerHTML = response.lhsData.dbCatalogNo;
-
-            document.getElementById("fail-product-gtin").innerHTML = response.rhsData.productLabelGTIN;
+            if (mismatches.GTINMismatch) {
+                document.getElementById("fail-product-gtin").innerHTML = response.rhsData.productLabelGTIN;
+                document.getElementById("fail-product-gtin").style.color = "red";
+            document.getElementById("p-gtin").style.color = "red";
+            } else {
+                document.getElementById("fail-product-gtin").innerHTML = response.rhsData.productLabelGTIN;
+                document.getElementById("fail-product-gtin").style.color = "black";
+            }
+        if (mismatches.lotNoMismatch) {
             document.getElementById("fail-product-lot-no").innerHTML = response.rhsData.productLotNo;
+            document.getElementById("fail-product-lot-no").style.color = "red";
+            document.getElementById("p-lotnum").style.color = "red";
+        } else {
+            document.getElementById("fail-product-lot-no").innerHTML = response.rhsData.productLotNo;
+            document.getElementById("fail-product-lot-no").style.color = "black";
+        }
+
+        if (mismatches.labelSpecMismatch) {
             document.getElementById("fail-product-label-spec").innerHTML = response.rhsData.productLabelSpec;
+            document.getElementById("fail-product-label-spec").style.color = "red";
+            document.getElementById("p-labelspec").style.color = "red";
+        } else {
+            document.getElementById("fail-product-label-spec").innerHTML = response.rhsData.productLabelSpec;
+            document.getElementById("fail-product-label-spec").style.color = "black";
+        }
+        if (mismatches.calculatedUseByMismatch) {
             document.getElementById("fail-product-use-by").innerHTML = response.rhsData.productUseBy;
+            document.getElementById("fail-product-use-by").style.color = "red";
+            document.getElementById("p-useby").style.color = "red";
+        } else {
+            document.getElementById("fail-product-use-by").innerHTML = response.rhsData.productUseBy;
+            document.getElementById("fail-product-use-by").style.color = "black";
+        }
+        if (mismatches.catalogNumMismatch) {
             document.getElementById("fail-wo-catalog-no").innerHTML = response.rhsData.workOrderCatalogNo;
+            document.getElementById("fail-wo-catalog-no").style.color = "red";
+            document.getElementById("w-catlognum").style.color = "red";
+        } else {
+            document.getElementById("fail-wo-catalog-no").innerHTML = response.rhsData.workOrderCatalogNo;
+            document.getElementById("fail-wo-catalog-no").style.color = "black";
+        }
 
         }
 
@@ -1231,11 +1377,4 @@ var expirationTime = localStorage.getItem("expiration_time");
 var currentTime = Math.floor(Date.now() / 1000);
 var remainingTime = expirationTime - currentTime;
 startTimer(remainingTime);
-
-
-
-
-
-
-
 </script>

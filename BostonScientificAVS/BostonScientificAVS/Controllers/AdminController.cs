@@ -236,5 +236,28 @@ namespace BostonScientificAVS.Controllers
             memoryStream.Seek(0, SeekOrigin.Begin);
             return File(memoryStream, "text/csv", "users.csv");
         }
+        [HttpGet]
+        public IActionResult TransactionTable(string search)
+        {
+            DateTime today = DateTime.Today;
+            ViewBag.SearchDate = search;
+
+            var records = _context.Transaction.ToList(); // Fetch all records to memory
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                var searchDate = DateTime.ParseExact(search, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                var formattedSearchDate = searchDate.ToString("dd-MM-yyyy");
+
+                records = records.Where(t => t.Date_Time != null &&
+                                              t.Date_Time.StartsWith(formattedSearchDate)).ToList();
+            }
+            else
+            {
+                records = records.Where(t => t.Date_Time != null && t.Date_Time.Contains(today.ToString("dd-MM-yyyy"))).ToList();
+            }
+
+            return View("Transaction", records); // Specify the view name and pass the records
+        }
     }
 }

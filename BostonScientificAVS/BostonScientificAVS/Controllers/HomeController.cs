@@ -47,40 +47,31 @@ namespace BostonScientificAVS.Controllers
         [HttpPost]
         public IActionResult SaveWorkOrder(string input)
         {
-            if (ModelState.IsValid)
+            string[] barcodeParts = input.Split('_');
+
+            if (barcodeParts.Length == 4 && barcodeParts.All(part => !string.IsNullOrEmpty(part.Trim())))
             {
-                string[] barcodeParts = input.Split('_');
+                // All parts are non-empty, proceed with saving the data
+                Transaction transaction = new Transaction();
+                transaction.WO_Catalog_Num = barcodeParts[0];
+                DateTime date = DateTime.ParseExact(barcodeParts[2], "MMddyyyy", null);
+                transaction.WO_Mfg_Date = date;
+                transaction.WO_Lot_Num = barcodeParts[3];
 
-                if (barcodeParts.Length == 4 &&
-                    barcodeParts.All(part => !string.IsNullOrEmpty(part.Trim())))
-                {
-                    // All parts are non-empty, proceed with saving the data
-                    Transaction transaction = new Transaction();
-                    transaction.WO_Catalog_Num = barcodeParts[0];
-                    DateTime date = DateTime.ParseExact(barcodeParts[2], "MMddyyyy", null);
-                    transaction.WO_Mfg_Date = date;
-                    transaction.WO_Lot_Num = barcodeParts[3];
+                _dataContext.Transaction.Add(transaction);
+                _dataContext.SaveChanges();
 
-                    _dataContext.Transaction.Add(transaction);
-                    _dataContext.SaveChanges();
+                TempData["WorkOrderLotNo"] = transaction.WO_Lot_Num;
 
-                    TempData["WorkOrderLotNo"] = transaction.WO_Lot_Num;
-
-                    return RedirectToAction("Result", "Home");
-                }
-                else
-                {
-                    // Invalid input format, redirect to error page
-                    return RedirectToAction("WorkOrderError", "Home");
-                }
+                return RedirectToAction("Result", "Home");
             }
             else
             {
-                return RedirectToAction("WorkOrderError", "Home");
+                // Invalid input format, add a model-level error
+                TempData["ErrorMessage"] = "Work Order Seems To be Invalid. Please retry again";
+                return View("WorkOrderScan");
             }
         }
-
-
 
         [HttpPost("/SaveProductLabel")]
         public async Task<IActionResult> SaveProductLabel(string productLabel, string productLabelSpec)
