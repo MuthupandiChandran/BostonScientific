@@ -233,6 +233,26 @@ namespace BostonScientificAVS.Controllers
             }
             return View();
         }
+
+        [HttpPost]
+        public ActionResult CheckSupervisorId(string supervisorEmpId)
+        {
+            // Get the user corresponding to the provided EmpID
+            ApplicationUser user = _dataContext.Users.FirstOrDefault(u => u.EmpID == supervisorEmpId);
+
+            if (user != null && user.UserRole == UserRole.Supervisor)
+            {
+                // Supervisor ID is valid
+                return Json(true);
+            }
+            else
+            {
+                // Supervisor ID is invalid or not a supervisor, return an error
+                return Json(new { error = "Supervisor ID is invalid. Please enter a valid ID." });
+            }
+        }
+
+
         public IActionResult WorkOrderScan()
         {
             return View();

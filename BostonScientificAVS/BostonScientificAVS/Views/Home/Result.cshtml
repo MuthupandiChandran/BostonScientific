@@ -1,7 +1,6 @@
 ﻿@model BostonScientificAVS.Models.WorkOrderInfo
-
+<partial name="_Loader" />
 <div class="main-container">
-
 <div class="navigation-header-result">
         <div class="dropdown">
   <button class="custom-config-button" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -452,10 +451,14 @@
 
 <div id="popupContainer">
         <div id="popupContent">
-            <img src="~/assets/images/Barcode image 2.png" alt="Barcode Icon">
-            <h5>Place Your Supervisor Badge under</h5>
-             <h5 style="margin-right: 69px;text-align:center;">The Scanner</h5>
+            <img src="~/assets/images/Barcode image 2.png" alt="Barcode Icon" id="scan-image">
+            <h5 class="supr-txt">Place Your Supervisor Badge</h5>
+            <h5 id="under">under the scanner</h5>
+            <input id="supervisorInput" placeholder="Super Visor Id" name="supervisorInput" />
+            <br/>
             <button id="greenButton" class="greenButton">Continue</button>
+             <br/>
+            <span class="error-message text-danger"></span>
         </div>
     </div>
 
@@ -498,6 +501,29 @@
 </div>
 
 <style>
+    #under {
+        margin-left: 38px;
+        text-align: center;
+        font-size: 23px;
+        font-weight: 400;
+    }
+    #scan-image {
+        width: 313px;
+        margin-left: 81px;
+    }
+    #supervisorInput{
+        margin-left: 152px;
+    width: 151px;
+    height: 43px;
+    border-radius: 10px;
+    border: 1px solid;
+    font-size: 20px;
+    text-align: center;
+    }
+
+    #spr-err-txt {
+        margin-left: 96px
+    }
 
     hr{
         color:black;
@@ -934,13 +960,14 @@
 
     /* Styles for the popup content */
     #popupContent {
+        width: 477px;
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         background-color: #fff;
         padding: 20px;
-        border-radius: 5px;
+        border-radius: 16px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     }
 
@@ -952,7 +979,17 @@
         border: none;
         border-radius: 5px;
         cursor: pointer;
-        margin-left:72px;
+        margin-left: 180px;
+        margin-top: 14px;
+        margin-bottom: 8px;
+    }
+
+    .supr-txt {
+        display: flex;
+        font-weight: 400;
+        align-items: center;
+        margin-left: 87px;
+        font-size: 25px;
     }
     #total{
         background-color: #EAF5FF;
@@ -1036,11 +1073,11 @@ let responseData = null;
     //        ScanFailToSupervisor();
     //        setScannedFailData(responseData);
     //    })
-    $('#greenButton').click(function(){
-        closePopup();
-        ScanFailToSupervisor();
-           setScannedFailData(responseData,responseData.mismatches);
-    });
+    //$('#greenButton').click(function(){
+    //    closePopup();
+    //    ScanFailToSupervisor();
+    //       setScannedFailData(responseData,responseData.mismatches);
+    //});
 
 
      document.getElementsByClassName('temp-reset-button')[0]
@@ -1195,7 +1232,9 @@ let responseData = null;
       }
 
       function showPopup(){
-        document.getElementById("scanning-icon-div").style.display = "none";
+       document.getElementById("scanning-icon-div").style.backgroundColor = "#FFB5B5";
+        document.getElementById("after-scan-fail-image").style.display = "block";
+        document.getElementById("after-scan-fail-text").style.display = "flex";
         document.getElementById("popupContainer").style.display = "block";
       }
 
@@ -1341,6 +1380,52 @@ let responseData = null;
             console.log(response.workOrderInfo.scannedCount);
               document.getElementById("work-order-lot-no").innerHTML = response.lhsData.workOrderLotNo;
         }
+
+    $(document).ready(function () {
+        configureContinueButton();
+    });
+
+    function configureContinueButton() {
+        $('#greenButton').off('click'); // Remove previous click event handler
+        $('#greenButton').click(function () {
+            showLoader();
+            var supervisorId = $('#supervisorInput').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '/Home/CheckSupervisorId',
+                data: { supervisorEmpId: supervisorId },
+                success: function (data) {
+                    if (data === true) {
+                        hideLoader();
+                        closePopup();
+                        ScanFailToSupervisor();
+                        setScannedFailData(responseData, responseData.mismatches);
+                    } else {
+                        hideLoader();
+                        // Supervisor ID is invalid, show an error message
+                        var errorMessage = 'Supervisor ID is invalid. Please enter a valid ID.';
+                        $('#popupContent').find('.error-message').text(errorMessage);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log("An error occurred while making the AJAX call:", error);
+                }
+            });
+        });
+    }
+
+
+    function showLoader() {
+        document.getElementById('loader').style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
+    }
+
+    // Function to hide the loader and overlay
+    function hideLoader() {
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('overlay').style.display = 'none';
+    }
 
       //code for session counter
           function startTimer(duration) {

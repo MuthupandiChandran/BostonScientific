@@ -23,6 +23,13 @@
     </div>
 
     </form>
+    <div class="text-danger" id="loginerror">
+        @if (TempData.ContainsKey("ErrorMessage"))
+        {
+            <span>@TempData["ErrorMessage"]</span>
+            TempData.Remove("ErrorMessage");
+        }
+    </div>
 </div>
 
 @*<div class="error-mockup">
@@ -35,7 +42,9 @@
 
 <style>
  
-
+    #loginerror{
+        text-align:center;
+    }
     .logo-image{
         width: 353px;
         height: 71px;

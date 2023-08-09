@@ -54,7 +54,7 @@ namespace BostonScientificAVS.Controllers
                         AllowRefresh = true,
                         IsPersistent = true
                     };
-                  await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), properties);
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), properties);
 
                     // instructing the controller that this is the call after immediate login
                     bool afterLogin = true;
@@ -62,7 +62,11 @@ namespace BostonScientificAVS.Controllers
                     HttpContext.Session.SetString("CurrentUserName", userInfo.UserFullName);
                     return RedirectToAction("HomeScreen", "Home");
                 }
-                return RedirectToAction("LoginError");
+                else
+                {
+                    TempData["ErrorMessage"] = "EmployeeID Seems To be Invalid. Please retry again";
+                    return RedirectToAction("Login");
+                }
             }
             catch (Exception e)
             {
