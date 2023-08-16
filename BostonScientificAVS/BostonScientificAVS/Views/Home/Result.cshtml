@@ -8,7 +8,7 @@
 </head>
 
 <body>
-    <div class="container-fluid">
+    <div class="container">
         <nav class="navbar">
             <div class="dropdown">
                 <button class="custom-config-button" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -573,7 +573,7 @@
                         <div class="col-md-6 lbl">
                             <div class="row">
                             <div class="col-6">
-                            <div id="before-scan-text" class="scanning-instruction temp-button" style="background-color: #003C71;">
+                            <div id="before-scan-text" class="scanning-instruction" style="background-color: #003C71;">
                                 <div class="scanning-text-container">
                                     <h6 class="scanning-text-1">place the product label </h6>
                                     <h6 class="scanning-text-1">under the scanner</h6>
@@ -1025,12 +1025,13 @@
 
     .data-comparison {
         padding: 4px;
-        width: 85%;
-        max-height: 150px;
+        width: 100%;
+        max-height: 171px;
         background-color: #EAF5FF;
         border-radius: 10px;
         overflow: auto;
     }
+
 
     .data-comparison-pass {
         height: 319px;
@@ -1108,7 +1109,7 @@
     .count-data {
         height: 50%;
         background-color: #003C71;
-        border-radius: 6px;
+        border-radius: 10px;
     }
 
 
@@ -1124,11 +1125,13 @@
     }
 
     .processing-lot-text {
+        padding-top: 5px;
         padding-left: 17px;
         font-size: 21px;
         font-weight: 300;
         color: white;
     }
+
 
     .processing-lot-no {
         font-weight: 700;
@@ -1256,8 +1259,9 @@
         justify-content: center;
     }
 
+
     .right-scan {
-        height: 96%;
+        margin-bottom: 12px;
         background-color: aliceblue;
     }
 
@@ -1323,21 +1327,27 @@
     }
 
     #productLabelInput {
-        width: 136%;
-        height: 30px
+        border-radius: 7px;
+        width: 146%;
+        height: 30px;
     }
+
 
     #productLabelSpec {
+        border-radius: 7px;
         margin-left: 112px;
         width: 93%;
-        height: 30px
+        height: 30px;
     }
 
+
     #submitBtn {
+        border-radius: 8px;
         margin-left: 90px;
         height: 30px;
         margin-bottom: 5px;
     }
+
 
     .inpt1 {
         margin-bottom: 4px
@@ -1369,12 +1379,11 @@
     }
 
     .left-part-fail {
-        width: 773px;
-        height: 44px;
-        border-radius: 7px;
-        background-color: #FF0000;
-    }
-
+    margin-top: 5px;
+    height: 44px;
+    border-radius: 9px;
+    background-color: #FF0000;
+}
     .pass-text {
         font-size: 24px;
         font-weight: 600;
@@ -1538,12 +1547,12 @@
     document.getElementById("error").style.display = "none";
     document.getElementById("navigation-container").style.display = "none";
     document.getElementById("next-scan-button").style.backgroundColor = "#C5C5C5";
-    document.getElementsByClassName('temp-button')[0]
-        .addEventListener('click', function (event) {
-            beforeToDuringScan();
-              setTimeout(duringToScanPass, 3000);
+    //document.getElementsByClassName('temp-button')[0]
+    //    .addEventListener('click', function (event) {
+    //        beforeToDuringScan();
+    //          setTimeout(duringToScanPass, 3000);
 
-        });
+    //    });
 
     document.getElementsByClassName('temp-supervisor-call-button')[0]
        .addEventListener('click', function (event) {
