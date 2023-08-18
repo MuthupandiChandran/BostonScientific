@@ -18,18 +18,6 @@ namespace BostonScientificAVS.Controllers
         }
         public IActionResult Login()
         {
-            ClaimsPrincipal claimUser = HttpContext.User;
-
-            if (claimUser.Identity.IsAuthenticated)
-            {
-                return RedirectToAction("HomeScreen", "Home");
-            }
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Login(ApplicationUser user)
-        {
             try
             {
                 bool isDatabaseConnected = checkDbConnection(); // Implement the method to check the database connection
@@ -37,10 +25,34 @@ namespace BostonScientificAVS.Controllers
                 if (!isDatabaseConnected)
                 {
                     TempData["ErrorMsg"] = "Database Connection Could Not Be Established";
-                    return RedirectToAction("Login");
+
                 }
 
 
+                ClaimsPrincipal claimUser = HttpContext.User;
+
+                if (claimUser.Identity.IsAuthenticated)
+                {
+                    return RedirectToAction("HomeScreen", "Home");
+                }
+                return View();
+            }
+
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return BadRequest();
+            }
+
+           
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(ApplicationUser user)
+        {
+            try
+            {             
                 List<ApplicationUser> validUser = _context.Users.Where(x => x.EmpID == user.EmpID).ToList();
 
                 if (validUser.Count > 0)
@@ -86,29 +98,7 @@ namespace BostonScientificAVS.Controllers
 
         }
 
-        //private string GetConnectionStringFromEnv()
-        //{
-        //    var appRootDirectory = Directory.GetCurrentDirectory();
-        //    var envFilePath = Path.Combine(appRootDirectory, ".env");
-
-        //    if (File.Exists(envFilePath))
-        //    {
-        //        var lines = File.ReadAllLines(envFilePath);
-        //        foreach (var line in lines)
-        //        {
-        //            var parts = line.Split(new char[] { '=' }, 2);
-        //            if (parts.Length == 2 && parts[0] == "DB_CON_STRING")
-        //            {
-        //                return parts[1];
-        //            }
-        //        }
-        //    }
-
-        //    return null; // Return null if the connection string is not found
-        //}
-
-
-
+       
         private Boolean checkDbConnection()
         {
 
