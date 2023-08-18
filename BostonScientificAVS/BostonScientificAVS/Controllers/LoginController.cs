@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Entity;
 using Context;
+using Microsoft.Data.SqlClient;
 
 namespace BostonScientificAVS.Controllers
 {
@@ -31,6 +32,15 @@ namespace BostonScientificAVS.Controllers
         {
             try
             {
+                bool isDatabaseConnected = checkDbConnection(); // Implement the method to check the database connection
+
+                if (!isDatabaseConnected)
+                {
+                    TempData["ErrorMsg"] = "Database Connection Could Not Be Established";
+                    return RedirectToAction("Login");
+                }
+
+
                 List<ApplicationUser> validUser = _context.Users.Where(x => x.EmpID == user.EmpID).ToList();
 
                 if (validUser.Count > 0)
@@ -75,6 +85,41 @@ namespace BostonScientificAVS.Controllers
             }
 
         }
+
+        //private string GetConnectionStringFromEnv()
+        //{
+        //    var appRootDirectory = Directory.GetCurrentDirectory();
+        //    var envFilePath = Path.Combine(appRootDirectory, ".env");
+
+        //    if (File.Exists(envFilePath))
+        //    {
+        //        var lines = File.ReadAllLines(envFilePath);
+        //        foreach (var line in lines)
+        //        {
+        //            var parts = line.Split(new char[] { '=' }, 2);
+        //            if (parts.Length == 2 && parts[0] == "DB_CON_STRING")
+        //            {
+        //                return parts[1];
+        //            }
+        //        }
+        //    }
+
+        //    return null; // Return null if the connection string is not found
+        //}
+
+
+
+        private Boolean checkDbConnection()
+        {
+
+            if (_context.Database.CanConnect())
+            {
+                return true;
+            }
+            return false;
+        }
+
+
 
         public IActionResult LoginError()
         {

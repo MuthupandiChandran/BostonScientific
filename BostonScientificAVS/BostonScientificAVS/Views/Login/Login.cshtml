@@ -30,6 +30,19 @@
             TempData.Remove("ErrorMessage");
         }
     </div>
+
+    @{
+        var errorMessage = TempData["ErrorMsg"] as string;
+    }
+    <div class="text-danger" id="loginerror">
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="error-message">
+                @errorMessage
+            </div>
+        }
+    </div>
+
 </div>
 
 @*<div class="error-mockup">

@@ -872,6 +872,7 @@
     </div>
 </body>
 <style>
+   
    /* #next-scan-button{
        background-color: #003C71;
        color:white;
@@ -1521,12 +1522,6 @@
       left: 0;
     }*/
 
-    .box {
-        width: 200px;
-        height: 200px;
-        border: 2px solid #0AC5F3;
-    }
-
 </style>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
 
@@ -1577,7 +1572,7 @@
             //    inPassScenario = false;
             //    resetPassScenario();
             //}
-            var targetUrl = "https://localhost:7157/WorkOrderScan";
+            var targetUrl = "Home/WorkOrderScan";
             window.location.href = targetUrl;
 
         });
@@ -1740,7 +1735,7 @@
         var productLabel = document.getElementById("productLabelInput").value;
         var productLabelSpec = document.getElementById("productLabelSpec").value;
 
-        var apiUrl = "https://localhost:7157/SaveProductLabel";
+        var apiUrl = "Home/SaveProductLabel";
         beforeToDuringScan();
         $.ajax({
             url: apiUrl,
