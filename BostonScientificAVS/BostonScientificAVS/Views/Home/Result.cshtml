@@ -38,7 +38,8 @@
             </div>
 
         </nav>
-        <hr/>
+       <div class="brdr-bottom"></div>
+        <div class="packaging">Package Processing</div>
         
 
 
@@ -60,20 +61,18 @@
             <div class="row inpt1">
                 <div class="col-md-8">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <input id="productLabelInput" class="scan-input" placeholder="Product label" name="input" />
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <input id="productLabelSpec" class="scan-input" placeholder="Label Spec" name="input1" />
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <button type="submit" class="login-button btn btn-primary" id="submitBtn">
                                 <span class="login-text">Scan ID/Submit</span>
                             </button>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-4">
                 </div>
             </div>
         </div>
@@ -868,7 +867,7 @@
 
                 </div>
             </div>
-
+            <br/>
         </div>
     </div>
 </body>
@@ -877,9 +876,15 @@
        background-color: #003C71;
        color:white;
     }*/
-    hr{
-    margin-top: -3px
-    }
+   .brdr-bottom{
+        border-bottom: 1px solid black;
+        margin-bottom: 6px;
+   }
+   .packaging{
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 20px;
+   }
     #error{
         height:45%;
         display:flex;
@@ -1319,7 +1324,6 @@
 
     .scan-input {
         height: 44px;
-        margin-left: 22px;
         border-radius: 10px;
         border: 1px solid;
         font-size: 20px;
@@ -1328,29 +1332,25 @@
 
     #productLabelInput {
         border-radius: 7px;
-        width: 146%;
-        height: 30px;
+        width: 100%;
     }
 
 
-    #productLabelSpec {
-        border-radius: 7px;
-        margin-left: 112px;
-        width: 93%;
-        height: 30px;
-    }
-
+   #productLabelSpec {
+    border-radius: 7px;
+    width: 100%;
+}
 
     #submitBtn {
-        border-radius: 8px;
-        margin-left: 90px;
-        height: 30px;
-        margin-bottom: 5px;
-    }
+    border-radius: 8px;
+    display: block;
+    margin-left: auto;
+    height:100%;
+}
 
 
     .inpt1 {
-        margin-bottom: 4px
+        margin-bottom: 7px
     }
     .scanning-next-text {
         padding-left: 16px;
@@ -1577,7 +1577,7 @@
             //    inPassScenario = false;
             //    resetPassScenario();
             //}
-            var targetUrl = "/Home/WorkOrderScan";
+            var targetUrl = "https://localhost:7157/WorkOrderScan";
             window.location.href = targetUrl;
 
         });
@@ -1740,7 +1740,7 @@
         var productLabel = document.getElementById("productLabelInput").value;
         var productLabelSpec = document.getElementById("productLabelSpec").value;
 
-        var apiUrl = "Home/SaveProductLabel";
+        var apiUrl = "https://localhost:7157/SaveProductLabel";
         beforeToDuringScan();
         $.ajax({
             url: apiUrl,
@@ -1763,7 +1763,7 @@
         var productLabel = document.getElementById("productLabelInput").value;
         var productLabelSpec = document.getElementById("productLabelSpec").value;
 
-        var apiUrl = "Home/SaveProductLabel";
+        var apiUrl = "https://localhost:7157/SaveProductLabel";
         beforeToDuringScan();
         $.ajax({
             url: apiUrl,
