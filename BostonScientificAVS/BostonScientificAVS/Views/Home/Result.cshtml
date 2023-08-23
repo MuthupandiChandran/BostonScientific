@@ -440,7 +440,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-8 scn">
+                    <div class="col-md-12 scn">
                         <div class="col-md-6 center">
                             <div id="scanning-icon-div" class="scanning-icon">
                                 <div id="before-scan-image" class="scanning-gif ">
@@ -1709,7 +1709,7 @@
         var productLabel = document.getElementById("productLabelInput").value;
         var productLabelSpec = document.getElementById("productLabelSpec").value;
 
-        var apiUrl = "Home/SaveProductLabel";
+        var apiUrl = "https://localhost:7157/SaveProductLabel";
         beforeToDuringScan();
         $.ajax({
             url: apiUrl,
