@@ -18,11 +18,14 @@ namespace BostonScientificAVS.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly DataContext _dataContext;
+        private readonly WebSocketHandler _websocket;
         
-        public HomeController(ILogger<HomeController> logger,DataContext dataContext)
+        public HomeController(ILogger<HomeController> logger,DataContext dataContext,WebSocketHandler websocket)
         {
             _logger = logger;
             _dataContext = dataContext;
+            _websocket = websocket;
+            
         }
 
         public IActionResult Privacy()
@@ -184,9 +187,13 @@ namespace BostonScientificAVS.Controllers
                 if (result.allMatch)
                 {
                     transaction.Result = "Pass";
-                } else
+                    await _websocket.SendMessageToSockets("Verification passed!", result); // Send success WebSocket message
+
+                }
+                else
                 {
                     transaction.Result = "Fail";
+                    await _websocket.SendMessageToSockets("Verification failed!", result); // Send failure WebSocket message                  
                 }
                 var empId = User.Claims.FirstOrDefault(c => c.Type == "EmpID")?.Value;
                 var user = _dataContext.Users.Where(x => x.EmpID == empId).FirstOrDefault();

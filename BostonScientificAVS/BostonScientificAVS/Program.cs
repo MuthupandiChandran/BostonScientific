@@ -36,6 +36,7 @@ builder.Services.AddDbContext<DataContext>(options =>
 });
 builder.Services.AddScoped<ItemService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<WebSocketHandler>();   
 
 var app = builder.Build();
 
