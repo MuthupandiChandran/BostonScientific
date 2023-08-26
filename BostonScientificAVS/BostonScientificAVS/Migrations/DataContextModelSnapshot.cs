@@ -111,7 +111,7 @@ namespace BostonScientificAVS.Migrations
                         .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("Carton_Use_By")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("DB_Catalog_Num")
                         .HasMaxLength(30)

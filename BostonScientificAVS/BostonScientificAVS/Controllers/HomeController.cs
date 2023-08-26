@@ -132,7 +132,7 @@ namespace BostonScientificAVS.Controllers
 
             if (transaction != null)
             {
-               
+
                 Result result = new Result();
                 Mismatches mismatches = new Mismatches();
                 Lhs lhsData = new Lhs();
@@ -222,7 +222,7 @@ namespace BostonScientificAVS.Controllers
                 TempData["ErrorMessage"] = "Invalid barcodes. One or both of the scanned barcodes are not valid.";
                 return Json(new { success = false, errorMessage = TempData["ErrorMessage"] });
             }
-        }
+        }      
         public IActionResult HomeScreen()
         {
             bool myBooleanValue = false; // Default value in case TempData["MyBoolean"] is not set
@@ -264,6 +264,244 @@ namespace BostonScientificAVS.Controllers
         {
             return View();
         }
+        public IActionResult WorkOrderBarcodeScan()
+        {
+            return View();
+        }
+        public IActionResult CartonLabelScan()
+        {
+            return View();
+        }
+        public IActionResult ProductLabelBarcodeScan()
+        {
+            return View();
+        }
+        public IActionResult IFU()
+        {
+            return View();
+        }
+        public async Task<IActionResult> FinalResult()
+        {
+            var transaction = await _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefaultAsync();
+
+            if (transaction != null)
+            {
+
+                Result result = new Result();
+                Mismatches mismatches = new Mismatches();
+                LHS lhsdata = new LHS();
+                RHS rhsdata = new RHS();
+                lhsdata.cartonGTIN = transaction.Carton_Label_GTIN;
+                lhsdata.woLotNo = transaction.WO_Lot_Num;
+                lhsdata.cartonLabelSpec = transaction.Carton_Label_Spec;
+                lhsdata.cartonUseBy = transaction.Carton_Use_By.ToString();
+                lhsdata.woCatalogNumber = transaction.WO_Catalog_Num;
+                lhsdata.cartonLotNo = transaction.Carton_Lot_Num;
+                lhsdata.scannedIFU = transaction.Scanned_IFU;
+
+                rhsdata.dbGTIN = transaction.DB_GTIN;
+                rhsdata.productLabelGTIN = transaction.Product_Label_GTIN;
+                rhsdata.productLotNo = transaction.Product_Lot_Num;
+                rhsdata.dbLabelSpec = transaction.DB_Label_Spec;
+                rhsdata.calculateUseBy = transaction.Calculated_Use_By.ToString();
+                rhsdata.dbCatalogNo = transaction.DB_Catalog_Num;
+                rhsdata.dbIFU = transaction.DB_IFU;
+                rhsdata.productUseBy = transaction.Product_Use_By.ToString();
+
+
+                result.rhsdata = rhsdata;
+                result.lhsdata = lhsdata;
+                result.allMatch = true;
+                if(transaction.Carton_Label_GTIN!=transaction.DB_GTIN||transaction.Carton_Label_GTIN!=transaction.Product_Label_GTIN||transaction.WO_Lot_Num!=transaction.Product_Lot_Num||transaction.Carton_Label_Spec!=transaction.DB_Label_Spec||transaction.Carton_Use_By!=transaction.Calculated_Use_By||transaction.WO_Catalog_Num!=transaction.DB_Catalog_Num||transaction.Carton_Lot_Num!=transaction.Product_Lot_Num||transaction.Scanned_IFU!=transaction.DB_IFU||transaction.Carton_Use_By!=transaction.Product_Use_By)
+                {
+                    result.allMatch = false;
+                }
+                if (!result.allMatch)
+                {
+                    if (transaction.DB_GTIN != transaction.Carton_Label_GTIN)
+                    {
+                        mismatches.GTINMismatch = true;
+                    }
+                    if (transaction.Carton_Label_GTIN != transaction.Product_Label_GTIN)
+                    {
+                        mismatches.gtinmismatches = true;
+                    }
+                    if (transaction.WO_Lot_Num != transaction.Product_Lot_Num)
+                    {
+                        mismatches.lotNoMismatch = true;
+                    }
+                    if (transaction.Carton_Label_Spec != transaction.DB_Label_Spec)
+                    {
+                        mismatches.labelSpecMismatch = true;
+                    }
+                    if (transaction.Carton_Use_By != transaction.Calculated_Use_By)
+                    {
+                        mismatches.calculatedUseByMismatch = true;
+                    }
+
+                    if (transaction.WO_Catalog_Num != transaction.DB_Catalog_Num)
+                    {
+                        mismatches.catalogNumMismatch = true;
+                    }
+                    if (transaction.Carton_Lot_Num != transaction.Product_Lot_Num)
+                    {
+                        mismatches.LotNumberMisMatch = true;
+                    }
+                    if (transaction.Scanned_IFU != transaction.DB_IFU)
+                    {
+                        mismatches.ifumismatches = true;
+                    }
+                    if (transaction.Carton_Use_By != transaction.Product_Use_By)
+                    {
+                        mismatches.CalculatedUseByMismatch = true;
+                    }
+                }
+                result.mismatches = mismatches;
+                if (result.allMatch)
+                {
+                    transaction.Result = "Pass";                 
+
+                }
+                else
+                {
+                    transaction.Result = "Fail";                 
+                }
+               
+                return View(result);
+            }
+            else
+            {
+                
+                TempData["ErrorMessage"] = "Invalid barcodes. One or both of the scanned barcodes are not valid.";
+                return Json(new { success = false, errorMessage = TempData["ErrorMessage"] });
+            }
+        }
+        [HttpPost]
+        public IActionResult SaveWorkOrderBarcode(string input)
+        {
+            string[] barcodeParts = input.Split('_');
+            if (barcodeParts.Length == 3 && barcodeParts.All(part => !string.IsNullOrEmpty(part.Trim())))
+            {
+
+                Transaction transaction = new Transaction();
+                transaction.WO_Catalog_Num = barcodeParts[0];
+                DateTime date = DateTime.ParseExact(barcodeParts[2], "MMddyyyy", null);
+                transaction.WO_Mfg_Date = date;
+                transaction.WO_Lot_Num = barcodeParts[3];
+
+                _dataContext.Transaction.Add(transaction);
+                _dataContext.SaveChanges();
+
+                TempData["WorkOrderLotNo"] = transaction.WO_Lot_Num;
+                return RedirectToAction("CartonLabelScan", "Home");
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Work Order Seems To be Invalid. Please retry again";
+                return View("WorkOrderBarcodeScan");
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> SaveCartonLabel(string input1, string input2)
+        {
+            if (ModelState.IsValid)
+            {
+                string[] barcodeParts = input1.Split('_');
+                var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
+                if (barcodeParts.Length >= 3 && barcodeParts.All(part => !string.IsNullOrEmpty(part.Trim())))
+                {
+                    transaction.Carton_Label_GTIN= barcodeParts[0];
+                    DateTime dateTime = DateTime.ParseExact(barcodeParts[2], "yyMMdd", null);
+                    transaction.Carton_Use_By = dateTime;
+                    transaction.Carton_Lot_Num = barcodeParts[3];
+
+
+                    ItemMaster item = await _dataContext.ItemMaster.FirstOrDefaultAsync(i => i.GTIN == transaction.Product_Label_GTIN);
+                    if (item != null)
+                    {
+                        // Assign values from ItemMaster
+                        transaction.DB_GTIN = item.GTIN;
+                        transaction.DB_Catalog_Num = item.Catalog_Num;
+                        DateTime workOrderDT = (DateTime)transaction.WO_Mfg_Date;
+                        transaction.Calculated_Use_By = workOrderDT.AddDays((double)item.Shelf_Life);
+                        transaction.DB_Label_Spec = item.Label_Spec;
+                        transaction.DB_IFU = item.IFU;
+                    }
+                    else
+                    {
+                        return RedirectToAction("WorkOrderError", "Home");
+                    }
+
+                    transaction.Carton_Label_Spec = input2;
+                }
+                await _dataContext.SaveChangesAsync();
+                return RedirectToAction("ProductLabelBarcodeScan","Home");
+            }
+            else
+            {
+                return RedirectToAction("WorkOrderError", "Home");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SaveProductLabelBarcode(string productLabel,string productLabelSpec)
+        {
+            if (ModelState.IsValid)
+            {
+
+                string pattern = @"\((\d+)\)"; // Matches two digits within parentheses
+
+                string[] barcodeParts = Regex.Split(productLabel, pattern);
+                var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
+                if (barcodeParts.Length >= 3 && barcodeParts.All(part => !string.IsNullOrEmpty(part.Trim())))
+                {
+                    transaction.Product_Label_GTIN = barcodeParts[2];
+                    DateTime dateTime = DateTime.ParseExact(barcodeParts[4], "yyMMdd", null);
+                    transaction.Product_Use_By = dateTime;
+                    transaction.Product_Lot_Num = barcodeParts[6];
+
+
+                    ItemMaster item = await _dataContext.ItemMaster.FirstOrDefaultAsync(i => i.GTIN == transaction.Product_Label_GTIN);
+                    if (item != null)
+                    {
+                        // Assign values from ItemMaster
+                        transaction.DB_GTIN = item.GTIN;
+                        transaction.DB_Catalog_Num = item.Catalog_Num;
+                        transaction.DB_Label_Spec = item.Label_Spec;
+                    }
+                    else
+                    {
+                        return RedirectToAction("WorkOrderError", "Home");
+                    }
+
+                    transaction.Carton_Label_Spec = productLabelSpec;
+                }
+                await _dataContext.SaveChangesAsync();
+                return RedirectToAction("IFU");
+            }
+            else
+            {
+                return RedirectToAction("WorkOrderError", "Home");
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> SaveIFU (string input)
+        {
+            if (!string.IsNullOrEmpty(input)) 
+            {
+                var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
+                transaction.Scanned_IFU = input;
+                
+            }
+            else
+            {
+                return RedirectToAction("WorkOrderError", "Home");
+            }
+            await _dataContext.SaveChangesAsync();
+            return RedirectToAction("FinalResult");
+        }
+
+
 
         public IActionResult WorkOrderError()
         {
