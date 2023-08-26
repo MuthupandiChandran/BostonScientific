@@ -1572,7 +1572,7 @@
             //    inPassScenario = false;
             //    resetPassScenario();
             //}
-            var targetUrl = "Home/WorkOrderScan";
+            var targetUrl = "/WorkOrderScan";
             window.location.href = targetUrl;
 
         });
@@ -1735,7 +1735,7 @@
         var productLabel = document.getElementById("productLabelInput").value;
         var productLabelSpec = document.getElementById("productLabelSpec").value;
 
-        var apiUrl = "Home/SaveProductLabel";
+        var apiUrl = "/SaveProductLabel";
         beforeToDuringScan();
         $.ajax({
             url: apiUrl,
