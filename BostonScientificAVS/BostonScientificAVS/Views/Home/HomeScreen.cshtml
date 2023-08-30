@@ -161,7 +161,6 @@
 
 <script>
     const myElement = document.getElementById('hoursInput');
-    console.log(myElement);
     function startTimer(duration) {
     var timerDisplay = document.getElementById("timer");
 
@@ -188,22 +187,22 @@
     }, 1000);
 }
 
-// Set the initial expiration time in JavaScript (2 hours in this example)
-var hoursInput = myElement.dataset.hoursInput;; // Replace this with the desired hours from your input*/
-var expirationTime;
-if (hoursInput == 0) {
-expirationTime = localStorage.getItem("expiration_time");
-} else {
- expirationTime = Math.floor(Date.now() / 1000) + hoursInput * 3600;
-// Store the expiration time in localStorage
-localStorage.setItem("expiration_time", expirationTime);
-}
+    // Set the initial expiration time in JavaScript (2 hours in this example)
+    var hoursInput = myElement.dataset.hoursInput;; // Replace this with the desired hours from your input*/
+    var expirationTime;
+    if (hoursInput == 0) {
+    expirationTime = localStorage.getItem("expiration_time");
+    } else {
+     expirationTime = Math.floor(Date.now() / 1000) + hoursInput * 3600;
+    // Store the expiration time in localStorage
+    localStorage.setItem("expiration_time", expirationTime);
+    }
 
 
 
 
-// Get the expiration time from localStorage
-var currentTime = Math.floor(Date.now() / 1000);
-var remainingTime = expirationTime - currentTime;
-startTimer(remainingTime);
+    // Get the expiration time from localStorage
+    var currentTime = Math.floor(Date.now() / 1000);
+    var remainingTime = expirationTime - currentTime;
+    startTimer(remainingTime);
 </script>
