@@ -30,12 +30,12 @@ namespace BostonScientificAVS.Controllers
                 }
 
 
-                ////ClaimsPrincipal claimUser = HttpContext.User;
+                ClaimsPrincipal claimUser = HttpContext.User;
 
-                //if (claimUser.Identity.IsAuthenticated)
-                //{
-                //    return RedirectToAction("HomeScreen", "Home");
-                //}
+                if (claimUser.Identity.IsAuthenticated)
+                {
+                    return RedirectToAction("HomeScreen", "Home");
+                }
                 return View();
             }
 
@@ -81,6 +81,7 @@ namespace BostonScientificAVS.Controllers
                 }
             }
             catch (Exception e)
+
             {
                 Console.WriteLine(e);
                 return BadRequest();
