@@ -215,7 +215,6 @@ namespace BostonScientificAVS.Controllers
 
                 result.workOrderInfo = woi;
                 return Json(result);
-
             }
             else
             {

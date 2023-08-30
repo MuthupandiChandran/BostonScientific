@@ -11,7 +11,6 @@ namespace BostonScientificAVS.Models
 
     }
 
-
     public class Mismatches
     {
        public bool GTINMismatch { get; set; }
@@ -20,7 +19,6 @@ namespace BostonScientificAVS.Models
        public bool calculatedUseByMismatch { get; set; }
        public bool catalogNumMismatch { get; set; }
       
-
     }
   
     public class Rhs
