@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Entity;
 using Context;
 using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Identity;
 
 namespace BostonScientificAVS.Controllers
 {
@@ -29,12 +30,12 @@ namespace BostonScientificAVS.Controllers
                 }
 
 
-                ClaimsPrincipal claimUser = HttpContext.User;
+                //ClaimsPrincipal claimUser = HttpContext.User;
 
-                if (claimUser.Identity.IsAuthenticated)
-                {
-                    return RedirectToAction("HomeScreen", "Home");
-                }
+                //if (claimUser.Identity.IsAuthenticated)
+                //{
+                //    return RedirectToAction("HomeScreen", "Home");
+                //}
                 return View();
             }
 
@@ -52,37 +53,26 @@ namespace BostonScientificAVS.Controllers
         public async Task<IActionResult> Login(ApplicationUser user)
         {
             try
-            {             
-                List<ApplicationUser> validUser = _context.Users.Where(x => x.EmpID == user.EmpID).ToList();
-
-                if (validUser.Count > 0)
+            {
+                //List<ApplicationUser> validUser = _context.Users.Where(x => x.EmpID == user.EmpID).First<ApplicationUser>();
+                bool validUser = _context.Users.Any(x => x.EmpID == user.EmpID);
+                ApplicationUser loggedInUser = _context.Users.Where(x => x.EmpID == user.EmpID).First<ApplicationUser>();
+                if (validUser)
                 {
-                    ApplicationUser userInfo = validUser[0];
-                    List<Claim> claims = new List<Claim>()
-                {
-                    new Claim(ClaimTypes.NameIdentifier, userInfo.UserFullName),
-                    new Claim(ClaimTypes.Name, userInfo.UserFullName),
-                     new Claim("EmpID", userInfo.EmpID),
-                    new Claim(ClaimTypes.Role, userInfo.UserRole.ToString())
-                };
-
-                    ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims,
-                    CookieAuthenticationDefaults.AuthenticationScheme);
-
-                    // Additional properties you can add
-
-                    AuthenticationProperties properties = new AuthenticationProperties()
-                    {
-                        AllowRefresh = true,
-                        IsPersistent = true
-                    };
-                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), properties);
-
-                    // instructing the controller that this is the call after immediate login
+                    var userRole = loggedInUser.UserRole.ToString();
                     bool afterLogin = true;
+                    var authClaims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, loggedInUser.UserFullName),
+                        new Claim(ClaimTypes.Role, userRole),
+                        new Claim("EmpID",loggedInUser.EmpID)
+
+                    };
+                    var claimsIdentity = new ClaimsIdentity(authClaims, "Login");
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
                     TempData["AfterLogin"] = afterLogin;
-                    HttpContext.Session.SetString("CurrentUserName", userInfo.UserFullName);
                     return RedirectToAction("HomeScreen", "Home");
+                    //return Redirect(ReturnUrl == null ? "/Home/HomeScreen" : ReturnUrl);
                 }
                 else
                 {
