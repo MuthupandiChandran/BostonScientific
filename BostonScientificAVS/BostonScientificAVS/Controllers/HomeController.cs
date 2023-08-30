@@ -187,13 +187,13 @@ namespace BostonScientificAVS.Controllers
                 if (result.allMatch)
                 {
                     transaction.Result = "Pass";
-                    await _websocket.SendMessageToSockets("Verification passed!", result); // Send success WebSocket message
+                    /*await _websocket.SendMessageToSockets("Verification passed!", result);*/ // Send success WebSocket message
 
                 }
                 else
                 {
                     transaction.Result = "Fail";
-                    await _websocket.SendMessageToSockets("Verification failed!", result); // Send failure WebSocket message                  
+                   /* await _websocket.SendMessageToSockets("Verification failed!", result);*/ // Send failure WebSocket message                  
                 }
                 var empId = User.Claims.FirstOrDefault(c => c.Type == "EmpID")?.Value;
                 var user = _dataContext.Users.Where(x => x.EmpID == empId).FirstOrDefault();
@@ -212,9 +212,10 @@ namespace BostonScientificAVS.Controllers
                 woi.passedCount = workOrder.Where(x => x.Result == "Pass").Count();
                 woi.failedCount = woi.totalCount - woi.passedCount;
                 woi.scannedCount = workOrder.Where(x => x.Rescan_Initated == true).Count();
-                
+
                 result.workOrderInfo = woi;
                 return Json(result);
+
             }
             else
             {
@@ -274,23 +275,28 @@ namespace BostonScientificAVS.Controllers
         }
         public IActionResult ProductLabelBarcodeScan()
         {
-            return View();
+            workOrderInfo woi = new workOrderInfo();
+            var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
+            var workOrder = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Result != null).Distinct();
+            woi.totalCount = workOrder.Count();
+            woi.passedCount = workOrder.Where(x => x.Result == "Pass").Count();
+            woi.failedCount = woi.totalCount - woi.passedCount;
+            woi.scannedCount = workOrder.Where(x => x.Rescan_Initated == true).Count();
+            woi.workOrderLotNo = transaction.WO_Lot_Num;
+            return View(woi);
         }
-        public IActionResult IFU()
-        {
-            return View();
-        }
+       
         public async Task<IActionResult> FinalResult()
         {
             var transaction = await _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefaultAsync();
 
             if (transaction != null)
             {
-
-                Result result = new Result();
-                Mismatches mismatches = new Mismatches();
+                FinalResult result = new FinalResult();
+                mismatchess mismatches = new mismatchess();
                 LHS lhsdata = new LHS();
                 RHS rhsdata = new RHS();
+                lhsdata.cartonGTIN = transaction.Carton_Label_GTIN;
                 lhsdata.cartonGTIN = transaction.Carton_Label_GTIN;
                 lhsdata.woLotNo = transaction.WO_Lot_Num;
                 lhsdata.cartonLabelSpec = transaction.Carton_Label_Spec;
@@ -298,6 +304,7 @@ namespace BostonScientificAVS.Controllers
                 lhsdata.woCatalogNumber = transaction.WO_Catalog_Num;
                 lhsdata.cartonLotNo = transaction.Carton_Lot_Num;
                 lhsdata.scannedIFU = transaction.Scanned_IFU;
+                lhsdata.cartonUseBy = transaction.Carton_Use_By.ToString();
 
                 rhsdata.dbGTIN = transaction.DB_GTIN;
                 rhsdata.productLabelGTIN = transaction.Product_Label_GTIN;
@@ -305,12 +312,13 @@ namespace BostonScientificAVS.Controllers
                 rhsdata.dbLabelSpec = transaction.DB_Label_Spec;
                 rhsdata.calculateUseBy = transaction.Calculated_Use_By.ToString();
                 rhsdata.dbCatalogNo = transaction.DB_Catalog_Num;
+                rhsdata.productLotNo = transaction.Product_Lot_Num;
                 rhsdata.dbIFU = transaction.DB_IFU;
                 rhsdata.productUseBy = transaction.Product_Use_By.ToString();
 
 
-                result.rhsdata = rhsdata;
-                result.lhsdata = lhsdata;
+                result.rhsData = rhsdata;
+                result.lhsData = lhsdata;
                 result.allMatch = true;
                 if(transaction.Carton_Label_GTIN!=transaction.DB_GTIN||transaction.Carton_Label_GTIN!=transaction.Product_Label_GTIN||transaction.WO_Lot_Num!=transaction.Product_Lot_Num||transaction.Carton_Label_Spec!=transaction.DB_Label_Spec||transaction.Carton_Use_By!=transaction.Calculated_Use_By||transaction.WO_Catalog_Num!=transaction.DB_Catalog_Num||transaction.Carton_Lot_Num!=transaction.Product_Lot_Num||transaction.Scanned_IFU!=transaction.DB_IFU||transaction.Carton_Use_By!=transaction.Product_Use_By)
                 {
@@ -320,7 +328,7 @@ namespace BostonScientificAVS.Controllers
                 {
                     if (transaction.DB_GTIN != transaction.Carton_Label_GTIN)
                     {
-                        mismatches.GTINMismatch = true;
+                        mismatches.gtinmismatch = true;
                     }
                     if (transaction.Carton_Label_GTIN != transaction.Product_Label_GTIN)
                     {
@@ -336,7 +344,7 @@ namespace BostonScientificAVS.Controllers
                     }
                     if (transaction.Carton_Use_By != transaction.Calculated_Use_By)
                     {
-                        mismatches.calculatedUseByMismatch = true;
+                        mismatches.calculatedUseByMismatches = true;
                     }
 
                     if (transaction.WO_Catalog_Num != transaction.DB_Catalog_Num)
@@ -356,7 +364,7 @@ namespace BostonScientificAVS.Controllers
                         mismatches.CalculatedUseByMismatch = true;
                     }
                 }
-                result.mismatches = mismatches;
+                
                 if (result.allMatch)
                 {
                     transaction.Result = "Pass";                 
@@ -366,8 +374,28 @@ namespace BostonScientificAVS.Controllers
                 {
                     transaction.Result = "Fail";                 
                 }
-               
-                return View(result);
+                var empId = User.Claims.FirstOrDefault(c => c.Type == "EmpID")?.Value;
+                var user = _dataContext.Users.Where(x => x.EmpID == empId).FirstOrDefault();
+
+                if (user != null)
+                {
+                    transaction.User = user.Id + "";
+                }
+                DateTime currentDateTime = DateTime.Now;
+                transaction.Date_Time = currentDateTime.ToString();
+                await _dataContext.SaveChangesAsync();
+
+                workOrderInfo woi = new workOrderInfo();
+                var workOrder = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Result != null).Distinct();
+                woi.totalCount = workOrder.Count();
+                woi.passedCount = workOrder.Where(x => x.Result == "Pass").Count();
+                woi.failedCount = woi.totalCount - woi.passedCount;
+                woi.scannedCount = workOrder.Where(x => x.Rescan_Initated == true).Count();
+
+                result.workOrderInfo = woi;
+                result.mismatches = mismatches;
+                var objdata = result;
+                return Json(objdata);
             }
             else
             {
@@ -380,7 +408,7 @@ namespace BostonScientificAVS.Controllers
         public IActionResult SaveWorkOrderBarcode(string input)
         {
             string[] barcodeParts = input.Split('_');
-            if (barcodeParts.Length == 3 && barcodeParts.All(part => !string.IsNullOrEmpty(part.Trim())))
+            if (barcodeParts.Length == 4 && barcodeParts.All(part => !string.IsNullOrEmpty(part.Trim())))
             {
 
                 Transaction transaction = new Transaction();
@@ -401,22 +429,24 @@ namespace BostonScientificAVS.Controllers
                 return View("WorkOrderBarcodeScan");
             }
         }
-        [HttpPost]
+        [HttpPost("/SaveCartonLabel")]
         public async Task<IActionResult> SaveCartonLabel(string input1, string input2)
         {
             if (ModelState.IsValid)
             {
-                string[] barcodeParts = input1.Split('_');
+
+                string pattern = @"\((\d+)\)";
+                string[] barcodeParts = Regex.Split(input1, pattern);
                 var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
-                if (barcodeParts.Length >= 3 && barcodeParts.All(part => !string.IsNullOrEmpty(part.Trim())))
+                if (barcodeParts.Length >=3)
                 {
-                    transaction.Carton_Label_GTIN= barcodeParts[0];
-                    DateTime dateTime = DateTime.ParseExact(barcodeParts[2], "yyMMdd", null);
+                    transaction.Carton_Label_GTIN= barcodeParts[2];
+                    DateTime dateTime = DateTime.ParseExact(barcodeParts[4], "yyMMdd", null);
                     transaction.Carton_Use_By = dateTime;
-                    transaction.Carton_Lot_Num = barcodeParts[3];
+                    transaction.Carton_Lot_Num = barcodeParts[6];
 
 
-                    ItemMaster item = await _dataContext.ItemMaster.FirstOrDefaultAsync(i => i.GTIN == transaction.Product_Label_GTIN);
+                    ItemMaster item = await _dataContext.ItemMaster.FirstOrDefaultAsync(i => i.GTIN == transaction.Carton_Label_GTIN);
                     if (item != null)
                     {
                         // Assign values from ItemMaster
@@ -432,9 +462,10 @@ namespace BostonScientificAVS.Controllers
                         return RedirectToAction("WorkOrderError", "Home");
                     }
 
-                    transaction.Carton_Label_Spec = input2;
+                    transaction.Carton_Label_Spec = input2;                  
                 }
                 await _dataContext.SaveChangesAsync();
+                TempData["WorkOrderLotNo"] = transaction.WO_Lot_Num;
                 return RedirectToAction("ProductLabelBarcodeScan","Home");
             }
             else
@@ -443,17 +474,17 @@ namespace BostonScientificAVS.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<IActionResult> SaveProductLabelBarcode(string productLabel,string productLabelSpec)
+        [HttpPost("/SaveProductLabelBarcode")]
+        public async Task<IActionResult>SaveProductLabelBarcode(string input1, string input2,string input3)
         {
             if (ModelState.IsValid)
             {
 
                 string pattern = @"\((\d+)\)"; // Matches two digits within parentheses
 
-                string[] barcodeParts = Regex.Split(productLabel, pattern);
+                string[] barcodeParts = Regex.Split(input1, pattern);
                 var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
-                if (barcodeParts.Length >= 3 && barcodeParts.All(part => !string.IsNullOrEmpty(part.Trim())))
+                if (barcodeParts.Length >= 3)
                 {
                     transaction.Product_Label_GTIN = barcodeParts[2];
                     DateTime dateTime = DateTime.ParseExact(barcodeParts[4], "yyMMdd", null);
@@ -474,35 +505,18 @@ namespace BostonScientificAVS.Controllers
                         return RedirectToAction("WorkOrderError", "Home");
                     }
 
-                    transaction.Carton_Label_Spec = productLabelSpec;
+                    transaction.Carton_Label_Spec = input2;
+                    transaction.Scanned_IFU = input3;
                 }
                 await _dataContext.SaveChangesAsync();
-                return RedirectToAction("IFU");
+                return RedirectToAction("FinalResult");
             }
             else
             {
                 return RedirectToAction("WorkOrderError", "Home");
             }
         }
-        [HttpPost]
-        public async Task<IActionResult> SaveIFU (string input)
-        {
-            if (!string.IsNullOrEmpty(input)) 
-            {
-                var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
-                transaction.Scanned_IFU = input;
-                
-            }
-            else
-            {
-                return RedirectToAction("WorkOrderError", "Home");
-            }
-            await _dataContext.SaveChangesAsync();
-            return RedirectToAction("FinalResult");
-        }
-
-
-
+        
         public IActionResult WorkOrderError()
         {
             return View();

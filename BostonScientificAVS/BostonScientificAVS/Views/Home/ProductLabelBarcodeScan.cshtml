@@ -1,178 +1,705 @@
-﻿<div class="container1">
-    <div class="navigation-header-items">
-        <div class="dropdown">
-            <button class="custom-config-button" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <img class="avatar-image-size" src="~/assets/images/user_avatar.png" />
-                <span class="user-name-text">Hello, @User.Identity.Name | @User.Claims.FirstOrDefault(c => c.Type == "EmpID")?.Value</span>
-            </button>
-            <div class="dropdown-menu custom-config-dropdown" aria-labelledby="dropdownMenuButton">
+﻿@model BostonScientificAVS.Models.workOrderInfo
+<partial name="_Loader" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Add Bootstrap CSS link -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+</head>
 
-                @if (User.IsInRole("Admin"))
-                {
-                    <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Users">Manage Users</a>
-                    <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Items">Manage Database</a>
-                    <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="TransactionTable">Transaction</a>
-                }
-                <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Login" asp-action="Logout">Logout</a>
-            </div>
-        </div>
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <div class="dropdown">
+                <button class="custom-config-button" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <img class="avatar-image-size" src="~/assets/images/user_avatar.png" />
+                    <span class="user-name-text">Hello, @User.Identity.Name | @User.Claims.FirstOrDefault(c => c.Type == "EmpID")?.Value</span>
+                </button>
+                <div class="dropdown-menu custom-config-dropdown" aria-labelledby="dropdownMenuButton">
 
-        <div class="navigation-back">
-            <div class="session-time">
-                <h6 class="session-expires-text text-color-blue">Your Session Expires On</h6>
-                <h6 id="timer" class="session-expire-time text-color-blue"></h6>
-            </div>
-            <div>
-                <a class="button" href="javascript:history.go(-1)"><img class="back-button-img" src="/assets/images/back-arrow.png" /><span class="back-text">Back</span></a>
-            </div>
-        </div>
-
-    </div>
-    <div class="main-container row pt-15" style="padding-top: 12%;">
-        <div class="work-order-scan">
-            <div>
-                <h6 class="first-text">Step 1</h6>
-            </div>
-            <div>
-                <h6 class="second-text">Place The Work Order Label</h6>
-                <h6 class="second-text">Under The Scanner</h6>
-            </div>
-            <div class="scanning-container">
-                <div class="scanning-text-div">
-                    <a class="scanning" asp-area="" asp-controller="Home" asp-action="Result"><span class="scanning-text">Scanning...</span></a>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Users">Manage Users</a>
+                        <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Items">Manage Database</a>
+                        <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="TransactionTable">Transaction</a>
+                    }
+                    <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Login" asp-action="Logout">Logout</a>
                 </div>
+            </div>
 
-                <form id="workOrderForm" asp-controller="Home" asp-action="SaveProductLabelBarcode" method="post">
-                    <div class="work-order-scan-submit">
-                        <div>
-                            <input class="scan-input" placeholder="Enter The Product Details" name="input1" id="input1" />
+            <div class="navigation-back">
+                <div class="session-time">
+                    <h6 class="session-expires-text text-color-blue">Your Session Expires On</h6>
+                    <h6 id="timer" class="session-expire-time text-color-blue"></h6>
+                </div>
+                <div>
+                    <a class="button" href="javascript:history.go(-1)" @*asp-area="" asp-controller="Home" asp-action="WorkOrderScan"*@><img class="back-button-img" src="/assets/images/back-arrow.png" /><span class="back-text">Back</span></a>
+                </div>
+            </div>
+
+        </nav>
+        <div class="brdr-bottom"></div>
+        <div class="packaging">Boxing Processing</div>
+        <div class="work-order-scan-submit">
+            <div class="row inpt1">
+                <div class="col-md-8">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <input id="productLabelInput" class="scan-input" placeholder="Product label" name="input" />
                         </div>
-                        <div>
-                            <input class="scan-input" placeholder="Product Label Specification" name="input2" id="input2" />
+                        <div class="col-md-3">
+                            <input id="productLabelSpec" class="scan-input" placeholder="Label Spec" name="input1" />
                         </div>
-                        <div>
-                            <button type="submit" class="login-button" id="submitBtn">
+                        <div class="col-md-3">
+                            <input id="ifu" class="scan-input" placeholder="Ifu Value" name="input2"/>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="login-button btn btn-primary" id="submitBtn">
                                 <span class="login-text">Scan ID/Submit</span>
                             </button>
                         </div>
                     </div>
-                </form>
-                <div class="text-danger">
-                    @if (TempData.ContainsKey("ErrorMessage"))
-                    {
-                        <span>@TempData["ErrorMessage"]</span>
-                        TempData.Remove("ErrorMessage");
-                    }
                 </div>
             </div>
         </div>
+        <div class="full-div">
+            <div class="row" id="first-row">            
+                <div class="col-md-8" id="first-column">
+                    <div class="count-data">
+                        <div class="p-10">
+                            <h6 class="processing-lot-text">Processing Lot No. : <span id="work-order-lot-no" class="processing-lot-no">@Model.workOrderLotNo</span></h6>
+                        </div>
+                        <div class="data-stat">
+                            <div class="data-card p-10" id="total">
+                                <div class="data-heading">
+                                    <h6 class="data-heading-text">Total</h6>
+
+                                </div>
+                                <hr style="color: #003C71;" />
+                                <div class="data-val">
+                                    <h6 id="total-val" class="data-val-text">@Model.totalCount</h6>
+                                </div>
+                            </div>
+                            <div class="data-card p-10" id="pass">
+                                <div class="data-heading">
+                                    <div>
+                                        <h6 class="data-heading-text">Passed</h6>
+                                    </div>
+                                    <div>
+                                        <img src="/assets/images/passed-icon.png" class="pass-icon" />
+                                    </div>
+                                </div>
+                                <hr style="color: #003C71;" />
+                                <div class="data-val">
+                                    <h6 id="total-passed-val" class="data-val-text">@Model.passedCount</h6>
+                                </div>
+                            </div>
+                            <div class="data-card p-10" id="fail">
+                                <div class="data-heading">
+                                    <div>
+                                        <h6 class="data-heading-text">Failed</h6>
+                                    </div>
+                                    <div>
+                                        <img src="/assets/images/failed-icon.png" class="pass-icon" />
+                                    </div>
+                                </div>
+                                <hr style="color: #003C71;" />
+                                <div class="data-val">
+                                    <h6 id="total-failed-val" class="data-val-text">@Model.failedCount</h6>
+                                </div>
+                            </div>
+                            <div class="data-card p-10" id="rescan">
+                                <div class="data-heading">
+                                    <div>
+                                        <h6 class="data-heading-text">Rescanned</h6>
+                                    </div>
+                                    <div>
+                                        <img src="/assets/images/approved-icon.png" class="pass-icon" />
+                                    </div>
+                                </div>
+                                <hr style="color: #003C71;" />
+                                <div class="data-val">
+                                    <h6 id="total-rescanned-val" class="data-val-text">@Model.scannedCount</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 scn">
+                        <div class="col-md-6 center">
+                            <div id="scanning-icon-div" class="scanning-icon">
+                                <div id="before-scan-image" class="scanning-gif ">
+                                    <img class="barcode-img-size" src="/assets/images/scanning-temp-image.png" />
+                                </div>
+                                <div id="after-scan-fail-image" class="scanning-gif temp-display">
+                                    <img class="barcode-img-size" src="/assets/images/fail-image.png" style="background-color: #F46D67" />
+                                </div>
+                                <div id="after-scan-pass-image" class="scanning-gif temp-display">
+                                    <img class="barcode-img-size" src="/assets/images/passed-icon.png" />
+                                </div>
+                            </div>
+
+                          
+
+                        </div>
+                        <div class="col-md-6 lbl">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div id="before-scan-text" class="scanning-instruction" style="background-color: #003C71;">
+                                        <div class="scanning-text-container">
+                                            <h6 class="scanning-text-1">place the product label </h6>
+                                            <h6 class="scanning-text-1">under the scanner</h6>
+                                        </div>
+                                    </div>
+                                    <div id="after-scan-fail-text" style="display:none;background-color: #003C71;" class="scanning-text-container scanning-failed-instruction temp-supervisor-call-button">
+                                        <h6 class="scanning-text-1">supervisor required to approve mismatch</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row" id="error">
+                        <div class="col-md-8">
+                            <div id="supervisor-intervention" class="supervisor-container temp-display">
+                                <div class="data-comparison">
+                                    <div>
+                                        <h6 class="mismatch-text">Scanned Details</h6>
+                                    </div>
+                                    <div class="data-table-pass-supervisor">
+                                        <div class="col-md-6 product-data" style="width:200px">
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text">Carton Label GTIN</h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-label-gtin" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text">Carton Label GTIN</h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-label-gtin1" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text">Work Order Lot No</h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-wo-lot-no" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text">Carton Label Spec</h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-db-label-spec" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text">Carton Use By</h6>
+                                                </div>
+                                                <div>
+                                                    <h6 id="fail-calc-use-by" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text">Wo Catalog Num</h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-db-catalog-num" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text">Carton Lot No</h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-carton-lot-no" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                             <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text">Scanned IFU</h6>
+                                                </div>
+                                                <div>
+                                                    <h6 id="fail-ifu" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text">Carton Use By</h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-calc-use-by1" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 data-from-db">
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text" id="p-gtin">DB GTIN</h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-db-gtin" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text" id="p-gtin">Product Label GTIN </h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-product-gtin" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text" id="p-lotnum"> Product Lot Num </h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-product-lot-no" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text" id="p-labelspec">DB Label Spec</h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-product-label-spec" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text" id="p-useby">Calculated Use By </h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-product-use-by" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text" id="w-catlognum">DB Catalog Num</h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-db-catalog-no" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text" id="p-lotnum"> Product Lot Num </h6>
+                                                </div>
+                                                <div>
+                                                    <h6 id="fail-product-lot-no1" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text" id="p-ifu">DB IFU</h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-product-db-ifu" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text" id="p-useby"> Product Use By</h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-product-useby" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-4">
+                            <div class="col-6" id="navigation-container">
+                                <div class="navigation-container">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <a id="rescanBtn" class="approve-button" onclick="reloadPage()"><span class="approve-text">Rescan</span></a>
+                                        </div>
+                                        <div class="col-12">
+                                            <a class="reject-button" asp-area="" asp-controller="Home" asp-action="WorkOrderScan"><span class="reject-text">New Work Order</span></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class="col-md-4 right-scan">
+                    <div class="product-spec-container temp-fail-button">
+                        <div class="product-spec">
+                            <div id="before-scan-dbgtin-no">
+                                <img src="/assets/images/before-scanning.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div class="temp-display" id="during-scan-dbgtin-no">
+                                <img src="/assets/images/scanning-stage-icon.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div class="temp-display" id="after-scan-pass-dbgtin-no">
+                                <img src="/assets/images/after-scanned-pass-icon.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div class="temp-display" id="after-scan-fail-dbgtin-no">
+                                <img src="/assets/images/after-scanned-fail-icon.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div>
+                                <h6 class="product-spec-text">DB GTIN</h6>
+                            </div>
+                        </div>
+                        <div class="product-spec">
+                            <div id="before-scan-gtin">
+                                <img src="/assets/images/before-scanning.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div class="temp-display" id="during-scan-gtin">
+                                <img src="/assets/images/scanning-stage-icon.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div class="temp-display" id="after-scan-pass-gtin">
+                                <img src="/assets/images/after-scanned-pass-icon.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div class="temp-display" id="after-scan-fail-gtin">
+                                <img src="/assets/images/after-scanned-fail-icon.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div>
+                                <h6 class="product-spec-text">Product label GTIN</h6>
+                            </div>
+                        </div>
+                        <div class="product-spec">
+                            <div id="before-scan-lot-no">
+                                <img src="/assets/images/before-scanning.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div class="temp-display" id="during-scan-lot-no">
+                                <img src="/assets/images/scanning-stage-icon.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div class="temp-display" id="after-scan-pass-lot-no">
+                                <img src="/assets/images/after-scanned-pass-icon.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div class="temp-display" id="after-scan-fail-lot-no">
+                                <img src="/assets/images/after-scanned-fail-icon.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div>
+                                <h6 class="product-spec-text">Product Lot No</h6>
+                            </div>
+                        </div>
+                        <div class="product-spec">
+                            <div id="before-scan-label-spec">
+                                <img src="/assets/images/before-scanning.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div class="temp-display" id="during-scan-label-spec">
+                                <img src="/assets/images/scanning-stage-icon.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div class="temp-display" id="after-scan-pass-label-spec">
+                                <img src="/assets/images/after-scanned-pass-icon.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div class="temp-display" id="after-scan-fail-label-spec">
+                                <img src="/assets/images/after-scanned-fail-icon.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div>
+                                <h6 class="product-spec-text">DB Label Specification</h6>
+                            </div>
+                        </div>
+                        <div class="product-spec">
+                            <div id="before-scan-use-date">
+                                <img src="/assets/images/before-scanning.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div class="temp-display" id="during-scan-use-date">
+                                <img src="/assets/images/scanning-stage-icon.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div class="temp-display" id="after-scan-pass-use-date">
+                                <img src="/assets/images/after-scanned-pass-icon.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div class="temp-display" id="after-scan-fail-use-date">
+                                <img src="/assets/images/after-scanned-fail-icon.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div>
+                                <h6 class="product-spec-text">Calculated Use By</h6>
+                            </div>
+                        </div>
+                        <div class="product-spec">
+                            <div id="before-scan-catalog">
+                                <img src="/assets/images/before-scanning.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div class="temp-display" id="during-scan-catalog">
+                                <img src="/assets/images/scanning-stage-icon.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div class="temp-display" id="after-scan-pass-catalog">
+                                <img src="/assets/images/after-scanned-pass-icon.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div class="temp-display" id="after-scan-fail-catalog">
+                                <img src="/assets/images/after-scanned-fail-icon.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div>
+                                <h6 class="product-spec-text">DB Catalog No</h6>
+                            </div>
+                        </div>
+                        <div class="product-spec">
+                            <div id="before-scan-lot-no1">
+                                <img src="/assets/images/before-scanning.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div class="temp-display" id="during-scan-lot-no1">
+                                <img src="/assets/images/scanning-stage-icon.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div class="temp-display" id="after-scan-pass-lot-no1">
+                                <img src="/assets/images/after-scanned-pass-icon.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div class="temp-display" id="after-scan-fail-lot-no1">
+                                <img src="/assets/images/after-scanned-fail-icon.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div>
+                                <h6 class="product-spec-text">Product Lot No</h6>
+                            </div>
+                        </div>
+               
+                          <div class="product-spec">
+                            <div id="before-scan-ifu">
+                                <img src="/assets/images/before-scanning.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div class="temp-display" id="during-scan-ifu">
+                                <img src="/assets/images/scanning-stage-icon.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div class="temp-display" id="after-scan-pass-ifu">
+                                <img src="/assets/images/after-scanned-pass-icon.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div class="temp-display" id="after-scan-fail-ifu">
+                                <img src="/assets/images/after-scanned-fail-icon.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div>
+                                <h6 class="product-spec-text">DB IFU</h6>
+                            </div>
+                        </div>
+                          <div class="product-spec">
+                            <div id="before-scan-product-useby">
+                                <img src="/assets/images/before-scanning.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div class="temp-display" id="during-scan-product-useby">
+                                <img src="/assets/images/scanning-stage-icon.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div class="temp-display" id="after-scan-pass-product-useby">
+                                <img src="/assets/images/after-scanned-pass-icon.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div class="temp-display" id="after-scan-fail-product-useby">
+                                <img src="/assets/images/after-scanned-fail-icon.png" class="scanning-stage-img-size" />
+                            </div>
+                            <div>
+                                <h6 class="product-spec-text">Product Use By</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="popupContainer">
+                <div id="popupContent">
+                    <img src="~/assets/images/Barcode image 2.png" alt="Barcode Icon" id="scan-image">
+                    <h5 class="supr-txt">Place Your Supervisor Badge</h5>
+                    <h5 id="under">under the scanner</h5>
+                    <input id="supervisorInput" placeholder="Super Visor Id" name="supervisorInput" />
+                    <br />
+                    <button id="greenButton" class="greenButton">Continue</button>
+                    <br />
+                    <span class="error-message text-danger"></span>
+                </div>
+            </div>
+
+
+
+            <div class="row bottom">
+                <div class="col-md-8">
+                    <div id="left-part-before-scan" class="left-part ">
+                        <h6 class="scanning-loading-text">
+                            Status Indicator
+                        </h6>
+                    </div>
+                    <div id="left-part-during-scan" class="left-part temp-display" style="display:none">
+                        <h6 class="scanning-loading-text">
+                            Scanning...
+                        </h6>
+                    </div>
+                    <div id="left-part-after-scan-pass" class="left-part-pass temp-display">
+                        <h6 class="pass-text">
+                            Data Verified
+                        </h6>
+                    </div>
+                    <div id="left-part-after-scan-fail" class="left-part-fail temp-display">
+                        <h6 class="pass-text">
+                            Data Mismatch
+                        </h6>
+                    </div>
+                </div>
+
+
+                <div class="col-md-4">
+                    <div id="next-scan-button" class="right-part-container temp-reset-button">
+                        <div class="next-button-align">
+                            <span class="scanning-next-text">
+                                Send To Boxing / Next Scan
+                            </span>
+                            <img class="next-img" src="/assets/images/next-button.png" />
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <br />
+        </div>
     </div>
-</div>
-
-
-
+</body>
 <style>
 
-    .work-order-scan-submit {
+    /* #next-scan-button{
+           background-color: #003C71;
+           color:white;
+        }*/
+    .brdr-bottom {
+        border-bottom: 1px solid black;
+        margin-bottom: 6px;
+    }
+
+    .packaging {
+        margin-bottom: 8px;
+        font-weight: 600;
+        font-size: 20px;
+    }
+
+    #error {
+        height: 45%;
         display: flex;
-        justify-content: center;
-        gap: 5px;
-        padding: 10px;
     }
 
-    .pt-15 {
-        padding-top: 15px;
+    .bottom {
+        margin-top: -13px;
     }
 
-    .back-button {
-        position: relative;
-        float: right;
-    }
-
-    .main-container {
-        height: 100%;
-    }
-
-    .container1 {
-        overflow: hidden;
-    }
-
-    .heading-text {
-        font-size: 27px;
-        vertical-align: -12px;
-    }
-
-    .heading {
-        display: flex;
-        gap: 307px;
-        justify-content: center;
-    }
-
-    .image-div {
-        position: relative;
-        float: right;
-    }
-
-
-    .image-size {
-        width: 560px;
-        height: 52px;
-    }
-
-    .work-order-scan {
-        position: relative;
-        top: 20%;
+    .full-div {
         display: flex;
         flex-direction: column;
-        gap: 22px;
+        gap: 1rem;
+        height: 70%;
     }
 
-    .first-text {
-        font-size: 24px;
-        font-weight: 600;
+    #first-row {
+        height: -webkit-fill-available;
+    }
+
+    #first-column {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+
+    .scn {
+        height: 57%;
+        display: flex;
+        background-color: aliceblue;
+        padding: 0.5rem;
+    }
+
+    #under {
+        margin-left: 38px;
         text-align: center;
-    }
-
-    .second-text {
-        font-size: 30px;
-        font-weight: 300;
-        text-align: center;
-    }
-
-    .scanning-text {
-        font-size: 24px;
+        font-size: 23px;
         font-weight: 400;
-        color: #003C71;
+    }
+
+    #scan-image {
+        width: 313px;
+        margin-left: 81px;
+    }
+
+    #supervisorInput {
+        margin-left: 152px;
+        width: 151px;
+        height: 43px;
+        border-radius: 10px;
+        border: 1px solid;
+        font-size: 20px;
         text-align: center;
     }
 
-    .scanning {
+    #spr-err-txt {
+        margin-left: 96px
+    }
+
+    hr {
+        color: black;
+    }
+
+    .next-button-align {
+        /* padding-left: 27px; */
+        /* padding-top: 8px; */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .approve-button {
+        display: block;
+        width: 150px;
+        height: 60px;
+        background: #FFB246;
+        padding: 10px;
+        text-align: center;
+        border-radius: 12px;
+        color: white;
+        font-weight: bold;
+        line-height: 40px;
+        margin-bottom: 17px;
+        /* margin: auto; */
         text-decoration: none;
     }
 
-    .scanning-container {
-        margin: auto;
-        margin-top: 0px;
-    }
-
-    .pr-70 {
-        padding-right: 70px;
-    }
-
-    .error-mockup {
-        position: relative;
-        top: 50%;
-    }
-
-    .scanning-text-div {
-        text-align: center;
-    }
-
-    .login-button {
+    .reject-button {
         display: block;
-        width: 206px;
-        height: 67px;
-        background: #003C71;
+        width: 155px;
+        height: 56px;
+        background: #FF0000;
         padding: 10px;
         text-align: center;
         border-radius: 12px;
@@ -183,61 +710,970 @@
         text-decoration: none;
     }
 
-    .login-text {
+    .next-img {
+        height: 24px;
+        width: 24px;
+        vertical-align: -5px;
+    }
+
+    .comparison-lable-text {
+        color: black;
+    }
+
+    .data-table {
+        display: flex;
+        justify-content: space-around;
+    }
+
+    .data-table-pass {
+        display: flex;
+        padding-left: 42px;
+        gap: 250px;
+    }
+
+    .data-table-pass-supervisor {
+        display: flex;
+    }
+
+    .mismatch-text {
+        color: #003C71;
+        font-size: 20px;
+        font-weight: 700;
+        padding-bottom: 10px;
+    }
+
+    supervisor-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        padding-top: 14px;
+        gap: 20px;
+    }
+
+    .data-comparison {
+        padding: 4px;
+        width: 100%;
+        max-height: 326px;
+        background-color: #EAF5FF;
+        border-radius: 10px;
+        overflow: auto;
+    }
+
+
+    .data-comparison-pass {
+        height: 319px;
+        background-color: #EAF5FF;
+        border-radius: 10px;
+    }
+
+    .navigation-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        background: transparent !important;
+    }
+
+    .temp-display {
+        display: none;
+    }
+
+    .pt-15 {
+        padding-top: 15px;
+    }
+
+
+    .container-fluid {
+        height: 100vh;
+    }
+
+    .image-div {
+        position: relative;
+        float: right;
+    }
+
+    .heading {
+        display: flex;
+        gap: 307px;
+        justify-content: center;
+    }
+
+    .image-size {
+        width: 560px;
+        height: 52px;
+    }
+
+    .heading-text {
+        font-size: 27px;
+        vertical-align: -12px;
+    }
+
+
+    .p-17 {
+        padding: 17px;
+    }
+
+    .mid-content {
+        display: flex;
+        justify-content: center;
+    }
+
+    #left-content {
+        /* max-height: 116px; */
+        display: flex;
+        flex-direction: column;
+        width: 746px;
+        color: red;
+    }
+
+
+    .right-content {
+        /* margin-top: 79px; */
+        width: 476px;
+        color: blue;
+        padding-left: 10px;
+    }
+
+    .count-data {
+        height: 40%;
+        background-color: #003C71;
+        border-radius: 10px;
+    }
+
+
+    
+
+    .center {
+        background-color: aliceblue;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .processing-lot-text {
+        padding-top: 5px;
+        padding-left: 17px;
+        font-size: 21px;
+        font-weight: 300;
+        color: white;
+    }
+
+
+    .processing-lot-no {
+        font-weight: 700;
+    }
+
+    .p-10 {
+        padding: 1px;
+    }
+
+    .data-stat {
+        margin-left: 12px;
+        width: 96%;
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        height: 86%;
+    }
+
+
+    .data-card {
+        padding: 7px;
+        width: 24%;
+        height: 85%;
+        border-radius: 5px;
+    }
+
+
+    .data-heading {
+        height: 31px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .data-val {
+        height: 61%;
+    }
+
+
+    .data-heading-text {
+        color: #003C71;
+        font-size: 21px;
+        font-weight: 700;
+    }
+
+    .data-val-text {
+        font-size: 60px;
+        font-weight: 600;
+        color: #003C71;
+        text-align: end;
+    }
+
+    .pass-icon {
+        width: 21px;
+        height: 21px;
+    }
+
+    .barcode-img-size {
+        height: 90%;
+        width: 100%;
+        vertical-align: -17px;
+        object-fit: contain;
+        background-color: aliceblue;
+    }
+
+
+    .scanning-icon {
+        max-height: 300px;
+        display: flex;
+        justify-content: space-between;
+        padding-top: 10px;
+    }
+
+    .scanning-instruction {
+        width: 363px;
+        /*background-color: #C5C5C5;*/
+        display: flex;
+        align-items: center;
+        border-radius: 10px;
+    }
+
+    .scanning-failed-instruction {
+        width: 363px;
+        background-color: #003C71;
+        display: flex;
+        align-items: center;
+        border-radius: 10px;
+    }
+
+    .scanning-text-1 {
+        color: white;
+        font-size: 28px;
+        font-weight: 700;
+        text-align: center;
+    }
+
+    .lbl {
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .scanning-text-container {
+        margin: auto;
+    }
+
+    .product-spec {
+        display: flex;
+        gap: 15px;
+        padding-left: 10px;
+    }
+
+    .scanning-stage-img-size {
+        height: 50px;
+        width: 50px;
+    }
+
+    .product-spec-container {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 13px;
+        padding-bottom: 20px;
+        border-radius: 10px;
+        justify-content: center;
+    }
+
+
+    .right-scan {
+        margin-bottom: 12px;
+        background-color: aliceblue;
+    }
+
+    .product-spec-text {
+        font-size: 25px;
+        font-weight: 600;
+        color: black;
+        padding-top: 5px;
+    }
+
+    .loading-and-nav {
+        position: relative;
+        display: flex;
+        padding-top: 10px;
+        justify-content: center;
+        bottom: 17px;
+    }
+
+    bar-scn {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .left-part {
+        border: 1px solid;
+        border-radius: 7px;
+        display: flex;
+        align-items: center;
+        height: 47px;
+    }
+
+
+
+    .right-part {
+        /* padding-top: 26px; */
+        width: 473px;
+        padding-left: 10px;
+        margin-top: 13px;
+    }
+
+    .right-part-container {
+        background-color: #C5C5C5;
+        height: 51px;
+        border-radius: 10px;
+    }
+
+    .scanning-loading-text {
+        font-size: 24px;
+        font-weight: 700;
+        color: #003C71;
+        padding-left: 15px;
+        padding-top: 4px;
+    }
+
+    .scan-input {
+        height: 44px;
+        border-radius: 10px;
+        border: 1px solid;
+        font-size: 20px;
+        text-align: center;
+    }
+
+    #productLabelInput {
+        border-radius: 7px;
+        width: 100%;
+    }
+
+
+    #productLabelSpec {
+        border-radius: 7px;
+        width: 100%;
+    }
+
+    #submitBtn {
+        border-radius: 8px;
+        display: block;
+        margin-left: auto;
+        height: 100%;
+    }
+
+
+    .inpt1 {
+        margin-bottom: 7px
+    }
+
+    .scanning-next-text {
+        padding-left: 16px;
         font-size: 24px;
         font-weight: 500;
+        color: white;
+        text-align: center;
+    }
+
+    .pr-70 {
+        padding-right: 70px;
+    }
+
+   
+
+    .left-part-pass {
+        width: 772px;
+        height: 54px;
+        border-radius: 10px;
+        background-color: #00E13F;
+    }
+
+    .left-part-fail {
+        margin-top: 5px;
+        height: 44px;
+        border-radius: 9px;
+        background-color: #FF0000;
+    }
+
+    .pass-text {
+        font-size: 24px;
+        font-weight: 600;
+        color: white;
+        padding-left: 15px;
+        padding-top: 7px;
+    }
+
+    .approve-text {
+        font-size: 24px;
+        font-weight: 600;
+        color: black;
+    }
+
+    .reject-text {
+        font-size: 15px;
+        font-weight: 600;
+        color: white;
+    }
+
+    .navigation-header-result {
+        /* padding: 20px; */
+        display: flex;
+        justify-content: center;
+        gap: 634px;
+        padding-left: 0px;
+        padding-top: 10px;
+    }
+
+    .temp-flex {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        padding-bottom: 10px;
+        align-items: center;
+    }
+
+    /* Styles for the popup container */
+    #popupContainer {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
+
+    /* Styles for the popup content */
+    #popupContent {
+        width: 477px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 16px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Style for the green button inside the popup */
+    #greenButton {
+        background-color: green;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-left: 180px;
+        margin-top: 14px;
+        margin-bottom: 8px;
+    }
+
+    .supr-txt {
+        display: flex;
+        font-weight: 400;
+        align-items: center;
+        margin-left: 87px;
+        font-size: 25px;
+    }
+
+    #total {
+        background-color: #EAF5FF;
+    }
+
+    #pass {
+        background-color: #BEF8A7;
+    }
+
+    #fail {
+        background-color: #F09785;
+    }
+
+    #rescan {
+        background-color: #F9EFC6;
+    }
+
+    .border {
+        border: 2px solid #0AC5F3;
+    }
+
+    #before-scan-text {
+        height: 316px !important;
+    }
+
+    #after-scan-fail-text {
+        height: 303px !important;
+        width: 321px;
+        margin-left: 35px;
     }
 
 </style>
-@section Scripts{
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
 
-    <script type="text/javascript">
-        document.addEventListener("DOMContentLoaded", function () {
-            var input1Field = document.getElementById("input1");
-            var input2Field = document.getElementById("input2");
+<script type="text/javascript">
+    let inPassScenario = false;
+    let inFailScenario = false;
+    let responseData = null;
+    document.getElementById("error").style.display = "none";
+    document.getElementById("navigation-container").style.display = "none";
+    document.getElementById("next-scan-button").style.backgroundColor = "#C5C5C5";
 
-            if (input1Field) {
-                input1Field.value = "";
-            }
 
-            if (input2Field) {
-                input2Field.value = "";
-            }
+    document.getElementsByClassName('temp-supervisor-call-button')[0]
+        .addEventListener('click', function (event) {
+            ScanFailToSupervisor();
+            setScannedFailData(responseData, responseData.mismatches);
+            
+        });
+    
+
+
+    document.getElementsByClassName('temp-reset-button')[0]
+        .addEventListener('click', function (event) {
+            var targetUrl = "/SaveWorkOrderBarcode";
+            window.location.href = targetUrl;
+
         });
 
-        function startTimer(duration) {
-            var timerDisplay = document.getElementById("timer");
+    
 
-            var timer = duration;
-            var hours, minutes, seconds;
+    function beforeToDuringScan() {
 
-            var intervalId = setInterval(function () {
-                hours = parseInt(timer / 3600, 10);
-                minutes = parseInt((timer % 3600) / 60, 10);
-                seconds = parseInt(timer % 60, 10);
+        document.getElementById("before-scan-dbgtin-no").style.display = "none";
+        document.getElementById("during-scan-dbgtin-no").style.display = "block";
 
-                hours = hours < 10 ? "0" + hours : hours;
-                minutes = minutes < 10 ? "0" + minutes : minutes;
-                seconds = seconds < 10 ? "0" + seconds : seconds;
+        document.getElementById("before-scan-gtin").style.display = "none";
+        document.getElementById("during-scan-gtin").style.display = "block";
 
-                timerDisplay.textContent = hours + ":" + minutes + ":" + seconds;
+        document.getElementById("before-scan-lot-no").style.display = "none";
+        document.getElementById("during-scan-lot-no").style.display = "block";
 
-                if (--timer < 0) {
-                    clearInterval(intervalId);
-                    // Perform any action you need when the timer reaches 00:00:00
-                    window.location.href = "/Login/Logout";
-                    //alert("Timer has expired!");
-                }
-            }, 1000);
+        document.getElementById("before-scan-label-spec").style.display = "none";
+        document.getElementById("during-scan-label-spec").style.display = "block";
+
+        document.getElementById("before-scan-use-date").style.display = "none";
+        document.getElementById("during-scan-use-date").style.display = "block";
+
+        document.getElementById("before-scan-catalog").style.display = "none";
+        document.getElementById("during-scan-catalog").style.display = "block";
+
+        document.getElementById("before-scan-lot-no1").style.display = "none";
+        document.getElementById("during-scan-lot-no1").style.display = "block";
+
+        document.getElementById("before-scan-ifu").style.display = "none";
+        document.getElementById("during-scan-ifu").style.display = "block";
+
+        document.getElementById("before-scan-product-useby").style.display = "none";
+        document.getElementById("during-scan-product-useby").style.display = "block";
+
+
+        document.getElementById("left-part-before-scan").style.display = "none";
+        document.getElementById("left-part-during-scan").style.display = "block";
+        document.getElementById("popupContainer").style.display = "none";
+    }
+
+    function duringToScanPass() {
+        inPassScenario = true;
+        
+        document.getElementById("during-scan-dbgtin-no").style.display = "none";
+        document.getElementById("after-scan-pass-dbgtin-no").style.display = "block";
+
+        document.getElementById("during-scan-gtin").style.display = "none";
+        document.getElementById("after-scan-pass-gtin").style.display = "block";
+
+        document.getElementById("during-scan-lot-no").style.display = "none";
+        document.getElementById("after-scan-pass-lot-no").style.display = "block";
+
+        document.getElementById("during-scan-label-spec").style.display = "none";
+        document.getElementById("after-scan-pass-label-spec").style.display = "block";
+
+        document.getElementById("during-scan-use-date").style.display = "none";
+        document.getElementById("after-scan-pass-use-date").style.display = "block";
+
+        document.getElementById("during-scan-catalog").style.display = "none";
+        document.getElementById("after-scan-pass-catalog").style.display = "block"; 
+        
+        document.getElementById("during-scan-lot-no1").style.display = "none";
+        document.getElementById("after-scan-pass-lot-no1").style.display = "block";
+
+        document.getElementById("during-scan-ifu").style.display = "none";
+        document.getElementById("after-scan-pass-ifu").style.display = "block";
+
+        document.getElementById("during-scan-product-useby").style.display = "none";
+        document.getElementById("after-scan-pass-product-useby").style.display = "block";
+
+        document.getElementById("left-part-during-scan").style.display = "none";
+        document.getElementById("left-part-after-scan-pass").style.display = "block";
+
+        document.getElementById("next-scan-button").style.backgroundColor = "#003C71";
+        document.getElementById("before-scan-text").style.display = "block";
+
+        document.getElementById("popupContainer").style.display = "none";
+    }
+
+    function duringToScanFail(response) {
+        document.getElementById("popupContainer").style.display = "none";
+        document.getElementById("scanning-icon-div").style.backgroundColor = "#FFB5B5";
+
+        document.getElementById("before-scan-text").style.display = "none";
+        document.getElementById("after-scan-fail-text").style.display = "flex";
+
+        document.getElementById("before-scan-image").style.display = "none";
+        document.getElementById("after-scan-fail-image").style.display = "block";
+
+        document.getElementById("during-scan-dbgtin-no").style.display = "none";
+        if (response.mismatches.gtinmismatch) {
+            document.getElementById("after-scan-fail-dbgtin-no").style.display = "block";
+        } else {
+            document.getElementById("after-scan-pass-dbgtin-no").style.display = "block";
+        }
+        document.getElementById("during-scan-gtin").style.display = "none";
+        if (response.mismatches.gtinmismatches) {
+            document.getElementById("after-scan-fail-gtin").style.display = "block";
+        } else {
+            document.getElementById("after-scan-pass-gtin").style.display = "block";
+        }
+           
+        document.getElementById("during-scan-lot-no").style.display = "none";
+        if (response.mismatches.lotNoMismatch) {
+            document.getElementById("after-scan-fail-lot-no").style.display = "block";
+        } else {
+            document.getElementById("after-scan-pass-lot-no").style.display = "block";
+        }
+        document.getElementById("during-scan-label-spec").style.display = "none";
+        if (response.mismatches.labelSpecMismatch) {
+            document.getElementById("after-scan-fail-label-spec").style.display = "block";
+        } else {
+            document.getElementById("after-scan-pass-label-spec").style.display = "block";
         }
 
-        // Local Storage is already set in homescreen so just obtain it here
-        var expirationTime = localStorage.getItem("expiration_time");
+        document.getElementById("during-scan-use-date").style.display = "none";
+        if (response.mismatches.calculatedUseByMismatches) {
+            document.getElementById("after-scan-fail-use-date").style.display = "block";
+        } else {
+            document.getElementById("after-scan-pass-use-date").style.display = "block";
+        }
+
+        document.getElementById("during-scan-catalog").style.display = "none";
+        if (response.mismatches.catalogNumMismatch) {
+            document.getElementById("after-scan-fail-catalog").style.display = "block";
+        } else {
+            document.getElementById("after-scan-pass-catalog").style.display = "block";
+        }
+        document.getElementById("during-scan-lot-no1").style.display = "none";
+        if (response.mismatches.LotNumberMisMatch) {
+            document.getElementById("after-scan-fail-lot-no1").style.display = "block";
+        } else {
+            document.getElementById("after-scan-pass-lot-no1").style.display = "block";
+        }
+        document.getElementById("during-scan-ifu").style.display = "none";
+        if (response.mismatches.ifumismatches) {
+            document.getElementById("after-scan-fail-ifu").style.display = "block";
+        } else {
+            document.getElementById("after-scan-pass-ifu").style.display = "block";
+        }
+        document.getElementById("during-scan-product-useby").style.display = "none";
+        if (response.mismatches.CalculatedUseByMismatch) {
+            document.getElementById("after-scan-fail-product-useby").style.display = "block";
+        } else {
+            document.getElementById("after-scan-pass-product-useby").style.display = "block";
+        }
+
+        document.getElementById("left-part-during-scan").style.display = "none";
+        document.getElementById("left-part-after-scan-fail").style.display = "block";
+    }
+
+    function ScanFailToSupervisor() {
+        document.getElementById("popupContainer").style.display = "none";
+        document.getElementById("scanning-icon-div").style.display = "none";
+        document.getElementById("supervisor-intervention").style.display = "flex";
+       
+    }
+
+    function resetPassScenario() {
+
+        document.getElementById("popupContainer").style.display = "none";
+        document.getElementById("after-scan-pass-lot-no").style.display = "none";
+        document.getElementById("before-scan-lot-no").style.display = "block";
+
+        document.getElementById("after-scan-pass-gtin").style.display = "none";
+        document.getElementById("before-scan-gtin").style.display = "block";
+
+        document.getElementById("after-scan-pass-cat-no").style.display = "none";
+        document.getElementById("before-scan-cat-no").style.display = "block";
+
+        document.getElementById("after-scan-pass-label-spec").style.display = "none";
+        document.getElementById("before-scan-label-spec").style.display = "block";
+
+        document.getElementById("after-scan-pass-use-date").style.display = "none";
+        document.getElementById("before-scan-use-date").style.display = "block";
+
+        document.getElementById("left-part-after-scan-pass").style.display = "none";
+        document.getElementById("left-part-before-scan").style.display = "block";
+
+        document.getElementById("next-scan-button").style.backgroundColor = "#C5C5C5";
+    }
+
+    function showPopup() {
+        document.getElementById("scanning-icon-div").style.backgroundColor = "#FFB5B5";
+        document.getElementById("after-scan-fail-image").style.display = "block";
+        document.getElementById("after-scan-fail-text").style.display = "flex";
+        document.getElementById("popupContainer").style.display = "block";
+    }
+
+    function closePopup() {
+        document.getElementById("popupContainer").style.display = "none";
+    }
 
 
-        // Get the expiration time from localStorage
-        var currentTime = Math.floor(Date.now() / 1000);
-        var remainingTime = expirationTime - currentTime;
-        startTimer(remainingTime);
-    </script>
-}
+    $(document).on("click", "#submitBtn", function () {
+        var productLabel = document.getElementById("productLabelInput").value;
+        var productLabelSpec = document.getElementById("productLabelSpec").value;
+        var scannedifu = document.getElementById("ifu").value;
+
+        var apiUrl = "/SaveProductLabelBarcode";
+        beforeToDuringScan();
+        $.ajax({
+            url: apiUrl,
+            method: "POST",
+            data: { input1:productLabel,input2:productLabelSpec,input3:scannedifu},
+            success: function (response) {
+                console.log(response);              
+                responseData = response;
+                processResponse(response);
+            },
+            error: function (xhr, status, error) {
+                console.log("An error occurred while making the AJAX call:", error);
+            }
+
+
+        });
+    });
+
+    $(document).on("click", "#rescanBtn", function () {
+        var productLabel = document.getElementById("productLabelInput").value;
+        var productLabelSpec = document.getElementById("productLabelSpec").value;
+
+        var apiUrl = "/SaveProductLabel";
+        beforeToDuringScan();
+        $.ajax({
+            url: apiUrl,
+            method: "POST",
+            data: { productLabel: productLabel, productLabelSpec: productLabelSpec },
+            success: function (response) {
+                console.log(response);
+                location.reload();
+                responseData = response;
+                processResponse(response);
+            },
+            error: function (xhr, status, error) {
+                console.log("An error occurred while making the AJAX call:", error);
+            }
+
+
+        });
+    });
+
+
+    function processResponse(response) {
+        console.log("response hit");
+        console.log(response.allMatch);
+        if (response.allMatch == true) {
+            //setTimeout(duringToScanPass, 3000);
+            duringToScanPass();
+        } else {
+            //setTimeout(duringToScanFail, 3000);
+            duringToScanFail(response);
+        }
+        setWorkOrderInfo(response);
+        setScannedData(response);
+    }
+
+    function setScannedData(response) {
+        console.log("set data called");
+        document.getElementById("fail-label-gtin").innerHTML = response.lhsData.cartonGTIN;
+        document.getElementById("fail-label-gtin1").innerHTML = response.lhsData.cartonGTIN;
+        document.getElementById("fail-wo-lot-no").innerHTML = response.lhsData.woLotNo;
+        document.getElementById("fail-db-label-spec").innerHTML = response.lhsData.cartonLabelSpec;
+        document.getElementById("fail-calc-use-by").innerHTML = response.lhsData.cartonUseBy;
+        document.getElementById("fail-db-catalog-num").innerHTML = response.lhsData.woCatalogNumber;
+        document.getElementById("fail-carton-lot-no").innerHTML = response.lhsData.cartonLotNo;
+        document.getElementById("fail-ifu").innerHTML = response.lhsData.scannedIFU;
+        document.getElementById("fail-calc-use-by1").innerHTML = response.lhsData.cartonUseBy;
+        
+
+        document.getElementById("fail-db-gtin").innerHTML = response.rhsData.dbGTIN;
+         document.getElementById("fail-product-gtin").innerHTML = response.rhsData.productLabelGTIN;
+        document.getElementById("fail-product-lot-no").innerHTML = response.rhsData.productLotNo;
+        document.getElementById("fail-product-label-spec").innerHTML = response.rhsData.dbLabelSpec;
+        document.getElementById("fail-product-use-by").innerHTML = response.rhsData.calculateUseBy;
+        document.getElementById("fail-db-catalog-no").innerHTML = response.rhsData.dbCatalogNo;
+        document.getElementById("fail-product-lot-no1").innerHTML = response.rhsData.productLotNo;
+        document.getElementById("fail-product-db-ifu").innerHTML = response.rhsData.dbIFU;
+        document.getElementById("fail-product-useby").innerHTML = response.rhsData.productUseBy;
+
+    }
+
+    function setScannedFailData(response, mismatches) {
+        console.log("set data for fail called");
+        document.getElementById("after-scan-fail-text").style.display = "none";
+        document.getElementsByClassName("scn")[0].style.display = "none";
+        document.getElementById("error").style.display = "flex";
+        document.getElementById("navigation-container").style.display = "block";
+        document.getElementById("next-scan-button").style.backgroundColor = "#003C71";
+        document.getElementById("fail-label-gtin").innerHTML = response.lhsData.cartonGTIN;
+        document.getElementById("fail-label-gtin").innerHTML = response.lhsData.cartonGTIN;
+        document.getElementById("fail-wo-lot-no").innerHTML = response.lhsData.woLotNo;
+        document.getElementById("fail-db-label-spec").innerHTML = response.lhsData.cartonLabelSpec;
+        document.getElementById("fail-calc-use-by").innerHTML = response.lhsData.cartonUseBy;
+        document.getElementById("fail-db-catalog-num").innerHTML = response.lhsData.woCatalogNumber;
+        document.getElementById("fail-carton-lot-no").innerHTML = response.lhsData.cartonLotNo;
+        document.getElementById("fail-ifu").innerHTML = response.lhsData.scannedIFU;
+        document.getElementById("fail-calc-use-by1").innerHTML = response.lhsData.cartonUseBy;
+        
+        if (mismatches.gtinmismatch) {
+            document.getElementById("fail-db-gtin").innerHTML = response.rhsData.dbGTIN;
+            document.getElementById("fail-db-gtin").style.color = "red";
+            document.getElementById("p-gtin").style.color = "red";
+        } else {
+            document.getElementById("fail-db-gtin").innerHTML = response.rhsData.dbGTIN;
+            document.getElementById("fail-db-gtin").style.color = "black";
+        }
+        if (mismatches.gtinmismatches) {
+            document.getElementById("fail-product-gtin").innerHTML = response.rhsData.productLabelGTIN;
+            document.getElementById("fail-product-gtin").style.color = "red";
+            document.getElementById("p-gtin").style.color = "red";
+        }
+        else{
+             document.getElementById("fail-product-gtin").innerHTML = response.rhsData.productLabelGTIN;
+            document.getElementById("fail-product-gtin").style.color = "black";
+        }
+        if (mismatches.lotNoMismatch) {
+            document.getElementById("fail-product-lot-no").innerHTML = response.rhsData.productLotNo;
+            document.getElementById("fail-product-lot-no").style.color = "red";
+            document.getElementById("p-lotnum").style.color = "red";
+        } else {
+            document.getElementById("fail-product-lot-no").innerHTML = response.rhsData.productLotNo;
+            document.getElementById("fail-product-lot-no").style.color = "black";
+        }
+
+        if (mismatches.labelSpecMismatch) {
+            document.getElementById("fail-product-label-spec").innerHTML = response.rhsData.dbLabelSpec;
+            document.getElementById("fail-product-label-spec").style.color = "red";
+            document.getElementById("p-labelspec").style.color = "red";
+        } else {
+            document.getElementById("fail-product-label-spec").innerHTML = response.rhsData.dbLabelSpec;
+            document.getElementById("fail-product-label-spec").style.color = "black";
+        }
+        if (mismatches.calculatedUseByMismatch) {
+            document.getElementById("fail-product-use-by").innerHTML = response.rhsData.calculateUseBy;
+            document.getElementById("fail-product-use-by").style.color = "red";
+            document.getElementById("p-useby").style.color = "red";
+        } else {
+            document.getElementById("fail-product-use-by").innerHTML = response.rhsData.calculateUseBy;
+            document.getElementById("fail-product-use-by").style.color = "black";
+        }
+        if (mismatches.catalogNumMismatch) {
+            document.getElementById("fail-db-catalog-no").innerHTML = response.rhsData.dbCatalogNo;
+            document.getElementById("fail-db-catalog-no").style.color = "red";
+            document.getElementById("w-catlognum").style.color = "red";
+        } else {
+            document.getElementById("fail-db-catalog-no").innerHTML = response.rhsData.dbCatalogNo;
+            document.getElementById("fail-db-catalog-no").style.color = "black";
+        }
+        if (mismatches.LotNumberMisMatch) {
+            document.getElementById("fail-product-lot-no1").innerHTML = response.rhsData.productLotNo;
+            document.getElementById("fail-product-lot-no1").style.color = "red";
+            document.getElementById("p-lotnum").style.color = "red";
+        }
+        else{
+            document.getElementById("fail-product-lot-no1").innerHTML = response.rhsData.productLotNo;
+            document.getElementById("fail-product-lot-no1").style.color = "black";
+        }
+        if (mismatches.ifumismatches) {
+            document.getElementById("fail-product-db-ifu").innerHTML = response.rhsData.dbIFU;
+            document.getElementById("fail-product-db-ifu").style.color = "red";
+            document.getElementById("p-ifu").style.color = "red";
+        }
+        else{
+            document.getElementById("fail-product-db-ifu").innerHTML = response.rhsData.dbIFU;
+            document.getElementById("fail-product-db-ifu").style.color = "black";
+
+        }
+        if (mismatches.CalculatedUseByMismatch){
+            document.getElementById("fail-product-useby").innerHTML = response.rhsData.productUseBy;
+            document.getElementById("fail-product-useby").style.color = "red";
+            document.getElementById("p-useby").style.color = "red";
+        }
+        else{
+            document.getElementById("fail-product-useby").innerHTML = response.rhsData.productUseBy;
+            document.getElementById("fail-product-useby").style.color = "black";
+        }
+    }
+
+    function setWorkOrderInfo(response) {
+        document.getElementById("total-val").innerHTML = response.workOrderInfo.totalCount != null ? response.workOrderInfo.totalCount : 0;
+        document.getElementById("total-passed-val").innerHTML = response.workOrderInfo.passedCount != null ? response.workOrderInfo.passedCount : 0;
+        document.getElementById("total-failed-val").innerHTML = response.workOrderInfo.failedCount != null ? response.workOrderInfo.failedCount : 0;
+        document.getElementById("total-rescanned-val").innerHTML = response.workOrderInfo.scannedCount != null ? response.workOrderInfo.scannedCount : 0;
+        console.log(response.workOrderInfo.scannedCount);
+        document.getElementById("work-order-lot-no").innerHTML = response.lhsData.woLotNo;
+    }
+
+    
+
+
+    function showLoader() {
+        document.getElementById('loader').style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
+    }
+
+    // Function to hide the loader and overlay
+    function hideLoader() {
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('overlay').style.display = 'none';
+    }
+
+    //code for session counter
+    function startTimer(duration) {
+        var timerDisplay = document.getElementById("timer");
+
+        var timer = duration;
+        var hours, minutes, seconds;
+
+        var intervalId = setInterval(function () {
+            hours = parseInt(timer / 3600, 10);
+            minutes = parseInt((timer % 3600) / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+
+            hours = hours < 10 ? "0" + hours : hours;
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            timerDisplay.textContent = hours + ":" + minutes + ":" + seconds;
+
+            if (--timer < 0) {
+                clearInterval(intervalId);
+                // Perform any action you need when the timer reaches 00:00:00
+                window.location.href = "/Login/Logout";
+                //alert("Timer has expired!");
+            }
+        }, 1000);
+    }
+
+    // Local Storage is already set in homescreen so just obtain it here
+    var expirationTime = localStorage.getItem("expiration_time");
+
+
+    // Get the expiration time from localStorage
+    var currentTime = Math.floor(Date.now() / 1000);
+    var remainingTime = expirationTime - currentTime;
+    startTimer(remainingTime);
+</script>
