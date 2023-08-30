@@ -30,7 +30,7 @@ namespace BostonScientificAVS.Controllers
                 }
 
 
-                //ClaimsPrincipal claimUser = HttpContext.User;
+                ////ClaimsPrincipal claimUser = HttpContext.User;
 
                 //if (claimUser.Identity.IsAuthenticated)
                 //{
@@ -56,9 +56,10 @@ namespace BostonScientificAVS.Controllers
             {
                 //List<ApplicationUser> validUser = _context.Users.Where(x => x.EmpID == user.EmpID).First<ApplicationUser>();
                 bool validUser = _context.Users.Any(x => x.EmpID == user.EmpID);
-                ApplicationUser loggedInUser = _context.Users.Where(x => x.EmpID == user.EmpID).First<ApplicationUser>();
+                
                 if (validUser)
                 {
+                    ApplicationUser loggedInUser = _context.Users.Where(x => x.EmpID == user.EmpID).First<ApplicationUser>();
                     var userRole = loggedInUser.UserRole.ToString();
                     bool afterLogin = true;
                     var authClaims = new List<Claim>
@@ -72,12 +73,11 @@ namespace BostonScientificAVS.Controllers
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
                     TempData["AfterLogin"] = afterLogin;
                     return RedirectToAction("HomeScreen", "Home");
-                    //return Redirect(ReturnUrl == null ? "/Home/HomeScreen" : ReturnUrl);
                 }
                 else
                 {
                     TempData["ErrorMessage"] = "EmployeeID Seems To be Invalid. Please retry again";
-                    return RedirectToAction("Login");
+                    return RedirectToAction("Login","Login");
                 }
             }
             catch (Exception e)
