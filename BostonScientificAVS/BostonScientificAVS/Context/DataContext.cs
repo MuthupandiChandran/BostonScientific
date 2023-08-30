@@ -12,6 +12,7 @@ namespace Context
         }
         public DbSet<ItemMaster> ItemMaster { get; set; }
         public DbSet<ApplicationUser> Users { get; set; }
+        public DbSet<Transaction> Transaction { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

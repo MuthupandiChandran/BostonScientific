@@ -1,27 +1,14 @@
-﻿@model List<BostonScientificAVS.Models.ApplicationUser>
+﻿@model List<Entity.ApplicationUser>
+@using Entity
 
 @{
     ViewData["Title"] = "Users";
 }
+<partial name="_Loader" />
 
-@*<link rel="stylesheet" href="~/css/bootstrap.css">
-<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css">*@
 
 
 <style>
-    /*.table-custom {
-                                                    width: 60%;
-                                                    float: left;
-                                                    margin-right: 30px;
-                                                }*/
-
-    /*   table.dataTable {
-                                                    width: 800px;
-                                                    margin: 0 auto;
-                                                    clear: both;
-                                                    border-collapse: separate;
-                                                    border-spacing: 0;
-                                                }*/
 
     #myTable {
         width: 100%;
@@ -30,6 +17,12 @@
         border-collapse: separate;
         border-spacing: 0;
     }
+
+    .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter, .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_processing, .dataTables_wrapper .dataTables_paginate {
+        color: inherit;
+        margin-bottom: 13px;
+    }
+
 
     div.dataTables_info {
         position: absolute
@@ -41,6 +34,7 @@
     }
 
     .table-active {
+        border: none;
         background-color: darkblue;
         color: aliceblue;
     }
@@ -111,35 +105,82 @@
         margin-left: 197px;
     }
 
-    #download1{
-        margin:auto;
-        text-align:center;
+    #rightside {
+        bottom: 0;
+        position: relative;
+        margin-bottom: 40px;
+        margin-top: 9px;
+    }
+    .btn-save1{
+        margin-top:5px;
+        margin-right:10px;
+        float:right;
+        margin-bottom:40px;
+    }
+    .btn-save2{
+        margin-top:5px;
+        float:left;
+        margin-bottom:40px;
+    }
+    #shorthand {
+        min-height: 200px;
     }
 
+    .top1{
+        padding-left: 10px;
+    }
 
-</style>
+    .card1{
+        margin-top: 13px;
+        border: 1px solid rgba(0,0,0,.125);
+        border-radius: 0.25rem;
+    }
+    .card{
+        margin-top:10px;
+    }
+    #download1{
+        margin-left:20px;
+    }
+    
+        </style>
 
+<div class="navigation-header-items">
+        <div class="dropdown">
+  <button class="custom-config-button" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <img class="avatar-image-size" src="~/assets/images/user_avatar.png"/>
+            <span class="user-name-text">Hello, @User.Identity.Name | @User.Claims.FirstOrDefault(c => c.Type == "EmpID")?.Value</span>
+  </button>
+  <div class="dropdown-menu custom-config-dropdown" aria-labelledby="dropdownMenuButton">
 
-<div class="download-btn-container">
-    <a title="Download List" class="dropbtn">
-        <i class="bi bi-person-circle"></i>
-    </a>
-    <div id="myDropdown2" class="dropdown-download">
-        <a href="#">Manage Users</a>
-        <a href="#">Manage Database</a>
-        <a href="#">Logout</a>
+            @if (User.IsInRole("Admin"))
+            {
+                 <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Users">Manage Users</a>
+                <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Items" >Manage Database</a>
+                <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="TransactionTable">Transaction</a>
+            }
+                         <a class="dropdown-item text-color-blue"  asp-area="" asp-controller="Login" asp-action="Logout" >Logout</a> 
+  </div>
+</div>
+
+<div class="navigation-back">
+    <div class="session-time">
+      <h6 class="session-expires-text text-color-blue">Your Session Expires On</h6>
+      <h6 id="timer" class="session-expire-time text-color-blue">07:59:59PM</h6>
+      </div>
+    <div>
+            <a class="button" href="javascript:history.go(-1)" @*asp-area="" asp-controller="Home" asp-action="HomeScreen"*@><img class="back-button-img" src="/assets/images/back-arrow.png" /><span class="back-text">Back</span></a>
     </div>
 </div>
 
-<h3 class="top1">Existing Users</h3>
+</div>
+
+
+<h3 class="top1"> @ViewData["Title"]</h3>
 <hr />
 
-@*<form id="userForm">*@
 <div class="container-fluid">
     <div class="row">
-        <div class="col-lg-6">
-            @*  <div class="full">
-            <div class="left">*@
+        <div class="col-lg-8" id="tbl">
             <table class="table table-custom table-responsive table-hover" id="myTable">
                 <thead>
                     <tr class="table-active">
@@ -150,133 +191,183 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if (Model != null && Model.Any())
-                    {
-                        @foreach (var us in Model)
-                        {
-                            <tr>
-                                <td width="2px">@us.EmpID</td>
-                                <td width="2px">@us.UserFullName</td>
-                                <td width="2px">@us.UserRole</td>
-                                <td width="2px">
-                                    @*<button type="button" class="btn btn-primary" onclick="editUser(this)">Edit</button>*@
-                                    <i class="bi bi-pencil-square" onclick="editUser(this)"></i>
-                                </td>
-                            </tr>
-                        }
-                    }
-                    else
+                    @foreach (var us in Model)
                     {
                         <tr>
-                            <td colspan="4">
-                                <div>
-                                    No Records Available at this Moment!
-                                </div>
+                            <td width="2px">@us.EmpID</td>
+                            <td width="2px">@us.UserFullName</td>
+                            <td width="2px">@us.UserRole</td>
+                            <td width="2px">
+                                <i class="bi bi-pencil-square" onclick="editUser(this)"></i>
                             </td>
                         </tr>
                     }
+
                 </tbody>
             </table>
         </div>
 
-        @*  </div>
-        </div>*@
-
-
-        <div class="col-lg-6">
-            <div class="col-lg-2"></div>
-            <h3 class="text-center">Add/Edit User</h3>
-            <hr />
-            @* <div class="flex">*@
-           
-            <div class="row">
-               
-                <div class="col-lg-4">
-                    <label for="EmpID">EmpID:</label>
+        <div class="col-sm-4" id="shorthand">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Add/Edit Form</h4>
                 </div>
-                <div class="col-lg-4">
-                    <input type="text" id="EmpID" class="form-control" name="EmpID" />
-                </div>
-
-            </div>
-            <div class="row mt-2">
-                <div class="col-lg-4">
-                    <label for="UserFullName">UserFullName:</label>
-                </div>
-                <div class="col-lg-4">
-                    <input type="text" id="UserFullName" class="form-control" name="UserFullName" />
-                </div>
-            </div>
-            <div class="row mt-2">
-                <div class="col-lg-4">
-                    <label for="UserRole">UserRole:</label>
-                </div>
-                <div class="col-lg-4">
-                    <select id="UserRole" name="UserRole" class="form-control">
-                        @foreach (UserRole role in Enum.GetValues(typeof(UserRole)))
-                        {
-                            <option value="@((int)role)">@role</option>
-                        }
-                    </select>
+                <div class="card-body">
+                        <div class="form-group">
+                            <label for="empid">EmpID:</label>
+                            <input type="text" class="form-control" id="empid" name="empid">
+                            <span class="text-danger" id="empidError"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="userfullname">UserFullName:</label>
+                            <input type="text" class="form-control" id="userfullname" name="userfullname">
+                            <span class="text-danger" id="userfullnameError"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="userrole">UserRole:</label>
+                            <div class="col-lg-4">
+                                <select id="UserRole" name="UserRole" class="form-control">
+                                    @foreach (UserRole role in Enum.GetValues(typeof(UserRole)))
+                                    {
+                                        <option value="@((int)role)">@role</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="btn-save text-center">
+                            <button type="submit" class="btn btn-primary" id="btnSave">Save</button>
+                        </div>
                 </div>
             </div>
-            <div class="row mt-2">
-                <div class="col-lg-4">
-                    <label for="csvFile"><i class="bi bi-filetype-csv"></i>Upload CSV File:</label>
+               <div class="card1">
+                <div class="card-header">
+                    <h4>Import Users</h4>
                 </div>
-                <div class="col-lg-5">
-                    <input type="file" id="csvFile" accept=".csv" />
+                <div class="card-body">             
+                        <div class="form-group" id="upload">
+                            <div class="col-lg-5 btn-save2">
+                                <input type="file" id="csvFile" accept=".csv" />
+                            </div>
+                            <div class="form-group btn-save1">
+                                <button type="button" class="btn btn-light border border-dark" onclick="importCsv(this)">Upload</button>
+                            </div>
+                        </div>                       
+                        <div class="text-center" id="downloadcsv">
+                            <a href="@Url.Action("DownloadCSV","Admin")" download id="download1" onclick="downloadCSV()"><label for="download">Please Download The Reference CSV</label></a>
+                        </div>                   
                 </div>
-                <div class="col-lg-2">
-                    <button type="button" class="btn btn-primary" onclick="importCsv()">Upload</button>
-                </div>
-            </div>
-            <div class="row mt-2" id="download">
-                <div class="col-lg-4">
-                    <label for="download"><b>Download:</b></label><br />
-                    <a href="@Url.Action("DownloadCSV", "Admin")" download id="download1"><i class="bi bi-download"></i> Download CSV
-                    </a>
-                </div>
-            </div>
-            <div class="row mt-2">
-                <div class="text-center">
-                    <button type="button" class="btn btn-primary" onclick="saveUser()">Save</button>
-                </div>
-            </div>
-        </div>
 
         @* </div>*@
     </div>
+        </div>
+
+    </div>
+
+
+         
 </div>
 @*
 </form>*@
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+@section scripts{
+
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
-@*<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.css" />
-<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.js"></script><script type="text/javascript" src="jquery.dataTables.js"></script>
-<script type="text/javascript" src="dataTables.scrollingPagination.js"></script>*@
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.css" />
+<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.js"></script>
 
 
-<script>
 
-   
+<script type="text/javascript">
 
-      new DataTable('#myTable', {
-    
-});
+        var js = jQuery.noConflict(true)
+        js(document).ready(function () {
+            js('#myTable').DataTable({
+
+
+        });
+
+
+    });
+
+        $(function () {
+
+            $('#userfullname').keydown(function (e) {
+
+                if (e.shiftKey || e.ctrlKey || e.altKey) {
+
+                    e.preventDefault();
+
+                } else {
+                    var key = e.keyCode;
+
+                    if (!((key == 8) || (key == 32) || (key == 46) || (key >= 35 && key <= 40) || (key >= 65 && key <= 90))) {
+
+                        e.preventDefault();
+
+                    }
+
+                }
+
+            });
+
+        });
+
+        function showLoader() {
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        // Function to hide the loader and overlay
+        function hideLoader() {
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+
+    $("#btnSave").click(function () {
+       
+        var empid = $("#empid").val();
+            var username = $("#userfullname").val();
+            var hasErrors = false;
+        // Validate EmpID
+        if (empid == '') {
+            $('#empidError').text("EmpID is required.");
+            hasErrors=true;
+            
+            
+
+        } else {
+            $('#empidError').text("");
+        }
+
+        // Validate UserFullName
+        if (username == '') {         
+            $('#userfullnameError').text("UserFullName is required.");
+                hasErrors = true;          
+        }
+        else {
+            $('#userfullnameError').text("");
+        }
+
+            if (hasErrors) {
+                return false; 
+            }
+        saveUser();
+
+    })
+
 
     let isEditing = false;
 
-    function editUser(button) {
-        var row = button.parentNode.parentNode;
-        var empID = row.cells[0].innerText;
-        var userFullName = row.cells[1].innerText;
-        var userRole = row.cells[2].innerText;
+        function editUser(button) {
+            var row = button.parentNode.parentNode;
+            var empID = row.cells[0].innerText;
+            var userFullName = row.cells[1].innerText;
+            var userRole = row.cells[2].innerText;
 
 
-        document.getElementById("EmpID").value = empID;
-        document.getElementById("UserFullName").value = userFullName;
+            document.getElementById("empid").value = empID;
+            document.getElementById("userfullname").value = userFullName;
 
 
         var select = document.getElementById("UserRole");
@@ -286,40 +377,45 @@
                 break;
             }
         }
+        $('#empidError').text("");
+        $('#userfullnameError').text("");
 
-        isEditing = true;
-    }
+            isEditing = true;
+        }
 
 
 
 
-    function saveUser() {
+        function saveUser() {
+            showLoader();
 
-        var empId = document.getElementById("EmpID").value;
-        var fullName = document.getElementById("UserFullName").value;
+        var empId = document.getElementById("empid").value;
+            var fullName = document.getElementById("userfullname").value;
         var userRole = document.getElementById("UserRole").value;
 
 
-        var user = {
-            EmpID: empId,
-            UserFullName: fullName,
-            UserRole: userRole
-        }
+            var user = {
+                EmpID: empId,
+                UserFullName: fullName,
+                UserRole: userRole
+            }
 
-        if (isEditing) {
-            user.EmpID = parseInt(user.EmpID);
-        }
+            if (isEditing) {
+                user.EmpID = parseInt(user.EmpID);
+            }
 
-        submitform(user);
-    }
+            submitform(user);
+        }
 
 
     function importCsv() {
+            showLoader();
         var fileInput = document.getElementById('csvFile');
         var file = fileInput.files[0];
 
         var formData = new FormData();
         formData.append('file', file);
+      
 
         $.ajax({
             url: '/Admin/importCsv',
@@ -328,29 +424,54 @@
             processData: false,
             contentType: false,
             success: function (response) {
+                    hideLoader();
                 alert("CSV file uploaded successfully!");
                 location.reload();
             },
-            error: function (error) {
+            error: function (error) {         
                 console.log(error);
                 alert("Error uploading CSV file!");
             }
         });
     }
 
+        function downloadCSV() {
+            // Show loader here
+            showLoader();
 
-    function submitform(user) {
+            // Perform the CSV download
+            $.ajax({
+                url: '/Admin/DownloadCSV', // The URL for CSV download (update it as per your actual URL)
+                type: 'GET',
+                success: function (response) {
+                    // Hide loader after successful download
+                    hideLoader();
+                    //alert("CSV file downloaded successfully!");
+                },
+                error: function (error) {
+                    // Hide loader after download error
+                    hideLoader();
+                    console.log(error);
+                    alert("Error downloading CSV file!");
+                }
+            });
+        }
+
+
+        function submitform(user) {
 
         $.ajax({
-            url: '/Admin/SaveUser',
-            type: 'POST',
-            data: user,
+                url: '/Admin/SaveUser',
+                type: 'POST',
+                data: user,
             success: function (response) {
                 if (response.message && response.message === "Updated successfully!") {
                     alert("User updated successfully!");
-                } else {
+                } 
+                else {
                     alert("User saved successfully!");
                 }
+                hideLoader();
                 location.reload();
             },
             error: function (error) {
@@ -359,7 +480,45 @@
             }
         });
 
-        isEditing = false;
+            isEditing = false;
 
     }
+
+    // code for session timer
+
+      function startTimer(duration) {
+    var timerDisplay = document.getElementById("timer");
+
+    var timer = duration;
+    var hours, minutes, seconds;
+
+    var intervalId = setInterval(function () {
+        hours = parseInt(timer / 3600, 10);
+        minutes = parseInt((timer % 3600) / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+
+        hours = hours < 10 ? "0" + hours : hours;
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        timerDisplay.textContent = hours + ":" + minutes + ":" + seconds;
+
+        if (--timer < 0) {
+            clearInterval(intervalId);
+            // Perform any action you need when the timer reaches 00:00:00
+            window.location.href = "/Login/Logout";
+            //alert("Timer has expired!");
+        }
+    }, 1000);
+}
+
+// Local Storage is already set in homescreen so just obtain it here
+var expirationTime = localStorage.getItem("expiration_time"); 
+
+
+// Get the expiration time from localStorage
+var currentTime = Math.floor(Date.now() / 1000);
+var remainingTime = expirationTime - currentTime;
+startTimer(remainingTime);
 </script>
+}

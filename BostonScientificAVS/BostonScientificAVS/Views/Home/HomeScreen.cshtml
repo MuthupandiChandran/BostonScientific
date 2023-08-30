@@ -1,18 +1,30 @@
-﻿
- <div class="navigation-header">
+﻿<div id="hoursInput" data-hours-input="@ViewBag.HoursInput"></div>
+<div class="navigation-header-home">
         <div class="dropdown">
   <button class="custom-config-button" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <img class="image-size" src="~/assets/images/user_avatar.png"/>
-            <span class="user-name-text">Hello, Martha</span>
+            <img class="avatar-image-size" src="~/assets/images/user_avatar.png"/>
+            <span class="user-name-text">Hello, @User.Identity.Name | @User.Claims.FirstOrDefault(c => c.Type == "EmpID")?.Value</span>
   </button>
   <div class="dropdown-menu custom-config-dropdown" aria-labelledby="dropdownMenuButton">
-    <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Users">Manage Users</a>
-    <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Items" >Manage Database</a>
-    <a class="dropdown-item text-color-blue"  asp-area="" asp-controller="Home" asp-action="Index" >Logout</a>
+
+            @if (User.IsInRole("Admin"))
+            {
+                 <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Users">Manage Users</a>
+                <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Items" >Manage Database</a>
+                <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="TransactionTable" >Transaction</a>
+            }
+                         <a class="dropdown-item text-color-blue"  asp-area="" asp-controller="Login" asp-action="Logout" >Logout</a> 
   </div>
 </div>
 
-    </div>
+<div class="navigation-back">
+    <div class="session-time">
+      <h6 class="session-expires-text text-color-blue">Your Session Expires On</h6>
+      <h6 id="timer" class="session-expire-time text-color-blue"></h6>
+      </div>
+</div>
+
+</div>
 <div class="login-container">
    
     <div class="mid-container">
@@ -28,7 +40,7 @@
         <a class="login-button" asp-area="" asp-controller="Home" asp-action="WorkOrderScan"><span class="login-text">Packaging</span></a>
     </div>
        <div>
-        <a class="login-button" asp-area="" asp-controller="Home" asp-action="Index"><span class="login-text">Boxing/Carton</span></a>
+        <a class="login-button" asp-area="" asp-controller="" asp-action=""><span class="login-text">Boxing/Carton</span></a>
     </div>
     </div>
    @*  <div>
@@ -52,29 +64,8 @@
        gap: 11px;
   }
 
-  .text-color-blue{
-      color:#003C71;
-  }
-
     .btn-secondary:active{
         background-color:white;
-    }
-
-    .custom-config-dropdown{
-        margin-left:17px;
-        border-radius: 10px;
-    }
-
-    .custom-config-button{
-        width: 211px;
-        height: 54px;
-        background-color: white;
-        border: none;
-        white-space: nowrap;   /* Added to remove white space */
-    }
-    .image-size {
-        height: 40px;
-   
     }
 
     .logout{
@@ -157,14 +148,61 @@
         padding-top:10px;
     }
 
-    .user-name-text{
-        font-size:24px;
-        font-weight:500;
-        vertical-align: -4px;
-        color: #003C71;
+    .navigation-header-home{
+        display: flex;
+        justify-content: space-between;
+        padding-left: 20px;
+        padding-top: 20px;
+        padding-right: 20px;
     }
 
-    .navigation-header{
-       padding: 20px;
-    }
+ 
 </style>
+
+<script>
+    const myElement = document.getElementById('hoursInput');
+    function startTimer(duration) {
+    var timerDisplay = document.getElementById("timer");
+
+    var timer = duration;
+    var hours, minutes, seconds;
+
+    var intervalId = setInterval(function () {
+        hours = parseInt(timer / 3600, 10);
+        minutes = parseInt((timer % 3600) / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+
+        hours = hours < 10 ? "0" + hours : hours;
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        timerDisplay.textContent = hours + ":" + minutes + ":" + seconds;
+
+        if (--timer < 0) {
+            clearInterval(intervalId);
+            // Perform any action you need when the timer reaches 00:00:00
+            window.location.href = "/Login/Logout";
+            //alert("Timer has expired!");
+        }
+    }, 1000);
+}
+
+    // Set the initial expiration time in JavaScript (2 hours in this example)
+    var hoursInput = myElement.dataset.hoursInput;; // Replace this with the desired hours from your input*/
+    var expirationTime;
+    if (hoursInput == 0) {
+    expirationTime = localStorage.getItem("expiration_time");
+    } else {
+     expirationTime = Math.floor(Date.now() / 1000) + hoursInput * 3600;
+    // Store the expiration time in localStorage
+    localStorage.setItem("expiration_time", expirationTime);
+    }
+
+
+
+
+    // Get the expiration time from localStorage
+    var currentTime = Math.floor(Date.now() / 1000);
+    var remainingTime = expirationTime - currentTime;
+    startTimer(remainingTime);
+</script>

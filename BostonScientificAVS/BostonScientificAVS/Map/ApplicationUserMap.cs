@@ -1,4 +1,4 @@
-﻿using BostonScientificAVS.Models;
+﻿using Entity;
 using CsvHelper.Configuration;
 
 namespace BostonScientificAVS.Map

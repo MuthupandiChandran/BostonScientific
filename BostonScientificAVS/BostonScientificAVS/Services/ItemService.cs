@@ -4,6 +4,7 @@ using Entity;
 using CsvHelper;
 using System.Globalization;
 using BostonScientificAVS.Models;
+using CsvHelper.Configuration;
 
 namespace BostonScientificAVS.Services
 {
@@ -20,7 +21,7 @@ namespace BostonScientificAVS.Services
             return _context.ItemMaster.ToList();
         }
 
-        public void updateItem(SingleItemEdit updatedItem)
+        public void updateItem(SingleItemEdit updatedItem,string editBy)
         {
             if (updatedItem.gtin_value != null)
             {
@@ -42,19 +43,17 @@ namespace BostonScientificAVS.Services
                     case "IFU":
                         itemToUpdate.IFU = updatedItem.updated_value;
                         break;
-                    case "Edit_Date_Time":
-                        itemToUpdate.Edit_Date_Time = updatedItem.updated_value;
-                        break;
-                    case "Edit_By":
-                        itemToUpdate.Edit_By = updatedItem.updated_value;
-                        break;
-                    case "Created":
-                        itemToUpdate.Created = updatedItem.updated_value;
-                        break;
-                    case "Created_by":
-                        itemToUpdate.Created_by = updatedItem.updated_value;
-                        break;
+                    //case "Edit_Date_Time":
+                    //    // Set the "Edit_Date_Time" property to the current date and time
+                    //    itemToUpdate.Edit_Date_Time = DateTime.Now; // Or use DateTime.Now if the property type is DateTime
+                        //break;
+                    //case "Edit_By":
+                    //    itemToUpdate.Edit_By = updatedItem.updated_value;
+                    //    break;            
+
                 }
+                itemToUpdate.Edit_By = editBy;
+                itemToUpdate.Edit_Date_Time = DateTime.Now;
                 _context.SaveChanges();
             }
 
@@ -80,15 +79,19 @@ namespace BostonScientificAVS.Services
             }
         }
 
-        public async Task importCsv(IFormFile file)
-        {
+        public async Task importCsv(IFormFile file, string currentUserName)
+        {         
             if (file != null && file.Length > 0)
-            {
+            {               
                 // Read the contents of the CSV file
                 using (var reader = new StreamReader(file.OpenReadStream()))
                 {
-                    // Create a CSV reader
-                    using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+                    // Create a CSV reader with CsvConfiguration and set MissingFieldFound to null
+                    var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
+                    {
+                        MissingFieldFound = null
+                    };
+                    using (var csv = new CsvReader(reader, csvConfig))
                     {
                         // Map the CSV columns to your model properties
                         csv.Context.RegisterClassMap<ItemMasterMap>();
@@ -108,26 +111,24 @@ namespace BostonScientificAVS.Services
                                 existingRecord.Shelf_Life = record.Shelf_Life;
                                 existingRecord.Label_Spec = record.Label_Spec;
                                 existingRecord.IFU = record.IFU;
-                                existingRecord.Created = record.Created;
-                                existingRecord.Edit_Date_Time = record.Edit_Date_Time;
-                                existingRecord.Edit_By = record.Edit_By;
                                 // Update other properties as needed
                             }
                             else
                             {
                                 // Insert new record
+                                record.Created_by = currentUserName; // Set a default value for Created_by
+                                record.Created = DateTime.Now; // Set the current date and time for Created
                                 _context.ItemMaster.Add(record);
                             }
                         }
 
-                            // Save changes to the database
-                            await _context.SaveChangesAsync();
-                       
+                        // Save changes to the database
+                        await _context.SaveChangesAsync();
                     }
                 }
             }
         }
-      
+
 
     }
 }

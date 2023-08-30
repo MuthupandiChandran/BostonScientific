@@ -1,5 +1,5 @@
 ﻿using BostonScientificAVS.Map;
-using BostonScientificAVS.Models;
+using Entity;
 using Context;
 using CsvHelper;
 using Microsoft.AspNetCore.Mvc;

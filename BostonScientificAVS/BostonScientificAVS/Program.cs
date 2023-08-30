@@ -1,21 +1,41 @@
 using BostonScientificAVS.Services;
 using Context;
-using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.CodeAnalysis.Options;
+using Microsoft.AspNetCore.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// Load the env file
 DotNetEnv.Env.Load();
-string DBConStr = Environment.GetEnvironmentVariable("DB_CON_STRING");
+
+// get the expire time from env
+int Time = DotNetEnv.Env.GetInt("EXPIRE_TIME");
+
+// get the connection string from env
+string DBConStr = DotNetEnv.Env.GetString("DB_CON_STRING");
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseSqlServer(DBConStr);
 });
 builder.Services.AddScoped<ItemService>();
 builder.Services.AddScoped<UserService>();
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+}).AddCookie(option =>
+{
+    option.LoginPath = "/Login/Login";
+    option.ExpireTimeSpan = TimeSpan.FromHours(Time);
+});
+//builder.Services.AddAuthentication("CustomScheme")
+//        .AddScheme<AuthenticationSchemeOptions, CustomAuthenticationHandler>("CustomScheme", options => { });
 
 var app = builder.Build();
 
@@ -32,10 +52,11 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Login}/{action=Login}/{id?}");
 
 app.Run();

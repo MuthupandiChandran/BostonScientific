@@ -1,0 +1,142 @@
+﻿@model Entity.ApplicationUser
+@{
+    ViewData["Title"] = "Home Page";
+}
+<partial name="_Loader" />
+
+<div class="login-container">
+    <div>
+        <div class="logo-image">
+            <img src="~/assets/images/AbeTechLogo.png" class="image-size-default" />
+        </div>
+    </div>
+    <div>
+        <h6 class="app-name-text">Auto Verify System</h6>
+    </div>
+    <form id="loginForm" asp-controller="Login" asp-action="Login" method="post">
+    <div class="login-div">
+        <div>
+              <input class="scan-input" placeholder="Enter ID here" asp-for="EmpID"/>
+        </div>
+       <div>
+             <a class="login-button" onclick="submitLoginForm()"><span class="login-text">Scan ID/Login</span></a>
+       </div>
+    </div>
+
+    </form>
+    <div class="text-danger" id="loginerror">
+        @if (TempData.ContainsKey("ErrorMessage"))
+        {
+            <span>@TempData["ErrorMessage"]</span>
+            TempData.Remove("ErrorMessage");
+        }
+    </div>
+
+    @{
+        var errorMessage = TempData["ErrorMsg"] as string;
+    }
+    <div class="text-danger" id="loginerror">
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="error-message">
+                @errorMessage
+            </div>
+        }
+    </div>
+
+</div>
+
+@*<div class="error-mockup">
+    <a class="login-error-button" asp-area="" asp-controller="Home" asp-action="LoginError"><span class="login-error-text">For Error Scenario</span></a>
+</div>*@
+
+@*<div class="text-center">
+       <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Result">Result</a>
+</div>*@
+
+<style>
+ 
+    #loginerror{
+        text-align:center;
+    }
+    .logo-image{
+        width: 353px;
+        height: 71px;
+        margin: auto;
+    }
+
+    .app-name-text{
+        font-size:41px;
+        font-weight: 700;
+        text-align: center;
+    }
+
+    .login-button{
+        display: block;
+        width: 206px;
+        height: 67px;
+        background: #003C71;
+        padding: 10px;
+        text-align: center;
+        border-radius: 12px;
+        color: white;
+        font-weight: bold;
+        line-height: 40px;
+        margin:auto;
+        text-decoration:none;
+    }
+
+
+
+    .login-text{
+        font-size:24px;
+        font-weight:500;
+    }
+
+    .login-error-text{
+        font-size:24px;
+        font-weight:500;
+        color: orange;
+    }
+
+    .login-container{
+        position: relative;
+        top: 30%;
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+    }
+
+    .error-mockup{
+        position: relative;
+        top: 50%;
+    }
+
+    .login-div{
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+    }
+
+</style>
+
+<script>
+    function submitLoginForm() {
+        console.log("submit hit");
+        document.getElementById("loginForm").submit();
+        showLoader();
+    }
+
+    // Function to show the loader and overlay
+function showLoader() {
+  document.getElementById('loader').style.display = 'block';
+  document.getElementById('overlay').style.display = 'block';
+}
+
+// Function to hide the loader and overlay
+function hideLoader() {
+  document.getElementById('loader').style.display = 'none';
+  document.getElementById('overlay').style.display = 'none';
+}
+
+</script>

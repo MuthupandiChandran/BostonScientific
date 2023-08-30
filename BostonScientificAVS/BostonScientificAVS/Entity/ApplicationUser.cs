@@ -3,19 +3,20 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 
-namespace BostonScientificAVS.Models
+namespace Entity
 {
     //[Index(nameof(EmpID), IsUnique = true)]
     public class ApplicationUser
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; } 
-        [Required]
+        public int Id { get; set; }
+        [Required(ErrorMessage = "EmpID is required")]
         [MaxLength(100)]
         [Column(TypeName = "nvarchar(100)")]  
         public string EmpID { get; set; }
-        [Required]
+        [Required(ErrorMessage = "UserFullName is required")]
+        [RegularExpression("^[A-Za-z]+$", ErrorMessage = "UserFullName should only contain alphabets")]
         public string UserFullName { get; set; }
         [Required]
         public UserRole UserRole { get; set; }

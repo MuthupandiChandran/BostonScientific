@@ -1,0 +1,174 @@
+﻿@model List<Entity.Transaction>
+@using Entity
+
+@{
+    ViewData["Title"] = "Transaction Table";
+}
+<div class="navigation-header-items">
+    <div class="dropdown">
+        <button class="custom-config-button" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <img class="avatar-image-size" src="~/assets/images/user_avatar.png" />
+            <span class="user-name-text">Hello, @User.Identity.Name | @User.Claims.FirstOrDefault(c => c.Type == "EmpID")?.Value</span>
+        </button>
+        <div class="dropdown-menu custom-config-dropdown" aria-labelledby="dropdownMenuButton">
+
+            @if (User.IsInRole("Admin"))
+            {
+                <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Users">Manage Users</a>
+                <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Items">Manage Database</a>
+                <a class="dropdown-item text-color-blue" asp-area="" asp-controller="" asp-action="">Transaction</a>
+            }
+            <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Login" asp-action="Logout">Logout</a>
+        </div>
+    </div>
+
+    <div class="navigation-back">
+        <div class="session-time">
+            <h6 class="session-expires-text text-color-blue">Your Session Expires On</h6>
+            <h6 id="timer" class="session-expire-time text-color-blue"></h6>
+        </div>
+        <div>
+            <a class="button" href="javascript:history.go(-1)" @*asp-area="" asp-controller="Home" asp-action="HomeScreen"*@><img class="back-button-img" src="/assets/images/back-arrow.png" /><span class="back-text">Back</span></a>
+        </div>
+    </div>
+</div>
+
+<h2>Transaction Table</h2>
+<hr/>
+
+<form id ="tbl-search"method="get" action="@Url.Action("TransactionTable")">
+    <label for="search">Search Date:</label>
+    <input type="date" id="search" name="search" />
+    <button type="submit">Search</button>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Transaction Id</th>
+            <th>Product Label GTIN</th>
+            <th>Carton Label GTIN</th>
+            <th>DB GTIN</th>
+            <th>WO Lot No</th>
+            <th>Product Lot No</th>
+            <th>Carton Lot No</th>
+            <th>WO Catalog No</th>
+            <th>Db Catalog No</th>
+            <th>ShelfLife</th>
+            <th>WO Mfg Date</th>
+            <th>Calculated Use By</th>
+            <th>Product Use By</th>
+            <th>Carton Use By</th>
+            <th>DB Label Spec</th>
+            <th>Product Label Spec</th>
+            <th>Carton Label Spec</th>
+            <th>DB IFU</th>
+            <th>Scanned IFU</th>
+            <th>User</th>
+            <th>Date Time</th>
+            <th>Rescan Initiated</th>
+            <th>Result</th>
+            <th>Failure Reason</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var record in Model)
+        {
+            <tr>
+                <td>@record.Transaction_Id</td>
+                <td>@record.Product_Label_GTIN</td>
+                <td>@record.Carton_Label_GTIN</td>
+                <td>@record.DB_GTIN</td>
+                <td>@record.WO_Lot_Num</td>
+                 <td>@record.Product_Lot_Num</td>
+                  <td>@record.Carton_Lot_Num</td>
+                   <td>@record.WO_Catalog_Num</td>
+                    <td>@record.DB_Catalog_Num</td>
+                     <td>@record.Shelf_Life</td>
+                      <td>@record.WO_Mfg_Date</td>
+                       <td>@record.Calculated_Use_By</td>
+                        <td>@record.Product_Use_By</td>
+                         <td>@record.Carton_Use_By</td>
+                          <td>@record.DB_Label_Spec</td>
+                           <td>@record.Product_Label_Spec</td>
+                            <td>@record.Carton_Label_Spec</td>
+                             <td>@record.DB_IFU</td>
+                              <td>@record.Scanned_IFU</td>
+                               <td>@record.User</td>
+                                <td>@record.Date_Time</td>
+                                 <td>@record.Rescan_Initated</td>
+                                  <td>@record.Result</td>
+                                   <td>@record.Failure_Reason</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<style>
+    .table{
+        overflow:auto;
+    }
+    hr{
+        color: black;
+        font-weight: 200;
+        margin-top: -4px;
+    }
+
+    .table thead th {
+        border: 1px solid #dee2e6;
+        background-color: darkblue;
+        color: aliceblue;
+        font-weight: bold;
+        padding: 8px;
+    }
+
+    /* Style for table rows */
+    .table tbody td {
+        border: 1px solid #dee2e6;
+        padding: 8px;
+    }
+    #tbl-search{
+        float:right;
+    }
+</style>
+
+
+
+
+<script type="text/javascript">
+    function startTimer(duration) {
+        var timerDisplay = document.getElementById("timer");
+
+        var timer = duration;
+        var hours, minutes, seconds;
+
+        var intervalId = setInterval(function () {
+            hours = parseInt(timer / 3600, 10);
+            minutes = parseInt((timer % 3600) / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+
+            hours = hours < 10 ? "0" + hours : hours;
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            timerDisplay.textContent = hours + ":" + minutes + ":" + seconds;
+
+            if (--timer < 0) {
+                clearInterval(intervalId);
+                // Perform any action you need when the timer reaches 00:00:00
+                window.location.href = "/Login/Logout";
+                //alert("Timer has expired!");
+            }
+        }, 1000);
+    }
+
+    // Local Storage is already set in homescreen so just obtain it here
+    var expirationTime = localStorage.getItem("expiration_time");
+
+
+    // Get the expiration time from localStorage
+    var currentTime = Math.floor(Date.now() / 1000);
+    var remainingTime = expirationTime - currentTime;
+    startTimer(remainingTime);
+</script>
+
