@@ -591,11 +591,6 @@
     </div>
 </body>
 <style>
-
-    /* #next-scan-button{
-           background-color: #003C71;
-           color:white;
-        }*/
     .brdr-bottom {
         border-bottom: 1px solid black;
         margin-bottom: 6px;
@@ -672,8 +667,6 @@
     }
 
     .next-button-align {
-        /* padding-left: 27px; */
-        /* padding-top: 8px; */
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1228,9 +1221,7 @@
 
     document.getElementsByClassName('temp-supervisor-call-button')[0]
         .addEventListener('click', function (event) {
-            ScanFailToSupervisor();
-            setScannedFailData(responseData, responseData.mismatches);
-            
+            showPopup();         
         });
     
 
@@ -1627,6 +1618,39 @@
         document.getElementById("work-order-lot-no").innerHTML = response.lhsData.woLotNo;
     }
 
+    $(document).ready(function () {
+        configureContinueButton();
+    });
+
+    function configureContinueButton() {
+        $('#greenButton').off('click'); // Remove previous click event handler
+        $('#greenButton').click(function () {
+            showLoader();
+            var supervisorId = $('#supervisorInput').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '/Home/CheckSupervisorId',
+                data: { supervisorEmpId: supervisorId },
+                success: function (data) {
+                    if (data === true) {
+                        hideLoader();
+                        closePopup();
+                        ScanFailToSupervisor();
+                        setScannedFailData(responseData, responseData.mismatches);
+                    } else {
+                        hideLoader();
+                        // Supervisor ID is invalid, show an error message
+                        var errorMessage = 'Supervisor ID is invalid. Please enter a valid ID.';
+                        $('#popupContent').find('.error-message').text(errorMessage);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log("An error occurred while making the AJAX call:", error);
+                }
+            });
+        });
+    }
     
 
 
