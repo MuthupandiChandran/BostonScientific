@@ -76,15 +76,14 @@ namespace BostonScientificAVS.Controllers
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "EmployeeID Seems To be Invalid. Please retry again";
+                    TempData["ErrorMessage"] = "Employee ID Seems To be Invalid. Please retry again";
                     return RedirectToAction("Login","Login");
                 }
             }
             catch (Exception e)
-
             {
-                Console.WriteLine(e);
-                return BadRequest();
+                TempData["ErrorMessage"] = e.Message;
+                return RedirectToAction("Login", "Login");
             }
 
         }
