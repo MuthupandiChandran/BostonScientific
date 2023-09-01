@@ -63,6 +63,16 @@
                         <span>@TempData["ErrorMessage"]</span>
                         TempData.Remove("ErrorMessage");
                     }
+                    @if (TempData.ContainsKey("ErrorMessage1"))
+                    {
+                        <span>@TempData["ErrorMessage1"]</span>
+                        TempData.Remove("ErrorMessage1");
+                    }
+                    @if (TempData.ContainsKey("ErrorMessage2"))
+                    {
+                        <span>@TempData["ErrorMessage2"]</span>
+                        TempData.Remove("ErrorMessage2");
+                    }
                 </div>
             </div>
         </div>
@@ -72,7 +82,9 @@
 
 
 <style>
-
+    .text-danger{
+        text-align:center;
+    }
     .work-order-scan-submit {
         display: flex;
         justify-content: center;
