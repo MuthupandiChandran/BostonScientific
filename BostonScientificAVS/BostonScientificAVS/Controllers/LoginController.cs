@@ -12,12 +12,10 @@ namespace BostonScientificAVS.Controllers
     public class LoginController : Controller
     {
         private readonly DataContext _context;
-        private readonly IHttpContextAccessor _contextAccessor;
 
-        public LoginController(DataContext context,IHttpContextAccessor contextAccessor)
+        public LoginController(DataContext context)
         {
             _context = context;
-            _contextAccessor = contextAccessor;
         }
         public IActionResult Login()
         {
@@ -74,7 +72,6 @@ namespace BostonScientificAVS.Controllers
                     var claimsIdentity = new ClaimsIdentity(authClaims, "Login");
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
                     TempData["AfterLogin"] = afterLogin;
-                    _contextAccessor.HttpContext.Session.SetString("CurrentUserName", loggedInUser.UserFullName);
                     return RedirectToAction("HomeScreen", "Home");
                 }
                 else
