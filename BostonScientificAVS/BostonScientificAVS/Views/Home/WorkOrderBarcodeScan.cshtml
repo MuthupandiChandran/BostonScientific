@@ -45,7 +45,7 @@
                 <form id="workOrderForm" asp-controller="Home" asp-action="SaveWorkOrderBarcode" method="post">
                     <div class="work-order-scan-submit">
                         <div>
-                            <input class="scan-input" placeholder="Enter ID here" name="input" id="input" />
+                            <input class="scan-input" placeholder="Please Enter Work Order" name="input" id="input" />
                         </div>
                         <div>
                             <button type="submit" class="login-button" id="submitBtn">
@@ -183,6 +183,10 @@
     .login-text {
         font-size: 24px;
         font-weight: 500;
+    }
+
+    .scan-input::placeholder {
+        font-size: 16px;
     }
 
 </style>

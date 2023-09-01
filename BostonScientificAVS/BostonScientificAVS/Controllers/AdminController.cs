@@ -242,6 +242,9 @@ namespace BostonScientificAVS.Controllers
             DateTime today = DateTime.Today;
             ViewBag.SearchDate = search;
 
+            string userFullName = HttpContext.Session.GetString("CurrentUserName");
+            ViewBag.UserFullName = userFullName; 
+
             var records = _context.Transaction.ToList(); // Fetch all records to memory
 
             if (!string.IsNullOrEmpty(search))

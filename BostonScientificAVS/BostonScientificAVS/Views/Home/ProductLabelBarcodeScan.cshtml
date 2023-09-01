@@ -536,6 +536,7 @@
 
             <div id="popupContainer">
                 <div id="popupContent">
+                    <a class="close" href="javascript:void(0);" onclick="closePopup()">X</a>
                     <img src="~/assets/images/Barcode image 2.png" alt="Barcode Icon" id="scan-image">
                     <h5 class="supr-txt">Place Your Supervisor Badge</h5>
                     <h5 id="under">under the scanner</h5>
@@ -577,9 +578,11 @@
                 <div class="col-md-4">
                     <div id="next-scan-button" class="right-part-container temp-reset-button">
                         <div class="next-button-align">
+                            <a asp-area="" asp-controller="Home" asp-action="HomeScreen">
                             <span class="scanning-next-text">
                                 Send To Boxing / Next Scan
                             </span>
+                            </a>
                             <img class="next-img" src="/assets/images/next-button.png" />
                         </div>
                     </div>
@@ -591,6 +594,9 @@
     </div>
 </body>
 <style>
+    .next-button-align a {
+        text-decoration: none;
+    }
     .brdr-bottom {
         border-bottom: 1px solid black;
         margin-bottom: 6px;
@@ -1205,6 +1211,13 @@
         height: 303px !important;
         width: 321px;
         margin-left: 35px;
+    }
+
+    .close {
+        float: right;
+        text-decoration: none;
+        color: #333;
+        font-weight: 700;
     }
 
 </style>

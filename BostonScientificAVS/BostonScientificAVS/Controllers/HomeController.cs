@@ -222,24 +222,30 @@ namespace BostonScientificAVS.Controllers
                 TempData["ErrorMessage"] = "Invalid barcodes. One or both of the scanned barcodes are not valid.";
                 return Json(new { success = false, errorMessage = TempData["ErrorMessage"] });
             }
-        }      
+        }
         public IActionResult HomeScreen()
         {
-            bool myBooleanValue = false; // Default value in case TempData["MyBoolean"] is not set
+            bool myBooleanValue = false; // Default value in case TempData["AfterLogin"] is not set
+
             if (TempData.ContainsKey("AfterLogin") && TempData["AfterLogin"] is bool myBoolean)
             {
                 myBooleanValue = myBoolean;
             }
+
             if (myBooleanValue)
             {
                 int hoursInput = DotNetEnv.Env.GetInt("EXPIRE_TIME");
                 ViewBag.HoursInput = hoursInput;
-            } else
+            }
+            else
             {
                 ViewBag.HoursInput = 0;
             }
+
             return View();
         }
+
+
 
         [HttpPost]
         public ActionResult CheckSupervisorId(string supervisorEmpId)
@@ -428,50 +434,74 @@ namespace BostonScientificAVS.Controllers
                 return View("WorkOrderBarcodeScan");
             }
         }
-        [HttpPost("/SaveCartonLabel")]
+        [HttpPost]
         public async Task<IActionResult> SaveCartonLabel(string input1, string input2)
         {
             if (ModelState.IsValid)
             {
+                string pattern = @"\((\d{2})\)(\d{14})\((\d{2})\)(\d{6})\((\d{2})\)(\w+)";
+                Match match = Regex.Match(input1, pattern);
 
-                string pattern = @"\((\d+)\)";
-                string[] barcodeParts = Regex.Split(input1, pattern);
-                var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
-                if (barcodeParts.Length >=3)
+                Transaction transaction = null; // Declare the variable outside the block
+
+                if (match.Success)
                 {
-                    transaction.Carton_Label_GTIN= barcodeParts[2];
-                    DateTime dateTime = DateTime.ParseExact(barcodeParts[4], "yyMMdd", null);
-                    transaction.Carton_Use_By = dateTime;
-                    transaction.Carton_Lot_Num = barcodeParts[6];
-
-
-                    ItemMaster item = await _dataContext.ItemMaster.FirstOrDefaultAsync(i => i.GTIN == transaction.Carton_Label_GTIN);
-                    if (item != null)
+                    string[] barcodeParts = new string[7];
+                    for (int i = 0; i < 7; i++)
                     {
-                        // Assign values from ItemMaster
-                        transaction.DB_GTIN = item.GTIN;
-                        transaction.DB_Catalog_Num = item.Catalog_Num;
-                        DateTime workOrderDT = (DateTime)transaction.WO_Mfg_Date;
-                        transaction.Calculated_Use_By = workOrderDT.AddDays((double)item.Shelf_Life);
-                        transaction.DB_Label_Spec = item.Label_Spec;
-                        transaction.DB_IFU = item.IFU;
+                        barcodeParts[i] = match.Groups[i + 1].Value;
+                    }
+
+                    if (barcodeParts[0] == "01" && barcodeParts[2] == "17" && barcodeParts[4] == "10")
+                    {
+                        transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
+
+                        transaction.Carton_Label_GTIN = barcodeParts[1];
+                        DateTime dateTime = DateTime.ParseExact(barcodeParts[3], "yyMMdd", null);
+                        transaction.Carton_Use_By = dateTime;
+                        transaction.Carton_Lot_Num = barcodeParts[5];
+
+                        ItemMaster item = await _dataContext.ItemMaster.FirstOrDefaultAsync(i => i.GTIN == transaction.Carton_Label_GTIN);
+                        if (item != null)
+                        {
+                            // Assign values from ItemMaster
+                            transaction.DB_GTIN = item.GTIN;
+                            transaction.DB_Catalog_Num = item.Catalog_Num;
+                            DateTime workOrderDT = (DateTime)transaction.WO_Mfg_Date;
+                            transaction.Calculated_Use_By = workOrderDT.AddDays((double)item.Shelf_Life);
+                            transaction.DB_Label_Spec = item.Label_Spec;
+                            transaction.DB_IFU = item.IFU;
+                        }
+                        else
+                        {
+                            return RedirectToAction("WorkOrderError", "Home");
+                        }
+                   
+                            transaction.DB_IFU = input2;  
+
                     }
                     else
                     {
-                        return RedirectToAction("WorkOrderError", "Home");
+                        TempData["ErrorMessage"] = "Carton Label spec Input is Invalid Format";
+                        return View("CartonLabelScan");
                     }
-
-                    transaction.Carton_Label_Spec = input2;                  
+                    
                 }
-                await _dataContext.SaveChangesAsync();
-                TempData["WorkOrderLotNo"] = transaction.WO_Lot_Num;
-                return RedirectToAction("ProductLabelBarcodeScan","Home");
+
+                if (transaction != null)
+                {
+                    await _dataContext.SaveChangesAsync();
+                    TempData["WorkOrderLotNo"] = transaction.WO_Lot_Num;
+                }
+                return RedirectToAction("ProductLabelBarcodeScan", "Home");
             }
             else
             {
                 return RedirectToAction("WorkOrderError", "Home");
             }
         }
+
+
 
         [HttpPost("/SaveProductLabelBarcode")]
         public async Task<IActionResult>SaveProductLabelBarcode(string input1, string input2,string input3)
@@ -504,7 +534,7 @@ namespace BostonScientificAVS.Controllers
                         return RedirectToAction("WorkOrderError", "Home");
                     }
 
-                    transaction.Carton_Label_Spec = input2;
+                    transaction.Product_Label_Spec = input2;
                     transaction.Scanned_IFU = input3;
                 }
                 await _dataContext.SaveChangesAsync();
