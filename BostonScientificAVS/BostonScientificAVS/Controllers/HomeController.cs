@@ -480,12 +480,12 @@ namespace BostonScientificAVS.Controllers
                             transaction.DB_IFU = input2;  
 
                     }
-                    else
-                    {
-                        TempData["ErrorMessage"] = "Carton Label spec Input is Invalid Format";
-                        return View("CartonLabelScan");
-                    }
                     
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Carton Label spec Input is Invalid Format";
+                    return View("CartonLabelScan");
                 }
 
                 if (transaction != null)
