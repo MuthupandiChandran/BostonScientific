@@ -48,7 +48,7 @@ namespace BostonScientificAVS.Migrations
                     WO_Mfg_Date = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Calculated_Use_By = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Product_Use_By = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Carton_Use_By = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Carton_Use_By = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DB_Label_Spec = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
                     Product_Label_Spec = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
                     Carton_Label_Spec = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),

@@ -1,0 +1,259 @@
+﻿<div class="container1">
+    <div class="navigation-header-items">
+        <div class="dropdown">
+            <button class="custom-config-button" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <img class="avatar-image-size" src="~/assets/images/user_avatar.png" />
+                <span class="user-name-text">Hello, @User.Identity.Name | @User.Claims.FirstOrDefault(c => c.Type == "EmpID")?.Value</span>
+            </button>
+            <div class="dropdown-menu custom-config-dropdown" aria-labelledby="dropdownMenuButton">
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Users">Manage Users</a>
+                    <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Items">Manage Database</a>
+                    <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="TransactionTable">Transaction</a>
+                }
+                <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Login" asp-action="Logout">Logout</a>
+            </div>
+        </div>
+
+        <div class="navigation-back">
+            <div class="session-time">
+                <h6 class="session-expires-text text-color-blue">Your Session Expires On</h6>
+                <h6 id="timer" class="session-expire-time text-color-blue"></h6>
+            </div>
+            <div>
+                <a class="button" href="javascript:history.go(-1)"><img class="back-button-img" src="/assets/images/back-arrow.png" /><span class="back-text">Back</span></a>
+            </div>
+        </div>
+
+    </div>
+    <div class="main-container row pt-15" style="padding-top: 12%;">
+        <div class="work-order-scan">
+            <div>
+                <h6 class="first-text">Step 2</h6>
+            </div>
+            <div>
+                <h6 class="second-text">Place The Carton Label</h6>
+                <h6 class="second-text">Under The Scanner</h6>
+            </div>
+            <div class="scanning-container">
+                <div class="scanning-text-div">
+                    <a class="scanning" asp-area="" asp-controller="Home" asp-action="Result"><span class="scanning-text">Scanning...</span></a>
+                </div>
+
+                <form id="workOrderForm" asp-controller="Home" asp-action="SaveCartonLabel" method="post">
+                    <div class="work-order-scan-submit">
+                        <div>
+                            <input class="scan-input" placeholder="Enter The Product Details" name="input1" id="input1" />
+                        </div>
+                        <div>
+                            <input class="scan-input" placeholder="Carton Label Specification" name="input2" id="input2" />
+                        </div>
+                        <div>
+                            <button type="submit" class="login-button" id="submitBtn">
+                                <span class="login-text">Scan ID/Submit</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <div class="text-danger">
+                    @if (TempData.ContainsKey("ErrorMessage"))
+                    {
+                        <span>@TempData["ErrorMessage"]</span>
+                        TempData.Remove("ErrorMessage");
+                    }
+                    @if (TempData.ContainsKey("ErrorMessage1"))
+                    {
+                        <span>@TempData["ErrorMessage1"]</span>
+                        TempData.Remove("ErrorMessage1");
+                    }
+                    @if (TempData.ContainsKey("ErrorMessage2"))
+                    {
+                        <span>@TempData["ErrorMessage2"]</span>
+                        TempData.Remove("ErrorMessage2");
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<style>
+    .text-danger{
+        text-align:center;
+    }
+    .work-order-scan-submit {
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        padding: 10px;
+    }
+
+    .pt-15 {
+        padding-top: 15px;
+    }
+
+    .back-button {
+        position: relative;
+        float: right;
+    }
+
+    .main-container {
+        height: 100%;
+    }
+
+    .container1 {
+        overflow: hidden;
+    }
+
+    .heading-text {
+        font-size: 27px;
+        vertical-align: -12px;
+    }
+
+    .heading {
+        display: flex;
+        gap: 307px;
+        justify-content: center;
+    }
+
+    .image-div {
+        position: relative;
+        float: right;
+    }
+
+
+    .image-size {
+        width: 560px;
+        height: 52px;
+    }
+
+    .work-order-scan {
+        position: relative;
+        top: 20%;
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+    }
+
+    .first-text {
+        font-size: 24px;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    .second-text {
+        font-size: 30px;
+        font-weight: 300;
+        text-align: center;
+    }
+
+    .scanning-text {
+        font-size: 24px;
+        font-weight: 400;
+        color: #003C71;
+        text-align: center;
+    }
+
+    .scanning {
+        text-decoration: none;
+    }
+
+    .scanning-container {
+        margin: auto;
+        margin-top: 0px;
+    }
+
+    .pr-70 {
+        padding-right: 70px;
+    }
+
+    .error-mockup {
+        position: relative;
+        top: 50%;
+    }
+
+    .scanning-text-div {
+        text-align: center;
+    }
+
+    .login-button {
+        display: block;
+        width: 206px;
+        height: 67px;
+        background: #003C71;
+        padding: 10px;
+        text-align: center;
+        border-radius: 12px;
+        color: white;
+        font-weight: bold;
+        line-height: 40px;
+        margin: auto;
+        text-decoration: none;
+    }
+
+    .login-text {
+        font-size: 24px;
+        font-weight: 500;
+    }
+
+    .scan-input::placeholder {
+        font-size: 16px; 
+    }
+
+</style>
+@section Scripts{
+
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            var input1Field = document.getElementById("input1");
+            var input2Field = document.getElementById("input2");
+
+            if (input1Field) {
+                input1Field.value = "";
+            }
+
+            if (input2Field) {
+                input2Field.value = "";
+            }
+        });
+
+        function startTimer(duration) {
+            var timerDisplay = document.getElementById("timer");
+
+            var timer = duration;
+            var hours, minutes, seconds;
+
+            var intervalId = setInterval(function () {
+                hours = parseInt(timer / 3600, 10);
+                minutes = parseInt((timer % 3600) / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                hours = hours < 10 ? "0" + hours : hours;
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                timerDisplay.textContent = hours + ":" + minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    clearInterval(intervalId);
+                    // Perform any action you need when the timer reaches 00:00:00
+                    window.location.href = "/Login/Logout";
+                    //alert("Timer has expired!");
+                }
+            }, 1000);
+        }
+
+        // Local Storage is already set in homescreen so just obtain it here
+        var expirationTime = localStorage.getItem("expiration_time");
+
+
+        // Get the expiration time from localStorage
+        var currentTime = Math.floor(Date.now() / 1000);
+        var remainingTime = expirationTime - currentTime;
+        startTimer(remainingTime);
+    </script>
+}

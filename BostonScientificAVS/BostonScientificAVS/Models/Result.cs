@@ -1,4 +1,5 @@
-﻿namespace BostonScientificAVS.Models
+﻿
+namespace BostonScientificAVS.Models
 {
     public class Result
     {
@@ -7,7 +8,7 @@
         public Lhs lhsData { get; set; }
         public Rhs rhsData { get; set; }
         public WorkOrderInfo workOrderInfo { get; set; }
-    
+
     }
 
     public class Mismatches
@@ -17,8 +18,9 @@
        public bool labelSpecMismatch { get; set; }
        public bool calculatedUseByMismatch { get; set; }
        public bool catalogNumMismatch { get; set; }
+      
     }
-
+  
     public class Rhs
     {
         public string productLabelGTIN { get; set; }
@@ -37,6 +39,8 @@
         public string calculatedUseBy { get; set; }
         public string dbCatalogNo { get; set; }
     }
+
+  
 
     public class WorkOrderInfo
     {

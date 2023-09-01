@@ -28,7 +28,7 @@ namespace Entity
         public DateTime? WO_Mfg_Date { get; set; }
         public DateTime? Calculated_Use_By { get; set; }
         public DateTime? Product_Use_By { get; set; }
-        public string? Carton_Use_By { get; set; }
+        public DateTime? Carton_Use_By { get; set; }
         [MaxLength(30)]
         public string? DB_Label_Spec { get; set; }
         [MaxLength(30)]
