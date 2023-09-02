@@ -579,7 +579,7 @@
                 <div class="col-md-4">
                     <div id="next-scan-button" class="right-part-container temp-reset-button">
                         <div class="next-button-align">
-                            <a asp-area="" asp-controller="Home" asp-action="HomeScreen">
+                            <a asp-area="" asp-controller="Home" asp-action="HomeScreen" asp-route-udpMessage="N">
                             <span class="scanning-next-text">
                                 Send To Boxing / Next Scan
                             </span>
@@ -1454,7 +1454,7 @@
                 responseData = response;
                 processResponse(response);
             },
-           error: function (xhr, status, error) {
+            error: function (xhr, status, error) {
                 if (xhr.responseJSON && xhr.responseJSON.errorMessage) {
                     var errorMessage = xhr.responseJSON.errorMessage;
                     $("#productLabelInputError").text(errorMessage);

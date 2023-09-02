@@ -4,26 +4,30 @@ using System.Diagnostics;
 using BostonScientificAVS.Services;
 using BostonScientificAVS.DTO;
 using Entity;
+using System.Net.WebSockets;
 using System.Text;
 using Context;
 using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
-
+using BostonScientificAVS.Websocket;
 
 namespace BostonScientificAVS.Controllers
 {
     [Authorize(Roles = "Admin,Supervisor,Operator")]
+
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
         private readonly DataContext _dataContext;
-       
-       public HomeController(ILogger<HomeController> logger,DataContext dataContext)
+        public IWebsocketHandler WebsocketHandler { get; }
+
+        public HomeController(ILogger<HomeController> logger, DataContext dataContext, IWebsocketHandler websocketHandler)
         {
             _logger = logger;
             _dataContext = dataContext;
+            WebsocketHandler = websocketHandler;
 
         }
 
@@ -31,10 +35,10 @@ namespace BostonScientificAVS.Controllers
         {
             return View();
         }
-       
+
         public IActionResult Result()
         {
-         
+
             WorkOrderInfo woi = new WorkOrderInfo();
             var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
             var workOrder = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Result != null).Distinct();
@@ -97,6 +101,7 @@ namespace BostonScientificAVS.Controllers
                     if (latestTransaction.Result != null)
                     {
                         latestTransaction.Rescan_Initated = true;
+                        await SendMessageToUDPclient("R");
                     }
 
                     if (barcodeParts[0] == "01" && barcodeParts[2] == "17" && barcodeParts[4] == "10")
@@ -124,7 +129,7 @@ namespace BostonScientificAVS.Controllers
                         latestTransaction.Product_Label_Spec = productLabelSpec;
                     }
                     else
-                    {                                        
+                    {
                         return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
 
                     }
@@ -142,6 +147,7 @@ namespace BostonScientificAVS.Controllers
                 return RedirectToAction("WorkOrderError", "Home");
             }
         }
+
 
 
         public async Task<IActionResult> ValidateTransaction()
@@ -206,12 +212,12 @@ namespace BostonScientificAVS.Controllers
                 if (result.allMatch)
                 {
                     transaction.Result = "Pass";
-                    
+                    await SendMessageToUDPclient("P");
                 }
                 else
                 {
                     transaction.Result = "Fail";
-                                         
+                    await SendMessageToUDPclient("F");
                 }
                 var empId = User.Claims.FirstOrDefault(c => c.Type == "EmpID")?.Value;
                 var user = _dataContext.Users.Where(x => x.EmpID == empId).FirstOrDefault();
@@ -241,7 +247,7 @@ namespace BostonScientificAVS.Controllers
                 return Json(new { success = false, errorMessage = TempData["ErrorMessage"] });
             }
         }
-        public IActionResult HomeScreen()
+        public IActionResult HomeScreen(string udpMessage)
         {
             bool myBooleanValue = false; // Default value in case TempData["AfterLogin"] is not set
 
@@ -260,8 +266,16 @@ namespace BostonScientificAVS.Controllers
                 ViewBag.HoursInput = 0;
             }
 
+            // Use the udpMessage parameter in your WriteUdpConnection method
+            if (!string.IsNullOrEmpty(udpMessage))
+            {
+                // The udpMessage parameter is present, so call WriteUdpConnection
+                SendMessageToUDPclient(udpMessage);
+            }
+
             return View();
         }
+
 
 
 
@@ -308,7 +322,7 @@ namespace BostonScientificAVS.Controllers
             woi.workOrderLotNo = transaction.WO_Lot_Num;
             return View(woi);
         }
-       
+
         public async Task<IActionResult> FinalResult()
         {
             var transaction = await _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefaultAsync();
@@ -343,7 +357,7 @@ namespace BostonScientificAVS.Controllers
                 result.rhsData = rhsdata;
                 result.lhsData = lhsdata;
                 result.allMatch = true;
-                if(transaction.Carton_Label_GTIN!=transaction.DB_GTIN||transaction.Carton_Label_GTIN!=transaction.Product_Label_GTIN||transaction.WO_Lot_Num!=transaction.Product_Lot_Num||transaction.Carton_Label_Spec!=transaction.DB_Label_Spec||transaction.Carton_Use_By!=transaction.Calculated_Use_By||transaction.WO_Catalog_Num!=transaction.DB_Catalog_Num||transaction.Carton_Lot_Num!=transaction.Product_Lot_Num||transaction.Scanned_IFU!=transaction.DB_IFU||transaction.Carton_Use_By!=transaction.Product_Use_By)
+                if (transaction.Carton_Label_GTIN != transaction.DB_GTIN || transaction.Carton_Label_GTIN != transaction.Product_Label_GTIN || transaction.WO_Lot_Num != transaction.Product_Lot_Num || transaction.Carton_Label_Spec != transaction.DB_Label_Spec || transaction.Carton_Use_By != transaction.Calculated_Use_By || transaction.WO_Catalog_Num != transaction.DB_Catalog_Num || transaction.Carton_Lot_Num != transaction.Product_Lot_Num || transaction.Scanned_IFU != transaction.DB_IFU || transaction.Carton_Use_By != transaction.Product_Use_By)
                 {
                     result.allMatch = false;
                 }
@@ -387,15 +401,15 @@ namespace BostonScientificAVS.Controllers
                         mismatches.CalculatedUseByMismatch = true;
                     }
                 }
-                
+
                 if (result.allMatch)
                 {
-                    transaction.Result = "Pass";                 
+                    transaction.Result = "Pass";
 
                 }
                 else
                 {
-                    transaction.Result = "Fail";                 
+                    transaction.Result = "Fail";
                 }
                 var empId = User.Claims.FirstOrDefault(c => c.Type == "EmpID")?.Value;
                 var user = _dataContext.Users.Where(x => x.EmpID == empId).FirstOrDefault();
@@ -422,7 +436,7 @@ namespace BostonScientificAVS.Controllers
             }
             else
             {
-                
+
                 TempData["ErrorMessage"] = "Invalid barcodes. One or both of the scanned barcodes are not valid.";
                 return Json(new { success = false, errorMessage = TempData["ErrorMessage"] });
             }
@@ -494,11 +508,11 @@ namespace BostonScientificAVS.Controllers
                         {
                             return RedirectToAction("WorkOrderError", "Home");
                         }
-                   
-                            transaction.DB_IFU = input2;  
+
+                        transaction.DB_IFU = input2;
 
                     }
-                    
+
                 }
                 else
                 {
@@ -590,10 +604,22 @@ namespace BostonScientificAVS.Controllers
                 return RedirectToAction("WorkOrderError", "Home");
             }
         }
-
-            public IActionResult WorkOrderError()
+        public IActionResult WorkOrderError()
         {
             return View();
+        }
+
+        public async Task SendMessageToUDPclient(String input)
+        {
+            try
+            {
+                await WebsocketHandler.writeToUDPSocketConnection(input);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
         }
 
 

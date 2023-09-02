@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.AspNetCore.Http;
+using BostonScientificAVS.Websocket;
+using System.Net.Sockets;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +27,8 @@ builder.Services.AddDbContext<DataContext>(options =>
 });
 builder.Services.AddScoped<ItemService>();
 builder.Services.AddScoped<UserService>();
-builder.Services.AddScoped<WebSocketHandler>();   
+builder.Services.AddSingleton<UdpClient>();
+builder.Services.AddSingleton<IWebsocketHandler, WebsocketHandler>();
 
 builder.Services.AddAuthentication(options =>
 {
