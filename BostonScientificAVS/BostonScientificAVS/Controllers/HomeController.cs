@@ -247,27 +247,21 @@ namespace BostonScientificAVS.Controllers
         }
         public IActionResult HomeScreen()
         {
-            bool myBooleanValue = false; // Default value in case TempData["AfterLogin"] is not set
-
+            bool myBooleanValue = false; // Default value in case TempData["MyBoolean"] is not set
             if (TempData.ContainsKey("AfterLogin") && TempData["AfterLogin"] is bool myBoolean)
             {
                 myBooleanValue = myBoolean;
             }
-
             if (myBooleanValue)
             {
                 int hoursInput = DotNetEnv.Env.GetInt("EXPIRE_TIME");
                 ViewBag.HoursInput = hoursInput;
-            }
-            else
+            } else
             {
                 ViewBag.HoursInput = 0;
             }
-
             return View();
         }
-
-
 
         [HttpPost]
         public ActionResult CheckSupervisorId(string supervisorEmpId)
@@ -522,8 +516,6 @@ namespace BostonScientificAVS.Controllers
                 return RedirectToAction("WorkOrderError", "Home");
             }
         }
-
-
 
         [HttpPost("/SaveProductLabelBarcode")]
         public async Task<IActionResult> SaveProductLabelBarcode(string input1, string input2, string input3)
