@@ -579,15 +579,12 @@
                 <div class="col-md-4">
                     <div id="next-scan-button" class="right-part-container temp-reset-button">
                         <div class="next-button-align">
-                            <a asp-area="" asp-controller="Home" asp-action="HomeScreen" asp-route-udpMessage="N">
                             <span class="scanning-next-text">
-                                Send To Boxing / Next Scan
+                                <a asp-area="" asp-controller="Home" asp-action="HomeScreen" id="home">Send To Home</a>/ <a asp-area="" asp-controller="Home" asp-action="ProductLabelBarcodeScan" asp-route-udpMessage="N" id="nxt-scn-btn">Next Scan</a>
                             </span>
-                            </a>
                             <img class="next-img" src="/assets/images/next-button.png" />
                         </div>
                     </div>
-
                 </div>
             </div>
             <br />
@@ -597,6 +594,7 @@
 <style>
     .next-button-align a {
         text-decoration: none;
+        color: #FFF;
     }
     .brdr-bottom {
         border-bottom: 1px solid black;
@@ -1231,6 +1229,8 @@
     document.getElementById("error").style.display = "none";
     document.getElementById("navigation-container").style.display = "none";
     document.getElementById("next-scan-button").style.backgroundColor = "#C5C5C5";
+    document.getElementById("home").style.color = "#FFF";
+    document.getElementById("nxt-scn-btn").style.color = "#FFF";
 
 
     document.getElementsByClassName('temp-supervisor-call-button')[0]
