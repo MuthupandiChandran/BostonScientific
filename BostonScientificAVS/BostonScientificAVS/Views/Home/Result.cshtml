@@ -63,6 +63,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <input id="productLabelInput" class="scan-input" placeholder="Product label" name="input" />
+                            <div id="productLabelInputError" class="text-danger"></div>
                         </div>
                         <div class="col-md-3">
                             <input id="productLabelSpec" class="scan-input" placeholder="Label Spec" name="input1" />
@@ -807,7 +808,7 @@
                                 <img src="/assets/images/after-scanned-fail-icon.png" class="scanning-stage-img-size" />
                             </div>
                             <div>
-                                <h6 class="product-spec-text">Use Date</h6>
+                                <h6 class="product-spec-text">Use By Date</h6>
                             </div>
                         </div>
                     </div>
@@ -858,16 +859,15 @@
 
                 <div class="col-md-4">
                     <div id="next-scan-button" class="right-part-container temp-reset-button">
-                        <div class="next-button-align">
-                            <a asp-area="" asp-controller="Home" asp-action="HomeScreen">
-                            <span class="scanning-next-text">
-                                Send To Boxing / Next Scan
-                            </span></a>
-                            <img class="next-img" src="/assets/images/next-button.png" />              
+                        <div class="next-button-align">                      
+                                <span class="scanning-next-text">
+                              <a asp-area="" asp-controller="Home" asp-action="HomeScreen" id="home">Send To Home</a>/ <a asp-area="" asp-controller="Home" asp-action="Result" asp-route-udpMessage="N" id="nxt-scn-btn">Next Scan</a>
+                                </span>
+                            <img class="next-img" src="/assets/images/next-button.png" />
                         </div>
                     </div>
-
                 </div>
+
             </div>
             <br/>
         </div>
@@ -877,6 +877,7 @@
 
     .next-button-align a {
         text-decoration: none;
+        color:#FFF;
     }
    .brdr-bottom{
         border-bottom: 1px solid black;
@@ -1503,6 +1504,13 @@
         font-weight: 700;
     }
 
+    /*#home {
+       color: #EAF5FF;
+    }
+    #nxt-scn-btn{
+        color: #EAF5FF;
+    }*/
+
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
@@ -1524,6 +1532,8 @@
     document.getElementById("error").style.display = "none";
     document.getElementById("navigation-container").style.display = "none";
     document.getElementById("next-scan-button").style.backgroundColor = "#C5C5C5";
+    document.getElementById("home").style.color= "#FFF";
+    document.getElementById("nxt-scn-btn").style.color = "#FFF";
     //document.getElementsByClassName('temp-button')[0]
     //    .addEventListener('click', function (event) {
     //        beforeToDuringScan();
@@ -1616,7 +1626,7 @@
         document.getElementById("left-part-during-scan").style.display = "none";
         document.getElementById("left-part-after-scan-pass").style.display = "block";
 
-        document.getElementById("next-scan-button").style.backgroundColor = "#003C71";
+        document.getElementById("next-scan-button").style.backgroundColor = "#003C71";      
         document.getElementById("before-scan-text").style.display = "block";
 
         document.getElementById("popupContainer").style.display = "none";
@@ -1729,9 +1739,14 @@
                 processResponse(response);
             },
             error: function (xhr, status, error) {
-                console.log("An error occurred while making the AJAX call:", error);
+                if (xhr.responseJSON && xhr.responseJSON.errorMessage) {
+                    var errorMessage = xhr.responseJSON.errorMessage;
+                    $("#productLabelInputError").text(errorMessage);
+                    beforeScan();
+                } else {
+                    console.log("An error occurred while making the AJAX call:", error);
+                }
             }
-
 
         });
     });
