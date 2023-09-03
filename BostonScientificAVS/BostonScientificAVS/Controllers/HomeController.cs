@@ -84,19 +84,13 @@ namespace BostonScientificAVS.Controllers
         {
             if (ModelState.IsValid)
             {
-                string pattern = @"\((\d{2})\)(\d{14})\((\d{2})\)(\d{6})\((\d{2})\)(\w+)";
+                string pattern = @"^\d{2}(\d{14})\d{2}(\d{6})(\d{2})(\w+)";
                 Match match = Regex.Match(productLabel, pattern);
 
                 Transaction latestTransaction = null; // Declare before the if block
 
                 if (match.Success)
                 {
-                    string[] barcodeParts = new string[7];
-                    for (int i = 0; i < 7; i++)
-                    {
-                        barcodeParts[i] = match.Groups[i + 1].Value;
-                    }
-
                     latestTransaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
                     if (latestTransaction.Result != null)
                     {
@@ -104,22 +98,24 @@ namespace BostonScientificAVS.Controllers
                         await SendMessageToUDPclient("R");
                     }
 
-                    if (barcodeParts[0] == "01" && barcodeParts[2] == "17" && barcodeParts[4] == "10")
+                    if (productLabel.Length == 34)
                     {
-                        latestTransaction.Product_Label_GTIN = barcodeParts[1];
-                        DateTime dateTime = DateTime.ParseExact(barcodeParts[3], "yyMMdd", null);
+                        latestTransaction.Product_Label_GTIN = match.Groups[1].Value;
+                        DateTime dateTime = DateTime.ParseExact(match.Groups[2].Value, "yyMMdd", null);
                         latestTransaction.Product_Use_By = dateTime;
-                        latestTransaction.Product_Lot_Num = barcodeParts[5];
+                        latestTransaction.Product_Lot_Num = match.Groups[4].Value;
 
                         ItemMaster item = await _dataContext.ItemMaster.FirstOrDefaultAsync(i => i.GTIN == latestTransaction.Product_Label_GTIN);
                         if (item != null)
                         {
+                            int shelfLife = item.Shelf_Life ?? 0;
                             // Assign values from ItemMaster
                             latestTransaction.DB_GTIN = item.GTIN;
                             latestTransaction.DB_Catalog_Num = item.Catalog_Num;
                             DateTime workOrderDT = (DateTime)latestTransaction.WO_Mfg_Date;
-                            latestTransaction.Calculated_Use_By = workOrderDT.AddDays((double)item.Shelf_Life);
+                            latestTransaction.Calculated_Use_By = workOrderDT.AddDays((double)shelfLife);
                             latestTransaction.DB_Label_Spec = item.Label_Spec;
+                            latestTransaction.Shelf_Life = shelfLife;
                         }
                         else
                         {
@@ -131,13 +127,20 @@ namespace BostonScientificAVS.Controllers
                     else
                     {
                         return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
-
                     }
+                }
+                else
+                {
+                    return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
                 }
 
                 if (latestTransaction != null)
                 {
                     await _dataContext.SaveChangesAsync();
+                }
+                else
+                {
+                    return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
                 }
 
                 return RedirectToAction("ValidateTransaction");
@@ -179,7 +182,7 @@ namespace BostonScientificAVS.Controllers
                 // initially assume all are a match
                 result.allMatch = true;
                 if (transaction.DB_GTIN != transaction.Product_Label_GTIN || transaction.WO_Lot_Num != transaction.Product_Lot_Num
-                    || transaction.DB_Label_Spec != transaction.Product_Label_Spec || transaction.Calculated_Use_By < transaction.Product_Use_By
+                    || transaction.DB_Label_Spec != transaction.Product_Label_Spec || transaction.Calculated_Use_By > transaction.Product_Use_By
                     || transaction.DB_Catalog_Num != transaction.WO_Catalog_Num)
                 {
                     result.allMatch = false;
@@ -469,59 +472,59 @@ namespace BostonScientificAVS.Controllers
         {
             if (ModelState.IsValid)
             {
-                string pattern = @"\((\d{2})\)(\d{14})\((\d{2})\)(\d{6})\((\d{2})\)(\w+)";
+                string pattern = @"^\d{2}(\d{14})\d{2}(\d{6})(\d{2})(\w+)";
                 Match match = Regex.Match(input1, pattern);
 
                 Transaction transaction = null; // Declare the variable outside the block
 
                 if (match.Success)
                 {
-                    string[] barcodeParts = new string[7];
-                    for (int i = 0; i < 7; i++)
-                    {
-                        barcodeParts[i] = match.Groups[i + 1].Value;
-                    }
+                    transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
 
-                    if (barcodeParts[0] == "01" && barcodeParts[2] == "17" && barcodeParts[4] == "10")
+                    if (input1.Length == 34)
                     {
-                        transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
-
-                        transaction.Carton_Label_GTIN = barcodeParts[1];
-                        DateTime dateTime = DateTime.ParseExact(barcodeParts[3], "yyMMdd", null);
+                        transaction.Carton_Label_GTIN = match.Groups[1].Value;
+                        DateTime dateTime = DateTime.ParseExact(match.Groups[2].Value, "yyMMdd", null);
                         transaction.Carton_Use_By = dateTime;
-                        transaction.Carton_Lot_Num = barcodeParts[5];
+                        transaction.Carton_Lot_Num = match.Groups[4].Value;
 
                         ItemMaster item = await _dataContext.ItemMaster.FirstOrDefaultAsync(i => i.GTIN == transaction.Carton_Label_GTIN);
                         if (item != null)
                         {
                             // Assign values from ItemMaster
+                            int shelfLife = item.Shelf_Life ?? 0;
                             transaction.DB_GTIN = item.GTIN;
                             transaction.DB_Catalog_Num = item.Catalog_Num;
                             DateTime workOrderDT = (DateTime)transaction.WO_Mfg_Date;
-                            transaction.Calculated_Use_By = workOrderDT.AddDays((double)item.Shelf_Life);
+                            transaction.Calculated_Use_By = workOrderDT.AddDays((double)shelfLife);
                             transaction.DB_Label_Spec = item.Label_Spec;
                             transaction.DB_IFU = item.IFU;
+                            transaction.Shelf_Life = shelfLife;
                         }
                         else
                         {
                             return RedirectToAction("WorkOrderError", "Home");
                         }
 
-                        transaction.DB_IFU = input2;
+                        transaction.Carton_Label_Spec = input2;
 
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Carton Label Input is Invalid Format";
+                        return View("CartonLabelScan");
                     }
 
                 }
-                else
-                {
-                    TempData["ErrorMessage"] = "Carton Label spec Input is Invalid Format";
-                    return View("CartonLabelScan");
-                }
-
                 if (transaction != null)
                 {
                     await _dataContext.SaveChangesAsync();
                     TempData["WorkOrderLotNo"] = transaction.WO_Lot_Num;
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Carton Label Input is Invalid Format";
+                    return View("CartonLabelScan");
                 }
                 return RedirectToAction("ProductLabelBarcodeScan", "Home");
             }
@@ -536,31 +539,25 @@ namespace BostonScientificAVS.Controllers
         {
             if (ModelState.IsValid)
             {
-                string pattern = @"\((\d{2})\)(\d{14})\((\d{2})\)(\d{6})\((\d{2})\)(\w+)";
+                string pattern = @"^\d{2}(\d{14})\d{2}(\d{6})(\d{2})(\w+)";
                 Match match = Regex.Match(input1, pattern);
 
                 Transaction latestTransaction = null; // Declare before the if block
 
                 if (match.Success)
                 {
-                    string[] barcodeParts = new string[7];
-                    for (int i = 0; i < 7; i++)
-                    {
-                        barcodeParts[i] = match.Groups[i + 1].Value;
-                    }
-
                     latestTransaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
                     if (latestTransaction.Result != null)
                     {
                         latestTransaction.Rescan_Initated = true;
                     }
 
-                    if (barcodeParts[0] == "01" && barcodeParts[2] == "17" && barcodeParts[4] == "10")
+                    if (input1.Length == 34)
                     {
-                        latestTransaction.Carton_Label_GTIN = barcodeParts[1];
-                        DateTime dateTime = DateTime.ParseExact(barcodeParts[3], "yyMMdd", null);
-                        latestTransaction.Carton_Use_By = dateTime;
-                        latestTransaction.Carton_Lot_Num = barcodeParts[5];
+                        latestTransaction.Product_Label_GTIN = match.Groups[1].Value;
+                        DateTime dateTime = DateTime.ParseExact(match.Groups[2].Value, "yyMMdd", null);
+                        latestTransaction.Product_Use_By = dateTime;
+                        latestTransaction.Product_Lot_Num = match.Groups[4].Value;
 
                         ItemMaster item = await _dataContext.ItemMaster.FirstOrDefaultAsync(i => i.GTIN == latestTransaction.Carton_Label_GTIN);
                         if (item != null)
@@ -587,10 +584,18 @@ namespace BostonScientificAVS.Controllers
 
                     }
                 }
+                else
+                {
+                    return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
+                }
 
                 if (latestTransaction != null)
                 {
                     await _dataContext.SaveChangesAsync();
+                }
+                else
+                {
+                    return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
                 }
 
                 return RedirectToAction("FinalResult");

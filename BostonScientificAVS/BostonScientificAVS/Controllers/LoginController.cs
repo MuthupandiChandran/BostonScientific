@@ -71,8 +71,7 @@ namespace BostonScientificAVS.Controllers
                     };
                     var claimsIdentity = new ClaimsIdentity(authClaims, "Login");
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
-                    TempData["AfterLogin"] = afterLogin;
-                    HttpContext.Session.SetString("CurrentUserName", loggedInUser.UserFullName);
+                    TempData["AfterLogin"] = afterLogin;                 
                     return RedirectToAction("HomeScreen", "Home");
                 }
                 else
