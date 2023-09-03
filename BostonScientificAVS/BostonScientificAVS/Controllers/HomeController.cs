@@ -74,6 +74,7 @@ namespace BostonScientificAVS.Controllers
             else
             {
                 // Invalid input format, add a model-level error
+                 SendMessageToUDPclient("E");
                 TempData["ErrorMessage"] = "Work Order Seems To be Invalid. Please retry again";
                 return View("WorkOrderScan");
             }
@@ -126,11 +127,13 @@ namespace BostonScientificAVS.Controllers
                     }
                     else
                     {
+                        await SendMessageToUDPclient("E");
                         return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
                     }
                 }
                 else
                 {
+                    await SendMessageToUDPclient("E");
                     return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
                 }
 
@@ -140,6 +143,7 @@ namespace BostonScientificAVS.Controllers
                 }
                 else
                 {
+                    await SendMessageToUDPclient("E");
                     return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
                 }
 
@@ -406,11 +410,13 @@ namespace BostonScientificAVS.Controllers
                 if (result.allMatch)
                 {
                     transaction.Result = "Pass";
+                    await SendMessageToUDPclient("P");
 
                 }
                 else
                 {
                     transaction.Result = "Fail";
+                    await SendMessageToUDPclient("F");
                 }
                 var empId = User.Claims.FirstOrDefault(c => c.Type == "EmpID")?.Value;
                 var user = _dataContext.Users.Where(x => x.EmpID == empId).FirstOrDefault();
@@ -437,7 +443,7 @@ namespace BostonScientificAVS.Controllers
             }
             else
             {
-
+                await SendMessageToUDPclient("E");
                 TempData["ErrorMessage"] = "Invalid barcodes. One or both of the scanned barcodes are not valid.";
                 return Json(new { success = false, errorMessage = TempData["ErrorMessage"] });
             }
@@ -463,6 +469,7 @@ namespace BostonScientificAVS.Controllers
             }
             else
             {
+                 SendMessageToUDPclient("E");
                 TempData["ErrorMessage"] = "Work Order Seems To be Invalid. Please retry again";
                 return View("WorkOrderBarcodeScan");
             }
@@ -511,6 +518,7 @@ namespace BostonScientificAVS.Controllers
                     }
                     else
                     {
+                        await SendMessageToUDPclient("E");
                         TempData["ErrorMessage"] = "Carton Label Input is Invalid Format";
                         return View("CartonLabelScan");
                     }
@@ -523,6 +531,7 @@ namespace BostonScientificAVS.Controllers
                 }
                 else
                 {
+                    await SendMessageToUDPclient("E");
                     TempData["ErrorMessage"] = "Carton Label Input is Invalid Format";
                     return View("CartonLabelScan");
                 }
@@ -580,12 +589,14 @@ namespace BostonScientificAVS.Controllers
                     }
                     else
                     {
+                        await SendMessageToUDPclient("E");
                         return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
 
                     }
                 }
                 else
                 {
+                    await SendMessageToUDPclient("E");
                     return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
                 }
 
@@ -595,6 +606,7 @@ namespace BostonScientificAVS.Controllers
                 }
                 else
                 {
+                    await SendMessageToUDPclient("E");
                     return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
                 }
 
