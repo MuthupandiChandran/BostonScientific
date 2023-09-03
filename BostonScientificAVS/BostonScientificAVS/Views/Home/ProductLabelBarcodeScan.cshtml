@@ -46,6 +46,7 @@
                     <div class="row">
                         <div class="col-md-3">
                             <input id="productLabelInput" class="scan-input" placeholder="Product label" name="input" />
+                            <div id="productLabelInputError" class="text-danger"></div>
                         </div>
                         <div class="col-md-3">
                             <input id="productLabelSpec" class="scan-input" placeholder="Label Spec" name="input1" />
@@ -1453,8 +1454,13 @@
                 responseData = response;
                 processResponse(response);
             },
-            error: function (xhr, status, error) {
-                console.log("An error occurred while making the AJAX call:", error);
+           error: function (xhr, status, error) {
+                if (xhr.responseJSON && xhr.responseJSON.errorMessage) {
+                    var errorMessage = xhr.responseJSON.errorMessage;
+                    $("#productLabelInputError").text(errorMessage);
+                } else {
+                    console.log("An error occurred while making the AJAX call:", error);
+                }
             }
 
 
