@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace BostonScientificAVS.Controllers
 {
     [Authorize(Roles = "Admin,Supervisor,Operator")]
@@ -18,14 +19,12 @@ namespace BostonScientificAVS.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly DataContext _dataContext;
-        private readonly WebSocketHandler _websocket;
-        
-        public HomeController(ILogger<HomeController> logger,DataContext dataContext,WebSocketHandler websocket)
+       
+       public HomeController(ILogger<HomeController> logger,DataContext dataContext)
         {
             _logger = logger;
             _dataContext = dataContext;
-            _websocket = websocket;
-            
+
         }
 
         public IActionResult Privacy()
@@ -81,40 +80,63 @@ namespace BostonScientificAVS.Controllers
         {
             if (ModelState.IsValid)
             {
-                string pattern = @"\((\d+)\)"; // Matches two digits within parentheses
+                string pattern = @"^\d{2}(\d{14})\d{2}(\d{6})(\d{2})(\w+)";
+                Match match = Regex.Match(productLabel, pattern);
 
-                string[] barcodeParts = Regex.Split(productLabel, pattern);
-                var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
-                if (transaction.Result != null)
-                {
-                    transaction.Rescan_Initated = true;
-                }
-                if (barcodeParts.Length >= 3)
-                {
-                    transaction.Product_Label_GTIN = barcodeParts[2];
-                    DateTime dateTime = DateTime.ParseExact(barcodeParts[4], "yyMMdd", null);
-                    transaction.Product_Use_By = dateTime;
-                    transaction.Product_Lot_Num = barcodeParts[6];
+                Transaction latestTransaction = null; // Declare before the if block
 
-                    ItemMaster item = await _dataContext.ItemMaster.FirstOrDefaultAsync(i => i.GTIN == transaction.Product_Label_GTIN);
-                    if (item != null)
+                if (match.Success)
+                {
+                    latestTransaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
+                    if (latestTransaction.Result != null)
                     {
-                        // Assign values from ItemMaster
-                        transaction.DB_GTIN = item.GTIN;
-                        transaction.DB_Catalog_Num = item.Catalog_Num;
-                        DateTime workOrderDT = (DateTime)transaction.WO_Mfg_Date;
-                        transaction.Calculated_Use_By = workOrderDT.AddDays((double)item.Shelf_Life);
-                        transaction.DB_Label_Spec = item.Label_Spec;
+                        latestTransaction.Rescan_Initated = true;
+                    }
+
+                    if (productLabel.Length == 34)
+                    {
+                        latestTransaction.Product_Label_GTIN = match.Groups[1].Value;
+                        DateTime dateTime = DateTime.ParseExact(match.Groups[2].Value, "yyMMdd", null);
+                        latestTransaction.Product_Use_By = dateTime;
+                        latestTransaction.Product_Lot_Num = match.Groups[4].Value;
+
+                        ItemMaster item = await _dataContext.ItemMaster.FirstOrDefaultAsync(i => i.GTIN == latestTransaction.Product_Label_GTIN);
+                        if (item != null)
+                        {
+                            int shelfLife = item.Shelf_Life ?? 0;
+                            // Assign values from ItemMaster
+                            latestTransaction.DB_GTIN = item.GTIN;
+                            latestTransaction.DB_Catalog_Num = item.Catalog_Num;
+                            DateTime workOrderDT = (DateTime)latestTransaction.WO_Mfg_Date;
+                            latestTransaction.Calculated_Use_By = workOrderDT.AddDays((double)shelfLife);
+                            latestTransaction.DB_Label_Spec = item.Label_Spec;
+                            latestTransaction.Shelf_Life = shelfLife;
+                        }
+                        else
+                        {
+                            return RedirectToAction("WorkOrderError", "Home");
+                        }
+
+                        latestTransaction.Product_Label_Spec = productLabelSpec;
                     }
                     else
                     {
-                        return RedirectToAction("WorkOrderError", "Home");
+                        return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
                     }
-
-                    transaction.Product_Label_Spec = productLabelSpec;
+                }
+                else
+                {
+                    return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
                 }
 
-                await _dataContext.SaveChangesAsync();
+                if (latestTransaction != null)
+                {
+                    await _dataContext.SaveChangesAsync();
+                }
+                else
+                {
+                    return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
+                }
 
                 return RedirectToAction("ValidateTransaction");
             }
@@ -123,6 +145,7 @@ namespace BostonScientificAVS.Controllers
                 return RedirectToAction("WorkOrderError", "Home");
             }
         }
+
 
 
         public async Task<IActionResult> ValidateTransaction()
@@ -154,7 +177,7 @@ namespace BostonScientificAVS.Controllers
                 // initially assume all are a match
                 result.allMatch = true;
                 if (transaction.DB_GTIN != transaction.Product_Label_GTIN || transaction.WO_Lot_Num != transaction.Product_Lot_Num
-                    || transaction.DB_Label_Spec != transaction.Product_Label_Spec || transaction.Calculated_Use_By < transaction.Product_Use_By
+                    || transaction.DB_Label_Spec != transaction.Product_Label_Spec || transaction.Calculated_Use_By > transaction.Product_Use_By
                     || transaction.DB_Catalog_Num != transaction.WO_Catalog_Num)
                 {
                     result.allMatch = false;
@@ -187,13 +210,12 @@ namespace BostonScientificAVS.Controllers
                 if (result.allMatch)
                 {
                     transaction.Result = "Pass";
-                    /*await _websocket.SendMessageToSockets("Verification passed!", result);*/ // Send success WebSocket message
-
+                    
                 }
                 else
                 {
                     transaction.Result = "Fail";
-                   /* await _websocket.SendMessageToSockets("Verification failed!", result);*/ // Send failure WebSocket message                  
+                                         
                 }
                 var empId = User.Claims.FirstOrDefault(c => c.Type == "EmpID")?.Value;
                 var user = _dataContext.Users.Where(x => x.EmpID == empId).FirstOrDefault();
@@ -439,59 +461,59 @@ namespace BostonScientificAVS.Controllers
         {
             if (ModelState.IsValid)
             {
-                string pattern = @"\((\d{2})\)(\d{14})\((\d{2})\)(\d{6})\((\d{2})\)(\w+)";
+                string pattern = @"^\d{2}(\d{14})\d{2}(\d{6})(\d{2})(\w+)";
                 Match match = Regex.Match(input1, pattern);
 
                 Transaction transaction = null; // Declare the variable outside the block
 
                 if (match.Success)
                 {
-                    string[] barcodeParts = new string[7];
-                    for (int i = 0; i < 7; i++)
-                    {
-                        barcodeParts[i] = match.Groups[i + 1].Value;
-                    }
+                    transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
 
-                    if (barcodeParts[0] == "01" && barcodeParts[2] == "17" && barcodeParts[4] == "10")
-                    {
-                        transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
-
-                        transaction.Carton_Label_GTIN = barcodeParts[1];
-                        DateTime dateTime = DateTime.ParseExact(barcodeParts[3], "yyMMdd", null);
+                    if (input1.Length==34)
+                    {         
+                        transaction.Carton_Label_GTIN = match.Groups[1].Value;
+                        DateTime dateTime = DateTime.ParseExact(match.Groups[2].Value, "yyMMdd", null);
                         transaction.Carton_Use_By = dateTime;
-                        transaction.Carton_Lot_Num = barcodeParts[5];
+                        transaction.Carton_Lot_Num = match.Groups[4].Value;
 
                         ItemMaster item = await _dataContext.ItemMaster.FirstOrDefaultAsync(i => i.GTIN == transaction.Carton_Label_GTIN);
                         if (item != null)
                         {
                             // Assign values from ItemMaster
+                            int shelfLife = item.Shelf_Life ?? 0;
                             transaction.DB_GTIN = item.GTIN;
                             transaction.DB_Catalog_Num = item.Catalog_Num;
                             DateTime workOrderDT = (DateTime)transaction.WO_Mfg_Date;
-                            transaction.Calculated_Use_By = workOrderDT.AddDays((double)item.Shelf_Life);
+                            transaction.Calculated_Use_By = workOrderDT.AddDays((double)shelfLife);
                             transaction.DB_Label_Spec = item.Label_Spec;
                             transaction.DB_IFU = item.IFU;
+                            transaction.Shelf_Life = shelfLife;
                         }
                         else
                         {
                             return RedirectToAction("WorkOrderError", "Home");
                         }
                    
-                            transaction.DB_IFU = input2;  
+                            transaction.Carton_Label_Spec = input2;  
 
                     }
-                    
-                }
-                else
-                {
-                    TempData["ErrorMessage"] = "Carton Label spec Input is Invalid Format";
-                    return View("CartonLabelScan");
-                }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Carton Label Input is Invalid Format";
+                        return View("CartonLabelScan");
+                    }
 
+                }
                 if (transaction != null)
                 {
                     await _dataContext.SaveChangesAsync();
                     TempData["WorkOrderLotNo"] = transaction.WO_Lot_Num;
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Carton Label Input is Invalid Format";
+                    return View("CartonLabelScan");
                 }
                 return RedirectToAction("ProductLabelBarcodeScan", "Home");
             }
@@ -504,40 +526,69 @@ namespace BostonScientificAVS.Controllers
 
 
         [HttpPost("/SaveProductLabelBarcode")]
-        public async Task<IActionResult>SaveProductLabelBarcode(string input1, string input2,string input3)
+        public async Task<IActionResult> SaveProductLabelBarcode(string input1, string input2, string input3)
         {
             if (ModelState.IsValid)
             {
+                string pattern = @"^\d{2}(\d{14})\d{2}(\d{6})(\d{2})(\w+)";
+                Match match = Regex.Match(input1, pattern);
 
-                string pattern = @"\((\d+)\)"; // Matches two digits within parentheses
+                Transaction latestTransaction = null; // Declare before the if block
 
-                string[] barcodeParts = Regex.Split(input1, pattern);
-                var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
-                if (barcodeParts.Length >= 3)
-                {
-                    transaction.Product_Label_GTIN = barcodeParts[2];
-                    DateTime dateTime = DateTime.ParseExact(barcodeParts[4], "yyMMdd", null);
-                    transaction.Product_Use_By = dateTime;
-                    transaction.Product_Lot_Num = barcodeParts[6];
-
-
-                    ItemMaster item = await _dataContext.ItemMaster.FirstOrDefaultAsync(i => i.GTIN == transaction.Product_Label_GTIN);
-                    if (item != null)
+                if (match.Success)
+                {                  
+                    latestTransaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
+                    if (latestTransaction.Result != null)
                     {
-                        // Assign values from ItemMaster
-                        transaction.DB_GTIN = item.GTIN;
-                        transaction.DB_Catalog_Num = item.Catalog_Num;
-                        transaction.DB_Label_Spec = item.Label_Spec;
+                        latestTransaction.Rescan_Initated = true;
+                    }
+
+                    if (input1.Length==34)
+                    {
+                        latestTransaction.Product_Label_GTIN = match.Groups[1].Value;
+                        DateTime dateTime = DateTime.ParseExact(match.Groups[2].Value, "yyMMdd", null);
+                        latestTransaction.Product_Use_By = dateTime;
+                        latestTransaction.Product_Lot_Num = match.Groups[4].Value;
+
+                        ItemMaster item = await _dataContext.ItemMaster.FirstOrDefaultAsync(i => i.GTIN == latestTransaction.Carton_Label_GTIN);
+                        if (item != null)
+                        {
+                            // Assign values from ItemMaster
+                            latestTransaction.DB_GTIN = item.GTIN;
+                            latestTransaction.DB_Catalog_Num = item.Catalog_Num;
+                            DateTime workOrderDT = (DateTime)latestTransaction.WO_Mfg_Date;
+                            latestTransaction.Calculated_Use_By = workOrderDT.AddDays((double)item.Shelf_Life);
+                            latestTransaction.DB_Label_Spec = item.Label_Spec;
+                            latestTransaction.DB_IFU = item.IFU;
+                        }
+                        else
+                        {
+                            return RedirectToAction("WorkOrderError", "Home");
+                        }
+
+                        latestTransaction.Product_Label_Spec = input2;
+                        latestTransaction.Scanned_IFU = input3;
                     }
                     else
                     {
-                        return RedirectToAction("WorkOrderError", "Home");
-                    }
+                        return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
 
-                    transaction.Product_Label_Spec = input2;
-                    transaction.Scanned_IFU = input3;
+                    }
                 }
-                await _dataContext.SaveChangesAsync();
+                else
+                {
+                    return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
+                }
+
+                if (latestTransaction != null)
+                {
+                    await _dataContext.SaveChangesAsync();
+                }
+                else
+                {
+                    return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
+                }
+
                 return RedirectToAction("FinalResult");
             }
             else
@@ -545,8 +596,8 @@ namespace BostonScientificAVS.Controllers
                 return RedirectToAction("WorkOrderError", "Home");
             }
         }
-        
-        public IActionResult WorkOrderError()
+
+            public IActionResult WorkOrderError()
         {
             return View();
         }
