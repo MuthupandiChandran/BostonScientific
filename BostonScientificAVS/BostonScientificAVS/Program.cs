@@ -38,6 +38,10 @@ builder.Services.AddAuthentication(options =>
     option.LoginPath = "/Login/Login";
     option.ExpireTimeSpan = TimeSpan.FromHours(Time);
 });
+builder.Services.AddSession(options => {
+    options.IdleTimeout = TimeSpan.FromHours(Time);
+});
+
 //builder.Services.AddAuthentication("CustomScheme")
 //        .AddScheme<AuthenticationSchemeOptions, CustomAuthenticationHandler>("CustomScheme", options => { });
 
@@ -58,6 +62,7 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseSession();
 
 app.MapControllerRoute(
     name: "default",
