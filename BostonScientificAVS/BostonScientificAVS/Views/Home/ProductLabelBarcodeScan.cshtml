@@ -45,14 +45,14 @@
                 <div class="col-md-8">
                     <div class="row">
                         <div class="col-md-3">
-                            <input id="productLabelInput" class="scan-input" placeholder="Product label" name="input" />
+                            <input id="productLabelInput" class="scan-input" placeholder="Product label" name="input" autocomplete="off" />
                             <div id="productLabelInputError" class="text-danger"></div>
                         </div>
                         <div class="col-md-3">
-                            <input id="productLabelSpec" class="scan-input" placeholder="Label Spec" name="input1" />
+                            <input id="productLabelSpec" class="scan-input" placeholder="Label Spec" name="input1" autocomplete="off" />
                         </div>
                         <div class="col-md-3">
-                            <input id="ifu" class="scan-input" placeholder="Ifu Value" name="input2"/>
+                            <input id="ifu" class="scan-input" placeholder="Ifu Value" name="input2" autocomplete="off"/>
                         </div>
                         <div class="col-md-3">
                             <button type="submit" class="login-button btn btn-primary" id="submitBtn">
@@ -541,7 +541,7 @@
                     <img src="~/assets/images/Barcode image 2.png" alt="Barcode Icon" id="scan-image">
                     <h5 class="supr-txt">Place Your Supervisor Badge</h5>
                     <h5 id="under">under the scanner</h5>
-                    <input id="supervisorInput" placeholder="Super Visor Id" name="supervisorInput" />
+                    <input id="supervisorInput" placeholder="Super Visor Id" name="supervisorInput" autocomplete="off"/>
                     <br />
                     <button id="greenButton" class="greenButton">Continue</button>
                     <br />
@@ -576,15 +576,20 @@
                 </div>
 
 
-                <div class="col-md-4">
-                    <div id="next-scan-button" class="right-part-container temp-reset-button">
-                        <div class="next-button-align">
-                            <span class="scanning-next-text">
-                                <a asp-area="" asp-controller="Home" asp-action="HomeScreen" id="home">Send To Home</a>/ <a asp-area="" asp-controller="Home" asp-action="ProductLabelBarcodeScan" asp-route-udpMessage="N" id="nxt-scn-btn">Next Scan</a>
-                            </span>
-                            <img class="next-img" src="/assets/images/next-button.png" />
-                        </div>
+                <div class="col-md-4" style="display:flex;">
+                    <div id="next-scan-button" class="col-6 right-part-container temp-reset-button" style="margin-right:10px;">
+                        <span class="scanning-next-text">
+                            <a asp-area="" asp-controller="Home" asp-action="HomeScreen" id="home">Send To New Work Order</a>
+                        </span>
+
                     </div>
+                    <div id="next-scan-button1" class="col-6 right-part-container">
+                        <span class="scanning-next-text">
+                            <a href="#" id="nxt-scn-btn">Next Scan</a>
+                        </span>
+                        <img class="next-img" src="/assets/images/next-button.png" />
+                    </div>
+
                 </div>
             </div>
             <br />
@@ -592,7 +597,12 @@
     </div>
 </body>
 <style>
-    .next-button-align a {
+    #next-scan-button a {
+        text-decoration: none;
+        color: #FFF;
+    }
+
+    #next-scan-button1 a {
         text-decoration: none;
         color: #FFF;
     }
@@ -1229,6 +1239,7 @@
     document.getElementById("error").style.display = "none";
     document.getElementById("navigation-container").style.display = "none";
     document.getElementById("next-scan-button").style.backgroundColor = "#C5C5C5";
+     document.getElementById("next-scan-button1").style.backgroundColor = "#C5C5C5";
     document.getElementById("home").style.color = "#FFF";
     document.getElementById("nxt-scn-btn").style.color = "#FFF";
 
@@ -1318,6 +1329,7 @@
         document.getElementById("left-part-after-scan-pass").style.display = "block";
 
         document.getElementById("next-scan-button").style.backgroundColor = "#003C71";
+        document.getElementById("next-scan-button1").style.backgroundColor = "#003C71";
         document.getElementById("before-scan-text").style.display = "block";
 
         document.getElementById("popupContainer").style.display = "none";
@@ -1457,7 +1469,11 @@
             error: function (xhr, status, error) {
                 if (xhr.responseJSON && xhr.responseJSON.errorMessage) {
                     var errorMessage = xhr.responseJSON.errorMessage;
-                    $("#productLabelInputError").text(errorMessage);
+                    $("#productLabelInputError").text(errorMessage);                
+                    setTimeout(function () {
+                        $("#productLabelInputError").text("");           
+                        location.reload();
+                    }, 5000);  
                 } else {
                     console.log("An error occurred while making the AJAX call:", error);
                 }
@@ -1538,6 +1554,7 @@
         document.getElementById("error").style.display = "flex";
         document.getElementById("navigation-container").style.display = "block";
         document.getElementById("next-scan-button").style.backgroundColor = "#003C71";
+        document.getElementById("next-scan-button1").style.backgroundColor = "#003C71";
         document.getElementById("fail-label-gtin").innerHTML = response.lhsData.cartonGTIN;
         document.getElementById("fail-label-gtin").innerHTML = response.lhsData.cartonGTIN;
         document.getElementById("fail-wo-lot-no").innerHTML = response.lhsData.woLotNo;
@@ -1670,6 +1687,24 @@
             });
         });
     }
+    $('#nxt-scn-btn').on('click', function (e) {
+        e.preventDefault(); // Prevent the default link behavior
+
+        // Make an AJAX request to your controller method
+        $.ajax({
+            url: '/Home/ProductLabelBarcodeScan', // Replace with the correct URL
+            method: 'POST', // Use POST or GET as appropriate
+            data: { udpMessage: 'N' }, // Send udpMessage as "N"
+            success: function (response) {
+                // Handle the response from the controller here
+                console.log(response);
+            },
+            error: function (error) {
+                // Handle any errors here
+                console.error(error);
+            }
+        });
+    });
     
 
 

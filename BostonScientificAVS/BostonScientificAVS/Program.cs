@@ -10,6 +10,10 @@ using System.Net.Sockets;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var webSocketOptions = new WebSocketOptions()
+{
+    KeepAliveInterval = TimeSpan.FromSeconds(1000),
+};
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
@@ -28,7 +32,10 @@ builder.Services.AddDbContext<DataContext>(options =>
 builder.Services.AddScoped<ItemService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddSingleton<UdpClient>();
+builder.Services.AddSingleton<TcpClient>();
+/*builder.Services.AddSingleton<NetworkStream>()*/;
 builder.Services.AddSingleton<IWebsocketHandler, WebsocketHandler>();
+
 
 builder.Services.AddAuthentication(options =>
 {
@@ -54,7 +61,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
+app.UseWebSockets(webSocketOptions);
 app.UseRouting();
 
 app.UseAuthentication();

@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Authorization;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using BostonScientificAVS.Websocket;
+using Azure;
+using System.Reflection.Metadata;
 
 namespace BostonScientificAVS.Controllers
 {
@@ -36,8 +38,13 @@ namespace BostonScientificAVS.Controllers
             return View();
         }
 
-        public IActionResult Result()
+        public IActionResult Result(string udpMessage)
         {
+            if (udpMessage == "N")
+            {
+                // If udpMessage is "N", send it to the socket method
+                SendMessageToUDPclient(udpMessage);
+            }
 
             WorkOrderInfo woi = new WorkOrderInfo();
             var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
@@ -81,10 +88,11 @@ namespace BostonScientificAVS.Controllers
         }
 
         [HttpPost("/SaveProductLabel")]
-        public async Task<IActionResult> SaveProductLabel(string productLabel, string productLabelSpec)
+        public async Task<IActionResult> SaveProductLabel(string productLabel, string productLabelSpec,bool gtinmismatch)
         {
             if (ModelState.IsValid)
             {
+                gtinmismatch = false;
                 string pattern = @"^\d{2}(\d{14})\d{2}(\d{6})(\d{2})(\w+)";
                 Match match = Regex.Match(productLabel, pattern);
 
@@ -99,7 +107,7 @@ namespace BostonScientificAVS.Controllers
                         await SendMessageToUDPclient("R");
                     }
 
-                    if (productLabel.Length == 34)
+                    if (productLabel.Length == 34 || match.Groups[1].Length == 14 || match.Groups[2].Length == 6 || match.Groups[4].Length ==8)
                     {
                         latestTransaction.Product_Label_GTIN = match.Groups[1].Value;
                         DateTime dateTime = DateTime.ParseExact(match.Groups[2].Value, "yyMMdd", null);
@@ -120,7 +128,9 @@ namespace BostonScientificAVS.Controllers
                         }
                         else
                         {
-                            return RedirectToAction("WorkOrderError", "Home");
+                            gtinmismatch = true;
+                            await _dataContext.SaveChangesAsync();
+                            return RedirectToAction("GTINmismatch", new { gtinMismatch = true });
                         }
 
                         latestTransaction.Product_Label_Spec = productLabelSpec;
@@ -154,22 +164,42 @@ namespace BostonScientificAVS.Controllers
                 return RedirectToAction("WorkOrderError", "Home");
             }
         }
-
-
-
-        public async Task<IActionResult> ValidateTransaction()
+        public async Task<IActionResult> GTINmismatch(bool gtinMismatch)
         {
-            // Fetch the latest record 
-            var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
-
-            if (transaction != null)
+       
+            if (gtinMismatch)
             {
-
                 Result result = new Result();
-                Mismatches mismatches = new Mismatches();
-                Lhs lhsData = new Lhs();
-                Rhs rhsData = new Rhs();
-                lhsData.dbGTIN = transaction.DB_GTIN;
+                var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
+                transaction.Result = "Fail";
+                DateTime currentDateTime = DateTime.Now;
+                transaction.Date_Time = currentDateTime.ToString();
+                await _dataContext.SaveChangesAsync();
+                // Create a response object with the GTINMismatch flag
+                var response = new
+                {
+                    GTINMismatch = true
+                    // Add other data as needed
+                };
+
+                return Json(response);
+            }
+
+            // Handle case when GTINMismatch is not true
+            return Ok(); // Return a default response if needed
+        }
+     
+    public async Task<IActionResult> ValidateTransaction()
+    {
+        // Fetch the latest record 
+            var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
+        if (transaction != null)
+        {
+            Result result = new Result();
+            Mismatches mismatches = new Mismatches();
+            Lhs lhsData = new Lhs();
+            Rhs rhsData = new Rhs();
+            lhsData.dbGTIN = transaction.DB_GTIN;
                 lhsData.workOrderLotNo = transaction.WO_Lot_Num;
                 lhsData.dbLabelSpec = transaction.DB_Label_Spec;
                 lhsData.calculatedUseBy = transaction.Calculated_Use_By.ToString();
@@ -254,7 +284,7 @@ namespace BostonScientificAVS.Controllers
                 return Json(new { success = false, errorMessage = TempData["ErrorMessage"] });
             }
         }
-        public IActionResult HomeScreen(string udpMessage)
+        public IActionResult HomeScreen()
         {
             bool myBooleanValue = false; // Default value in case TempData["MyBoolean"] is not set
             if (TempData.ContainsKey("AfterLogin") && TempData["AfterLogin"] is bool myBoolean)
@@ -269,13 +299,6 @@ namespace BostonScientificAVS.Controllers
             else
             {
                 ViewBag.HoursInput = 0;
-            }
-
-            // Use the udpMessage parameter in your WriteUdpConnection method
-            if (!string.IsNullOrEmpty(udpMessage))
-            {
-                // The udpMessage parameter is present, so call WriteUdpConnection
-                SendMessageToUDPclient(udpMessage);
             }
 
             return View();
@@ -634,6 +657,7 @@ namespace BostonScientificAVS.Controllers
             }
 
         }
+       
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

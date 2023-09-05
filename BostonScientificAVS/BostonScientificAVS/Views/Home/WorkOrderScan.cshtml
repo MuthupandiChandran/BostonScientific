@@ -67,7 +67,7 @@
                 <form id="workOrderForm" asp-controller="Home" asp-action="SaveWorkOrder" method="post">
                     <div class="work-order-scan-submit">
                         <div>
-                            <input class="scan-input" placeholder="Please Enter Work Order" name="input" id="input" />
+                            <input class="scan-input" placeholder="Please Enter Work Order" name="input" id="input" autocomplete="off"/>
                         </div>
                         <div>
                             <button type="submit" class="login-button" id="submitBtn">
@@ -217,6 +217,7 @@
 
   
 </style>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 @section Scripts{
 
 <script type="text/javascript">
