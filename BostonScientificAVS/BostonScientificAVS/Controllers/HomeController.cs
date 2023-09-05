@@ -166,30 +166,44 @@ namespace BostonScientificAVS.Controllers
         }
         public async Task<IActionResult> GTINmismatch(bool gtinMismatch)
         {
-       
             if (gtinMismatch)
             {
                 Result result = new Result();
+                var item = _dataContext.ItemMaster.OrderByDescending(x=>x.GTIN).FirstOrDefault();
                 var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
                 transaction.Result = "Fail";
                 DateTime currentDateTime = DateTime.Now;
                 transaction.Date_Time = currentDateTime.ToString();
-                await _dataContext.SaveChangesAsync();
-                // Create a response object with the GTINMismatch flag
-                var response = new
-                {
-                    GTINMismatch = true
-                    // Add other data as needed
-                };
+                var product_Gtin = _dataContext.Transaction
+                    .OrderByDescending(x => x.Product_Label_GTIN)
+                    .Select(x => x.Product_Label_GTIN)
+                    .FirstOrDefault();
 
-                return Json(response);
+                
+                var count = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Result != null).Distinct();
+                var countData = new countinfo
+                {
+                    Product_Gtin =product_Gtin,
+                    Db_Gtin = item.GTIN,
+                    GTINMismatch = true, // Set the GTINMismatch flag to true
+                    totalcount = count.Count(),
+                    passedCount = count.Where(x => x.Result == "Pass").Count(),
+                    failedCount = count.Count() - count.Where(x => x.Result == "Pass").Count(),
+                    scannedCount = count.Where(x => x.Rescan_Initated == true).Count()
+                };
+                ;
+                await _dataContext.SaveChangesAsync();
+
+                // Return the countData as JSON response
+                return Json(countData);
             }
 
             // Handle case when GTINMismatch is not true
             return Ok(); // Return a default response if needed
         }
-     
-    public async Task<IActionResult> ValidateTransaction()
+
+
+        public async Task<IActionResult> ValidateTransaction()
     {
         // Fetch the latest record 
             var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
@@ -511,7 +525,7 @@ namespace BostonScientificAVS.Controllers
                 {
                     transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
 
-                    if (input1.Length == 34)
+                    if (input1.Length == 34 || match.Groups[1].Length == 14 || match.Groups[2].Length == 6 || match.Groups[4].Length == 8)
                     {
                         transaction.Carton_Label_GTIN = match.Groups[1].Value;
                         DateTime dateTime = DateTime.ParseExact(match.Groups[2].Value, "yyMMdd", null);
@@ -533,7 +547,10 @@ namespace BostonScientificAVS.Controllers
                         }
                         else
                         {
-                            return RedirectToAction("WorkOrderError", "Home");
+                            await SendMessageToUDPclient("E");
+                            TempData["ErrorMessage"] = "Carton GTIN value is Invalid";
+                            return View("CartonLabelScan");
+
                         }
 
                         transaction.Carton_Label_Spec = input2;
@@ -544,6 +561,7 @@ namespace BostonScientificAVS.Controllers
                         await SendMessageToUDPclient("E");
                         TempData["ErrorMessage"] = "Carton Label Input is Invalid Format";
                         return View("CartonLabelScan");
+                        
                     }
 
                 }
@@ -567,7 +585,7 @@ namespace BostonScientificAVS.Controllers
         }
 
         [HttpPost("/SaveProductLabelBarcode")]
-        public async Task<IActionResult> SaveProductLabelBarcode(string input1, string input2, string input3)
+        public async Task<IActionResult> SaveProductLabelBarcode(string input1, string input2, string input3, bool gtinmismatch)
         {
             if (ModelState.IsValid)
             {
@@ -582,16 +600,17 @@ namespace BostonScientificAVS.Controllers
                     if (latestTransaction.Result != null)
                     {
                         latestTransaction.Rescan_Initated = true;
+                        await SendMessageToUDPclient("R");
                     }
 
-                    if (input1.Length == 34)
+                    if (input1.Length == 34 || match.Groups[1].Length == 14 || match.Groups[2].Length == 6 || match.Groups[4].Length == 8)
                     {
                         latestTransaction.Product_Label_GTIN = match.Groups[1].Value;
                         DateTime dateTime = DateTime.ParseExact(match.Groups[2].Value, "yyMMdd", null);
                         latestTransaction.Product_Use_By = dateTime;
                         latestTransaction.Product_Lot_Num = match.Groups[4].Value;
 
-                        ItemMaster item = await _dataContext.ItemMaster.FirstOrDefaultAsync(i => i.GTIN == latestTransaction.Carton_Label_GTIN);
+                        ItemMaster item = await _dataContext.ItemMaster.FirstOrDefaultAsync(i => i.GTIN == latestTransaction.Product_Label_GTIN);
                         if (item != null)
                         {
                             // Assign values from ItemMaster
@@ -604,7 +623,9 @@ namespace BostonScientificAVS.Controllers
                         }
                         else
                         {
-                            return RedirectToAction("WorkOrderError", "Home");
+                            gtinmismatch = true;
+                            await _dataContext.SaveChangesAsync();
+                            return RedirectToAction("GTINmismatch", new { gtinMismatch = true });
                         }
 
                         latestTransaction.Product_Label_Spec = input2;

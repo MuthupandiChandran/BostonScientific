@@ -582,6 +582,9 @@
                             <div id="after-scan-fail-text" style="display:none;background-color: #003C71;" class="scanning-text-container scanning-failed-instruction temp-supervisor-call-button">
                                 <h6 class="scanning-text-1">supervisor required to approve mismatch</h6>                  
                             </div>
+                                    <div id="after-scan-fail-text1" style="display:none;background-color: #003C71;" class="scanning-text-container scanning-failed-instruction temp-supervisor-call-button1">
+                                        <h6 class="scanning-text-1">supervisor required to approve mismatch</h6>
+                                    </div>
                             </div>
                             </div>
                             </div>
@@ -1684,6 +1687,9 @@
     #after-scan-fail-text{
         height:155px !important
     }
+    #after-scan-fail-text1{
+        height:155px !important
+    }
 
     .close {
         float: right;
@@ -1724,6 +1730,7 @@
     document.getElementById("next-scan-button1").style.backgroundColor = "#C5C5C5";
     document.getElementById("home").style.color= "#FFF";
     document.getElementById("nxt-scn-btn").style.color = "#FFF";
+    document.getElementById("after-scan-fail-text1").style.display = "none";
     //document.getElementsByClassName('temp-button')[0]
     //    .addEventListener('click', function (event) {
     //        beforeToDuringScan();
@@ -1735,6 +1742,12 @@
        .addEventListener('click', function (event) {
            showPopup();
        });
+    document.getElementsByClassName('temp-supervisor-call-button1')[0]
+        .addEventListener('click', function (event) {
+            showPopup1();
+        });
+
+
     //document.getElementByClassName('greenButton')[0]
     //    .addEventListener('click',function(event)
     //    {
@@ -1875,16 +1888,17 @@
     }
 
     function GtinMismatch(response) {
-        debugger;
-        document.getElementById("total-val").innerHTML = response.gtinMismatch ? 1 : 0;
-        document.getElementById("total-failed-val").innerHTML = response.gtinMismatch ? 1:0;
-
+        if (response.gtinMismatch) {
+            // Increment both values by 1
+            document.getElementById("total-val").innerHTML = parseInt(document.getElementById("total-val").innerHTML) + 1;
+            document.getElementById("total-failed-val").innerHTML = parseInt(document.getElementById("total-failed-val").innerHTML) + 1;
+        }
         document.getElementById("popupContainer").style.display = "none";
          document.getElementById("popupContainer1").style.display = "none";
         document.getElementById("scanning-icon-div").style.backgroundColor = "#FFB5B5";
 
         document.getElementById("before-scan-text").style.display = "none";
-        document.getElementById("after-scan-fail-text").style.display = "flex";
+        document.getElementById("after-scan-fail-text1").style.display = "flex";
 
         document.getElementById("before-scan-image").style.display = "none";
         document.getElementById("after-scan-fail-image").style.display = "block";
@@ -1948,6 +1962,14 @@
         document.getElementById("popupContainer1").style.display = "none";
     }
 
+    function showPopup1() {
+        document.getElementById("scanning-icon-div").style.backgroundColor = "#FFB5B5";
+        document.getElementById("after-scan-fail-image").style.display = "block";
+        document.getElementById("after-scan-fail-text1").style.display = "flex";
+        document.getElementById("popupContainer").style.display = "none";
+        document.getElementById("popupContainer1").style.display = "block";
+    }
+
     function closePopup() {
         document.getElementById("popupContainer").style.display = "none";
         document.getElementById("popupContainer1").style.display = "none";
@@ -1967,6 +1989,7 @@
             success: function (response) {
                 console.log(response);
                 if (response.gtinMismatch) {
+                    responseData= response;
                     GtinMismatch(response);
                 } else {
                     responseData = response;
@@ -2128,31 +2151,30 @@
     }
     function setScannedFailData1(response) {
         console.log("set data for fail called");
-        document.getElementById("after-scan-fail-text").style.display = "none";
+        document.getElementById("after-scan-fail-text1").style.display = "none";
         document.getElementsByClassName("scn")[0].style.display = "none";
-        document.getElementById("error").style.display = "flex";
+        document.getElementById("error1").style.display = "flex";
         document.getElementById("navigation-container").style.display = "block";
         document.getElementById("next-scan-button").style.backgroundColor = "#003C71";
         document.getElementById("next-scan-button1").style.backgroundColor = "#003C71";
-        document.getElementById("fail-db-gtin").innerHTML = response.lhsData.dbGTIN;
-        document.getElementById("fail-wo-lot-no").innerHTML = response.lhsData.workOrderLotNo;
-        document.getElementById("fail-db-label-spec").innerHTML = response.lhsData.dbLabelSpec;
-        document.getElementById("fail-calc-use-by").innerHTML = response.lhsData.calculatedUseBy;
-        document.getElementById("fail-db-catalog-num").innerHTML = response.lhsData.dbCatalogNo;
-        document.getElementById("fail-product-gtin").innerHTML = response.rhsData.productLabelGTIN;
-        document.getElementById("fail-product-gtin").style.color = "red";
-        document.getElementById("p-gtin").style.color = "red";
-       
-       document.getElementById("fail-product-lot-no").innerHTML = response.rhsData.productLotNo;
-        document.getElementById("fail-product-lot-no").style.color = "black";
-            document.getElementById("fail-product-label-spec").innerHTML = response.rhsData.productLabelSpec;
-            document.getElementById("fail-product-label-spec").style.color = "black";
-            document.getElementById("fail-product-use-by").innerHTML = response.rhsData.productUseBy;
-            document.getElementById("fail-product-use-by").style.color = "black";
-            document.getElementById("fail-wo-catalog-no").innerHTML = response.rhsData.workOrderCatalogNo;
-            document.getElementById("fail-wo-catalog-no").style.color = "black";
-        
+        if (GTINMismatch = true) {
+            document.getElementById("fail-product-gtin").innerHTML = response.product_Gtin;
+            document.getElementById("fail-product-gtin").style.color = "red";
+            document.getElementById("p-gtin").style.color = "red";
+            document.getElementById("fail-db-gtin").innerHTML = response.db_Gtin;
+            document.getElementById("fail-db-gtin").style.color = "black";
+        }
 
+        document.getElementById("fail-wo-lot-no").style.display = "flex"
+        document.getElementById("fail-db-label-spec").style.display = "flex";
+        document.getElementById("fail-calc-use-by").style.display = "flex";
+        document.getElementById("fail-db-catalog-num").style.display = "flex";
+        document.getElementById("fail-product-lot-no").style.display = "flex";
+
+        document.getElementById("fail-product-label-spec").style.display = "flex";
+
+        document.getElementById("fail-product-use-by").style.display = "flex";
+        document.getElementById("fail-wo-catalog-no").style.display = "flex";
 
 
     }
@@ -2160,9 +2182,7 @@
 
 
 
-
     function setWorkOrderInfo(response) {
-        debugger;
         document.getElementById("total-val").innerHTML = response.workOrderInfo.totalCount != null ? response.workOrderInfo.totalCount : 0;
         document.getElementById("total-passed-val").innerHTML = response.workOrderInfo.passedCount != null ? response.workOrderInfo.passedCount : 0;
               document.getElementById("total-failed-val").innerHTML = response.workOrderInfo.failedCount != null ? response.workOrderInfo.failedCount: 0;
@@ -2172,12 +2192,10 @@
     }
 
     $(document).ready(function () {     
-      configure2btn();
         configureContinueButton();
     });
-    function configure2btn() {
-        $('#redButton').off('click'); // Remove previous click event handler
-        $('#redButton').click(function () {
+   
+        $('#redButton').click(function (response) {
             showLoader();
             var supervisorId = $('#supervisorInput').val();
 
@@ -2190,12 +2208,13 @@
                         hideLoader();
                         closePopup();
                         ScanFailToSupervisor1();
-                        setScannedFailData1(responseData, responseData.mismatches);
-                    } else {
+                    setScannedFailData1(responseData);
+                } else {
                         hideLoader();
                         // Supervisor ID is invalid, show an error message
                         var errorMessage = 'Supervisor ID is invalid. Please enter a valid ID.';
                         $('#popupContent').find('.error-message').text(errorMessage);
+                    $('#supervisorInput').val('');
                     }
                 },
                 error: function (xhr, status, error) {
@@ -2203,7 +2222,7 @@
                 }
             });
         });
-    }
+    
 
 
 
@@ -2237,6 +2256,7 @@
             });
         });
     }
+
     $('#nxt-scn-btn').on('click', function (e) {
         e.preventDefault(); // Prevent the default link behavior
 

@@ -154,11 +154,226 @@
                                     <div id="after-scan-fail-text" style="display:none;background-color: #003C71;" class="scanning-text-container scanning-failed-instruction temp-supervisor-call-button">
                                         <h6 class="scanning-text-1">supervisor required to approve mismatch</h6>
                                     </div>
+                                    <div id="after-scan-fail-text1" style="display:none;background-color: #003C71;" class="scanning-text-container scanning-failed-instruction temp-supervisor-call-button1">
+                                        <h6 class="scanning-text-1">supervisor required to approve mismatch</h6>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                     </div>
+
+                    <div class="row" id="error1">
+                        <div class="col-md-8">
+                            <div id="supervisor-intervention" class="supervisor-container temp-display">
+                                <div class="data-comparison">
+                                    <div>
+                                        <h6 class="mismatch-text">Scanned Details</h6>
+                                    </div>
+                                    <div class="data-table-pass-supervisor">
+                                        <div class="col-md-6 product-data" style="width:200px">
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text">Carton Label GTIN</h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-label-gtin" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text">Carton Label GTIN</h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-label-gtin1" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text">Work Order Lot No</h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-wo-lot-no" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text">Carton Label Spec</h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-db-label-spec" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text">Carton Use By</h6>
+                                                </div>
+                                                <div>
+                                                    <h6 id="fail-calc-use-by" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text">Wo Catalog Num</h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-db-catalog-num" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text">Carton Lot No</h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-carton-lot-no" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text">Scanned IFU</h6>
+                                                </div>
+                                                <div>
+                                                    <h6 id="fail-ifu" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text">Carton Use By</h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-calc-use-by1" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 data-from-db">
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text" id="p-gtin">DB GTIN</h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-db-gtin" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text" id="p-gtin">Product Label GTIN </h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-product-gtin" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text" id="p-lotnum"> Product Lot Num </h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-product-lot-no" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text" id="p-labelspec">DB Label Spec</h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-product-label-spec" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text" id="p-useby">Calculated Use By </h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-product-use-by" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text" id="w-catlognum">DB Catalog Num</h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-db-catalog-no" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text" id="p-lotnum"> Product Lot Num </h6>
+                                                </div>
+                                                <div>
+                                                    <h6 id="fail-product-lot-no1" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text" id="p-ifu">DB IFU</h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-product-db-ifu" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div>
+                                                <div>
+                                                    <h6 class="comparison-lable-text" id="p-useby"> Product Use By</h6>
+                                                </div>
+                                                <div>
+
+                                                    <h6 id="fail-product-useby" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-4">
+                            <div class="col-6" id="navigation-container">
+                                <div class="navigation-container">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <a id="rescanBtn" class="approve-button" onclick="reloadPage()"><span class="approve-text">Rescan</span></a>
+                                        </div>
+                                        <div class="col-12">
+                                            <a class="reject-button" asp-area="" asp-controller="Home" asp-action="WorkOrderScan"><span class="reject-text">New Work Order</span></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
 
                     <div class="row" id="error">
                         <div class="col-md-8">
@@ -271,7 +486,7 @@
                                             </div>
                                             <div>
                                                 <div>
-                                                    <h6 class="comparison-lable-text" id="p-gtin">Product Label GTIN </h6>
+                                                    <h6 class="comparison-lable-text" id="pl-gtin">Product Label GTIN </h6>
                                                 </div>
                                                 <div>
 
@@ -533,6 +748,21 @@
                     </div>
                 </div>
             </div>
+
+            <div id="popupContainer1">
+                <div id="popupContent">
+                    <a class="close" href="javascript:void(0);" onclick="closePopup()">X</a>
+                    <img src="~/assets/images/Barcode image 2.png" alt="Barcode Icon" id="scan-image">
+                    <h5 class="supr-txt">Place Your Supervisor Badge</h5>
+                    <h5 id="under">under the scanner</h5>
+                    <input id="supervisorInput" placeholder="Super Visor Id" name="supervisorInput" autocomplete="off" />
+                    <br />
+                    <button id="redButton" class="redButton">Continue</button>
+                    <br />
+                    <span class="error-message text-danger"></span>
+                </div>
+            </div>
+
 
 
             <div id="popupContainer">
@@ -1157,6 +1387,16 @@
         background-color: rgba(0, 0, 0, 0.5);
         z-index: 999;
     }
+    #popupContainer1 {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
 
     /* Styles for the popup content */
     #popupContent {
@@ -1173,6 +1413,17 @@
 
     /* Style for the green button inside the popup */
     #greenButton {
+        background-color: green;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-left: 180px;
+        margin-top: 14px;
+        margin-bottom: 8px;
+    }
+    #redButton {
         background-color: green;
         color: white;
         padding: 10px 20px;
@@ -1221,6 +1472,12 @@
         width: 321px;
         margin-left: 35px;
     }
+    #after-scan-fail-text1 {
+        height: 303px !important;
+        width: 321px;
+        margin-left: 35px;
+    }
+
 
     .close {
         float: right;
@@ -1242,11 +1499,16 @@
      document.getElementById("next-scan-button1").style.backgroundColor = "#C5C5C5";
     document.getElementById("home").style.color = "#FFF";
     document.getElementById("nxt-scn-btn").style.color = "#FFF";
+    document.getElementById("after-scan-fail-text1").style.display = "none";
 
 
     document.getElementsByClassName('temp-supervisor-call-button')[0]
         .addEventListener('click', function (event) {
             showPopup();         
+        });
+    document.getElementsByClassName('temp-supervisor-call-button1')[0]
+        .addEventListener('click', function (event) {
+            showPopup1();
         });
     
 
@@ -1293,6 +1555,7 @@
         document.getElementById("left-part-before-scan").style.display = "none";
         document.getElementById("left-part-during-scan").style.display = "block";
         document.getElementById("popupContainer").style.display = "none";
+        document.getElementById("popupContainer1").style.display = "none";
     }
 
     function duringToScanPass() {
@@ -1333,10 +1596,12 @@
         document.getElementById("before-scan-text").style.display = "block";
 
         document.getElementById("popupContainer").style.display = "none";
+        document.getElementById("popupContainer1").style.display = "none";
     }
 
     function duringToScanFail(response) {
         document.getElementById("popupContainer").style.display = "none";
+         document.getElementById("popupContainer1").style.display = "none";
         document.getElementById("scanning-icon-div").style.backgroundColor = "#FFB5B5";
 
         document.getElementById("before-scan-text").style.display = "none";
@@ -1407,16 +1672,57 @@
         document.getElementById("left-part-after-scan-fail").style.display = "block";
     }
 
+    function GtinMismatch(response) {
+        if (response.gtinMismatch) {
+            // Increment both values by 1
+            document.getElementById("total-val").innerHTML = parseInt(document.getElementById("total-val").innerHTML) + 1;
+            document.getElementById("total-failed-val").innerHTML = parseInt(document.getElementById("total-failed-val").innerHTML) + 1;
+        }
+        document.getElementById("popupContainer").style.display = "none";
+        document.getElementById("popupContainer1").style.display = "none";
+        document.getElementById("scanning-icon-div").style.backgroundColor = "#FFB5B5";
+
+        document.getElementById("before-scan-text").style.display = "none";
+        document.getElementById("after-scan-fail-text1").style.display = "flex";
+
+        document.getElementById("before-scan-image").style.display = "none";
+        document.getElementById("after-scan-fail-image").style.display = "block";
+
+        document.getElementById("during-scan-dbgtin-no").style.display = "none";
+        document.getElementById("after-scan-fail-dbgtin-no").style.display = "block";
+        document.getElementById("during-scan-gtin").style.display = "none";
+        document.getElementById("after-scan-fail-gtin").style.display = "block";
+        document.getElementById("during-scan-lot-no").style.display = "block";
+        document.getElementById("during-scan-label-spec").style.display = "block";
+        document.getElementById("during-scan-use-date").style.display = "block";
+        document.getElementById("during-scan-catalog").style.display = "block";
+        document.getElementById("during-scan-lot-no1").style.display = "block";
+        document.getElementById("during-scan-ifu").style.display = "block";
+        document.getElementById("during-scan-product-useby").style.display = "block";
+        document.getElementById("left-part-during-scan").style.display = "none";
+        document.getElementById("left-part-after-scan-fail").style.display = "block";
+    }
+
+
     function ScanFailToSupervisor() {
         document.getElementById("popupContainer").style.display = "none";
+        document.getElementById("popupContainer1").style.display = "none";
         document.getElementById("scanning-icon-div").style.display = "none";
         document.getElementById("supervisor-intervention").style.display = "flex";
        
+    }
+    function ScanFailToSupervisor1() {
+        document.getElementById("popupContainer").style.display = "none";
+        document.getElementById("popupContainer1").style.display = "none";
+        document.getElementById("scanning-icon-div").style.display = "none";
+        document.getElementById("supervisor-intervention").style.display = "flex";
+
     }
 
     function resetPassScenario() {
 
         document.getElementById("popupContainer").style.display = "none";
+        document.getElementById("popupContainer1").style.display = "none";
         document.getElementById("after-scan-pass-lot-no").style.display = "none";
         document.getElementById("before-scan-lot-no").style.display = "block";
 
@@ -1443,10 +1749,19 @@
         document.getElementById("after-scan-fail-image").style.display = "block";
         document.getElementById("after-scan-fail-text").style.display = "flex";
         document.getElementById("popupContainer").style.display = "block";
+        document.getElementById("popupContainer1").style.display = "none";
+    }
+     function showPopup1() {
+        document.getElementById("scanning-icon-div").style.backgroundColor = "#FFB5B5";
+        document.getElementById("after-scan-fail-image").style.display = "block";
+        document.getElementById("after-scan-fail-text1").style.display = "flex";
+        document.getElementById("popupContainer").style.display = "none";
+        document.getElementById("popupContainer1").style.display = "block";
     }
 
     function closePopup() {
         document.getElementById("popupContainer").style.display = "none";
+        document.getElementById("popupContainer1").style.display = "none";
     }
 
 
@@ -1462,9 +1777,14 @@
             method: "POST",
             data: { input1:productLabel,input2:productLabelSpec,input3:scannedifu},
             success: function (response) {
-                console.log(response);              
-                responseData = response;
-                processResponse(response);
+                console.log(response);
+                if (response.gtinMismatch) {
+                    responseData = response;
+                    GtinMismatch(response);
+                } else {
+                    responseData = response;
+                    processResponse(response);
+                }
             },
             error: function (xhr, status, error) {
                 if (xhr.responseJSON && xhr.responseJSON.errorMessage) {
@@ -1547,6 +1867,37 @@
 
     }
 
+    function setScannedFailData1(response) {
+        console.log("set data for fail called");
+        document.getElementById("after-scan-fail-text").style.display = "none";
+        document.getElementsByClassName("scn")[0].style.display = "none";
+        document.getElementById("error").style.display = "flex";
+        document.getElementById("navigation-container").style.display = "block";
+        document.getElementById("next-scan-button1").style.backgroundColor = "#003C71";
+        if (GTINMismatch = true) {
+            document.getElementById("p-gtin").style.color = "red";
+            document.getElementById("fail-db-gtin").innerHTML = response.product_Gtin;
+            document.getElementById("fail-db-gtin").style.color = "red";
+            document.getElementById("pl-gtin").style.color = "red";
+            document.getElementById("fail-product-gtin").innerHTML = response.product_Gtin;
+            document.getElementById("fail-product-gtin").style.color = "red";
+            
+
+            document.getElementById("fail-label-gtin").innerHTML = response.db_Gtin;
+            document.getElementById("fail-label-gtin").style.color ="black";
+            document.getElementById("fail-label-gtin1").innerHTML = response.db_Gtin;
+            document.getElementById("fail-label-gtin1").style.color = "black";
+        }
+        document.getElementById("fail-product-lot-no").style.display = "flex";
+        document.getElementById("fail-product-label-spec").style.display = "flex";
+        document.getElementById("fail-product-use-by").style.display = "flex";
+        document.getElementById("fail-db-catalog-no").style.display = "flex";
+        document.getElementById("fail-product-lot-no1").style.display = "flex";
+        document.getElementById("fail-product-db-ifu").style.display = "flex";
+        document.getElementById("fail-product-useby").style.display = "flex";
+        document.getElementById("error").style.display="none";
+    }
+
     function setScannedFailData(response, mismatches) {
         console.log("set data for fail called");
         document.getElementById("after-scan-fail-text").style.display = "none";
@@ -1576,7 +1927,7 @@
         if (mismatches.gtinmismatches) {
             document.getElementById("fail-product-gtin").innerHTML = response.rhsData.productLabelGTIN;
             document.getElementById("fail-product-gtin").style.color = "red";
-            document.getElementById("p-gtin").style.color = "red";
+            document.getElementById("pl-gtin").style.color = "red";
         }
         else{
              document.getElementById("fail-product-gtin").innerHTML = response.rhsData.productLabelGTIN;
@@ -1653,6 +2004,37 @@
         console.log(response.workOrderInfo.scannedCount);
         document.getElementById("work-order-lot-no").innerHTML = response.lhsData.woLotNo;
     }
+
+    $('#redButton').click(function (response) {
+        showLoader();
+        var supervisorId = $('#supervisorInput').val();
+
+        $.ajax({
+            type: 'POST',
+            url: '/Home/CheckSupervisorId',
+            data: { supervisorEmpId: supervisorId },
+            success: function (data) {
+                if (data === true) {
+                    hideLoader();
+                    closePopup();
+                    ScanFailToSupervisor1();
+                    setScannedFailData1(responseData);
+                } else {
+                    hideLoader();
+                    // Supervisor ID is invalid, show an error message
+                    var errorMessage = 'Supervisor ID is invalid. Please enter a valid ID.';
+                    $('#popupContent').find('.error-message').text(errorMessage);
+                    $('#supervisorInput').val('');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log("An error occurred while making the AJAX call:", error);
+            }
+        });
+    });
+
+
+
 
     $(document).ready(function () {
         configureContinueButton();
