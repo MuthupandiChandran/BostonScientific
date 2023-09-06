@@ -64,4 +64,5 @@ namespace BostonScientificAVS.Models
         public int? scannedCount { get; set; }
 
     }
+
 }

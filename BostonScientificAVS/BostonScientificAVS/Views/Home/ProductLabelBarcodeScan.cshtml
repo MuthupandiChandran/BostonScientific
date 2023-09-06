@@ -274,7 +274,7 @@
                                             </div>
                                             <div>
                                                 <div>
-                                                    <h6 class="comparison-lable-text" id="p-gtin">Product Label GTIN </h6>
+                                                    <h6 class="comparison-lable-text" id="pl-gtin">Product Label GTIN </h6>
                                                 </div>
                                                 <div>
 
@@ -361,7 +361,7 @@
                         <div class="col-md-4">
                             <div class="col-6" id="navigation-container">
                                 <div class="navigation-container">
-                                    <div class="row">
+                                    <div class="row rescn">
                                         <div class="col-12">
                                             <a id="rescanBtn" class="approve-button" onclick="reloadPage()"><span class="approve-text">Rescan</span></a>
                                         </div>
@@ -486,7 +486,7 @@
                                             </div>
                                             <div>
                                                 <div>
-                                                    <h6 class="comparison-lable-text" id="pl-gtin">Product Label GTIN </h6>
+                                                    <h6 class="comparison-lable-text"id="product-lbl-gtin">Product Label GTIN </h6>
                                                 </div>
                                                 <div>
 
@@ -578,7 +578,7 @@
                                             <a id="rescanBtn" class="approve-button" onclick="reloadPage()"><span class="approve-text">Rescan</span></a>
                                         </div>
                                         <div class="col-12">
-                                            <a class="reject-button" asp-area="" asp-controller="Home" asp-action="WorkOrderScan"><span class="reject-text">New Work Order</span></a>
+                                            <a class="reject-button" asp-area="" asp-controller="Home" asp-action="WorkOrderBarcodeScan"><span class="reject-text">New Work Order</span></a>
                                         </div>
                                     </div>
                                 </div>
@@ -750,14 +750,14 @@
             </div>
 
             <div id="popupContainer1">
-                <div id="popupContent">
+                <div id="popupContent1">
                     <a class="close" href="javascript:void(0);" onclick="closePopup()">X</a>
                     <img src="~/assets/images/Barcode image 2.png" alt="Barcode Icon" id="scan-image">
                     <h5 class="supr-txt">Place Your Supervisor Badge</h5>
                     <h5 id="under">under the scanner</h5>
-                    <input id="supervisorInput" placeholder="Super Visor Id" name="supervisorInput" autocomplete="off" />
+                    <input id="supervisorInput1" placeholder="Super Visor Id" name="supervisorInput1" autocomplete="off" />
                     <br />
-                    <button id="redButton" class="redButton">Continue</button>
+                    <button id="redButton" class="redButton" onclick="redbutton('supervisorInput1')">Continue</button>
                     <br />
                     <span class="error-message text-danger"></span>
                 </div>
@@ -773,7 +773,7 @@
                     <h5 id="under">under the scanner</h5>
                     <input id="supervisorInput" placeholder="Super Visor Id" name="supervisorInput" autocomplete="off"/>
                     <br />
-                    <button id="greenButton" class="greenButton">Continue</button>
+                    <button id="greenButton" class="greenButton" onclick="configureContinueButton('supervisorInput')">Continue</button>
                     <br />
                     <span class="error-message text-danger"></span>
                 </div>
@@ -827,6 +827,10 @@
     </div>
 </body>
 <style>
+    .rescn {
+        position: absolute;
+        top: 65%;
+    }
     #next-scan-button a {
         text-decoration: none;
         color: #FFF;
@@ -902,6 +906,15 @@
         font-size: 20px;
         text-align: center;
     }
+     #supervisorInput1 {
+        margin-left: 152px;
+        width: 151px;
+        height: 43px;
+        border-radius: 10px;
+        border: 1px solid;
+        font-size: 20px;
+        text-align: center;
+    }
 
     #spr-err-txt {
         margin-left: 96px
@@ -937,6 +950,7 @@
         display: block;
         width: 155px;
         height: 56px;
+        margin-right: -10px;
         background: #FF0000;
         padding: 10px;
         text-align: center;
@@ -944,9 +958,10 @@
         color: white;
         font-weight: bold;
         line-height: 40px;
-        margin: auto;
         text-decoration: none;
     }
+
+
 
     .next-img {
         height: 24px;
@@ -1400,6 +1415,17 @@
 
     /* Styles for the popup content */
     #popupContent {
+        width: 477px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 16px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+     #popupContent1 {
         width: 477px;
         position: absolute;
         top: 50%;
@@ -1873,12 +1899,13 @@
         document.getElementsByClassName("scn")[0].style.display = "none";
         document.getElementById("error").style.display = "flex";
         document.getElementById("navigation-container").style.display = "block";
+        document.getElementById("next-scan-button").style.backgroundColor = "#003C71";
         document.getElementById("next-scan-button1").style.backgroundColor = "#003C71";
         if (GTINMismatch = true) {
             document.getElementById("p-gtin").style.color = "red";
             document.getElementById("fail-db-gtin").innerHTML = response.product_Gtin;
             document.getElementById("fail-db-gtin").style.color = "red";
-            document.getElementById("pl-gtin").style.color = "red";
+            document.getElementById("p").style.setProperty("color", "red", "important");
             document.getElementById("fail-product-gtin").innerHTML = response.product_Gtin;
             document.getElementById("fail-product-gtin").style.color = "red";
             
@@ -1902,8 +1929,7 @@
         console.log("set data for fail called");
         document.getElementById("after-scan-fail-text").style.display = "none";
         document.getElementsByClassName("scn")[0].style.display = "none";
-        document.getElementById("error").style.display = "flex";
-        document.getElementById("navigation-container").style.display = "block";
+        document.getElementById("error").style.display = "flex";      
         document.getElementById("next-scan-button").style.backgroundColor = "#003C71";
         document.getElementById("next-scan-button1").style.backgroundColor = "#003C71";
         document.getElementById("fail-label-gtin").innerHTML = response.lhsData.cartonGTIN;
@@ -1927,7 +1953,7 @@
         if (mismatches.gtinmismatches) {
             document.getElementById("fail-product-gtin").innerHTML = response.rhsData.productLabelGTIN;
             document.getElementById("fail-product-gtin").style.color = "red";
-            document.getElementById("pl-gtin").style.color = "red";
+            document.getElementById("product-lbl-gtin").style.color = "red";
         }
         else{
              document.getElementById("fail-product-gtin").innerHTML = response.rhsData.productLabelGTIN;
@@ -2005,9 +2031,9 @@
         document.getElementById("work-order-lot-no").innerHTML = response.lhsData.woLotNo;
     }
 
-    $('#redButton').click(function (response) {
+    function redbutton(inputFieldId) {
         showLoader();
-        var supervisorId = $('#supervisorInput').val();
+        var supervisorId = $('#' + inputFieldId).val();
 
         $.ajax({
             type: 'POST',
@@ -2019,54 +2045,51 @@
                     closePopup();
                     ScanFailToSupervisor1();
                     setScannedFailData1(responseData);
+                    $('#' + inputFieldId).val('');
                 } else {
                     hideLoader();
                     // Supervisor ID is invalid, show an error message
                     var errorMessage = 'Supervisor ID is invalid. Please enter a valid ID.';
-                    $('#popupContent').find('.error-message').text(errorMessage);
-                    $('#supervisorInput').val('');
+                    $('#popupContent1').find('.error-message').text(errorMessage);
+                    $('#' + inputFieldId).val('');
                 }
             },
             error: function (xhr, status, error) {
                 console.log("An error occurred while making the AJAX call:", error);
             }
         });
-    });
+    }
 
 
 
+  
 
-    $(document).ready(function () {
-        configureContinueButton();
-    });
+    function configureContinueButton(inputFieldId) {
+        showLoader();
+        var supervisorId = $('#' + inputFieldId).val(); // Retrieve value using the provided input field ID
 
-    function configureContinueButton() {
-        $('#greenButton').off('click'); // Remove previous click event handler
-        $('#greenButton').click(function () {
-            showLoader();
-            var supervisorId = $('#supervisorInput').val();
-
-            $.ajax({
-                type: 'POST',
-                url: '/Home/CheckSupervisorId',
-                data: { supervisorEmpId: supervisorId },
-                success: function (data) {
-                    if (data === true) {
-                        hideLoader();
-                        closePopup();
-                        ScanFailToSupervisor();
-                        setScannedFailData(responseData, responseData.mismatches);
-                    } else {
-                        hideLoader();
-                        // Supervisor ID is invalid, show an error message
-                        var errorMessage = 'Supervisor ID is invalid. Please enter a valid ID.';
-                        $('#popupContent').find('.error-message').text(errorMessage);
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.log("An error occurred while making the AJAX call:", error);
+        $.ajax({
+            type: 'POST',
+            url: '/Home/CheckSupervisorId',
+            data: { supervisorEmpId: supervisorId },
+            success: function (data) {
+                if (data === true) {
+                    hideLoader();
+                    closePopup();
+                    ScanFailToSupervisor();
+                    setScannedFailData(responseData, responseData.mismatches);
+                    $('#' + inputFieldId).val('');
+                } else {
+                    hideLoader();
+                    // Supervisor ID is invalid, show an error message
+                    var errorMessage = 'Supervisor ID is invalid. Please enter a valid ID.';
+                    $('#popupContent').find('.error-message').text(errorMessage);
+                    $('#' + inputFieldId).val('');
                 }
-            });
+            },
+            error: function (xhr, status, error) {
+                console.log("An error occurred while making the AJAX call:", error);
+            }
         });
     }
     $('#nxt-scn-btn').on('click', function (e) {

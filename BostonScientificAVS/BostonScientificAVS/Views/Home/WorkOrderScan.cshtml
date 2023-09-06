@@ -222,11 +222,49 @@
 
 <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function () {
-            var inputField = document.getElementById("input");
-            if (inputField) {
-                inputField.value = "";
+            // Retrieve the boolean value from localStorage
+            var isBack = localStorage.getItem("isBack") === 'true';
+
+            // Check if the page is loaded as a result of clicking the back button
+            if (isBack) {
+                var workOrderValue = localStorage.getItem("workOrderValue");
+                if (workOrderValue) {
+                    // Set the input field value from localStorage
+                    document.getElementById("input").value = workOrderValue;
+
+                    // Remove the "isBack" flag from localStorage (to prevent it from being used again)
+                    localStorage.removeItem("isBack");
+                }
             }
+
+            // Event listener for the form submission
+            document.getElementById("submitBtn").addEventListener("click", function () {
+                // Get the value of the input field
+                var inputValue = document.getElementById("input").value;
+
+                // Store the value in localStorage
+                localStorage.setItem("workOrderValue", inputValue);
+
+                // Remove the error message
+                var errorMessageDiv = document.querySelector(".text-danger");
+                if (errorMessageDiv) {
+                    errorMessageDiv.textContent = ""; // Clear the error message
+                }
+            });
+
+            // Event listener for input changes
+            document.getElementById("input").addEventListener("input", function () {
+                // Remove the error message when the input changes
+                var errorMessageDiv = document.querySelector(".text-danger");
+                if (errorMessageDiv) {
+                    errorMessageDiv.textContent = ""; // Clear the error message
+                }
+            });
         });
+
+
+
+
  
     function startTimer(duration) {
     var timerDisplay = document.getElementById("timer");
