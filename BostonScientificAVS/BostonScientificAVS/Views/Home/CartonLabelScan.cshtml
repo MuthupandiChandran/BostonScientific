@@ -45,7 +45,7 @@
                 <form id="workOrderForm" asp-controller="Home" asp-action="SaveCartonLabel" method="post">
                     <div class="work-order-scan-submit">
                         <div>
-                            <input class="scan-input" placeholder="Enter The Product Details" name="input1" id="input1" autocomplete="off" />
+                            <input class="scan-input" placeholder="Carton Label" name="input1" id="input1" autocomplete="off" />
                         </div>
                         <div>
                             <input class="scan-input" placeholder="Carton Label Specification" name="input2" id="input2" autocomplete="off" />
@@ -220,6 +220,43 @@
                 input2Field.value = "";
             }
         });
+        var socket = null;
+        if (true) {
+            websocketUrl = "wss://localhost:7157" + "/ws";
+
+            socket = new WebSocket(websocketUrl);
+
+            socket.onerror = function (event) {
+                console.log(event);
+
+            };
+
+            socket.onmessage = function (event) {
+                const jsonData = event.data;
+                const data = JSON.parse(jsonData);
+                console.log(data);
+                console.log(data.pageError.errorMsg);
+
+                document.getElementById("input1").value = data.pageError.errorMsg;
+                document.getElementById("input2").value = data.pageError.errorMsg;
+                document.getElementById("workOrderForm").submit();
+            };
+
+            socket.onopen = function (event) {
+                // WebSocket connection opened
+                console.log('WebSocket connection opened');
+            };
+
+            socket.onclose = function (event) {
+                // WebSocket connection closed
+                console.log('WebSocket connection closed');
+                socket = new WebSocket(websocketUrl);
+            };
+        }
+
+
+
+
 
         function startTimer(duration) {
             var timerDisplay = document.getElementById("timer");

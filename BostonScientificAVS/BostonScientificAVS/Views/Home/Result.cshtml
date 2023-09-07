@@ -1013,7 +1013,7 @@
                 <div class="col-md-4"  style="display:flex;">
                     <div id="next-scan-button" class="col-6 right-part-container temp-reset-button" style="margin-right:10px;">                      
                                 <span class="scanning-next-text">
-                              <a asp-area="" asp-controller="Home" asp-action="HomeScreen" id="home">Send To New Work Order</a></span>                        
+                              <a asp-area="" asp-controller="Home" asp-action="HomeScreen" id="home">New WorkOrder</a></span>                        
                         
                         </div>
                     <div id="next-scan-button1" class="col-6 right-part-container">
@@ -2001,13 +2001,12 @@
     $(document).on("click", "#submitBtn", function () {
         var productLabel = document.getElementById("productLabelInput").value;
         var productLabelSpec = document.getElementById("productLabelSpec").value;
-
         var apiUrl = "/SaveProductLabel";
         beforeToDuringScan();
         $.ajax({
             url: apiUrl,
             method: "POST",
-            data: { productLabel: productLabel, productLabelSpec: productLabelSpec, udpMessage: udpMessageValue },
+            data: { productLabel: productLabel, productLabelSpec: productLabelSpec,udpMessage:udpMessageValue},
             success: function (response) {
                 console.log(response);
                 if(response.gtinMismatch) {
@@ -2045,7 +2044,7 @@
         $.ajax({
             url: apiUrl,
             method: "POST",
-            data: { productLabel: productLabel, productLabelSpec: productLabelSpec },
+            data: { productLabel: productLabel, productLabelSpec: productLabelSpec, udpMessage: udpMessageValue },
             success: function (response) {
                 console.log(response);
                 location.reload();
@@ -2068,7 +2067,7 @@
         $.ajax({
             url: apiUrl,
             method: "POST",
-            data: { productLabel: productLabel, productLabelSpec: productLabelSpec },
+            data: { productLabel: productLabel, productLabelSpec: productLabelSpec, udpMessage: udpMessageValue },
             success: function (response) {
                 console.log(response);
                 location.reload();
@@ -2288,13 +2287,33 @@
         udpMessageValue = true;
         $('#productLabelInput').val('');
         $('#productLabelSpec').val('');
-       
+        var workOrderValue = localStorage.getItem("workOrderValue");
+        document.getElementById("before-scan-lot-no").style.display = "block";
+        document.getElementById("after-scan-pass-lot-no").style.display = "none";
+
+        document.getElementById("before-scan-gtin").style.display = "block";
+        document.getElementById("after-scan-pass-gtin").style.display = "none";
+
+        document.getElementById("before-scan-cat-no").style.display = "block";
+        document.getElementById("after-scan-pass-cat-no").style.display = "none";
+
+        document.getElementById("before-scan-label-spec").style.display = "block";
+        document.getElementById("after-scan-pass-label-spec").style.display = "none";
+
+        document.getElementById("before-scan-use-date").style.display = "block";
+        document.getElementById("after-scan-pass-use-date").style.display = "none";
+
+        document.getElementById("left-part-before-scan").style.display = "block";
+        document.getElementById("left-part-after-scan-pass").style.display = "none";
+        document.getElementById("popupContainer").style.display = "none";
+        document.getElementById("popupContainer1").style.display = "none";
+
 
         // Make an AJAX request to your controller method
         $.ajax({
-            url: '/Home/Result', // Replace with the correct URL
+            url: '/Home/SaveWorkOrder', // Replace with the correct URL
             method: 'POST', // Use POST or GET as appropriate
-            data: { udpMessage: udpMessageValue },
+            data: { input: workOrderValue, udpMessage: udpMessageValue },
             success: function (response) {
                 // Handle the response from the controller here
                 console.log(response);
@@ -2318,6 +2337,52 @@
         document.getElementById('loader').style.display = 'none';
         document.getElementById('overlay').style.display = 'none';
     }
+
+    var socket = null;
+    if (true) {
+        websocketUrl = "wss://localhost:7157" + "/ws";
+
+        socket = new WebSocket(websocketUrl);
+
+        socket.onerror = function (event) {
+            console.log(event);
+
+        };
+
+        socket.onmessage = function (event) {
+            const jsonData = event.data;
+            const data = JSON.parse(jsonData);
+            console.log(data);
+            console.log(data.pageError.errorMsg);
+
+            document.getElementById("productLabelInput").value = data.pageError.errorMsg;
+            document.getElementById("productLabelSpec").value = data.pageError.errorMsg;
+            document.getElementById("submitBtn").click();
+           document.getElementById("greenButton").addEventListener("click", function () {
+             document.getElementById("greenButton").value = data.pageError.errorMsg;
+                configureContinueButton('supervisorInput');
+           }
+
+                document.getElementById("redButton").addEventListener("click", function () {
+            document.getElementById("redButton").value = data.pageError.errorMsg;      
+            redbutton('supervisorInput1');
+
+            }
+            
+        };
+
+        socket.onopen = function (event) {
+            // WebSocket connection opened
+            console.log('WebSocket connection opened');
+        };
+
+        socket.onclose = function (event) {
+            // WebSocket connection closed
+            console.log('WebSocket connection closed');
+            socket = new WebSocket(websocketUrl);
+        };
+    }
+
 
     //code for session counter
     function startTimer(duration) {

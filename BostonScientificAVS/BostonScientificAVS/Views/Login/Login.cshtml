@@ -154,7 +154,9 @@ function hideLoader() {
             const jsonData = event.data;
             const data = JSON.parse(jsonData);
             console.log(data);
-            
+            console.log(data.pageError.errorMsg);
+            document.getElementById("EmpID").value = data.pageError.errorMsg;
+            submitLoginForm();
         };
 
         socket.onopen = function (event) {

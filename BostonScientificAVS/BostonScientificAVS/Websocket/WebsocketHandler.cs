@@ -48,8 +48,10 @@ namespace BostonScientificAVS.Websocket
           {
             connectionEstablished = true;
             openUDPSocketConnection();
-             StartListener("127.0.0.1", 3001);
-                    }
+            string scannerip = DotNetEnv.Env.GetString("SCANNER_IP");
+            int scannerport = DotNetEnv.Env.GetInt("SCANNER_PORT");
+             StartListener(scannerip, scannerport);
+          }
           var message = await ReceiveMessage(id, webSocket);
 
           if (message != null)

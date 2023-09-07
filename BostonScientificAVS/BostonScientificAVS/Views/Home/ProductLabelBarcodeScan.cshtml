@@ -147,7 +147,13 @@
                                 <div class="col-6">
                                     <div id="before-scan-text" class="scanning-instruction" style="background-color: #003C71;">
                                         <div class="scanning-text-container">
-                                            <h6 class="scanning-text-1">place the product label </h6>
+                                            <h6 class="scanning-text-1">please enter product label and product label spec</h6>
+                                            <h6 class="scanning-text-1">under the scanner</h6>
+                                        </div>
+                                    </div>
+                                    <div id="ifu-scan-text" class="scanning-instruction" style="background-color: #003C71;">
+                                        <div class="scanning-text-container1">
+                                            <h6 class="scanning-text-1">please Enter the IFU</h6>
                                             <h6 class="scanning-text-1">under the scanner</h6>
                                         </div>
                                     </div>
@@ -809,7 +815,7 @@
                 <div class="col-md-4" style="display:flex;">
                     <div id="next-scan-button" class="col-6 right-part-container temp-reset-button" style="margin-right:10px;">
                         <span class="scanning-next-text">
-                            <a asp-area="" asp-controller="Home" asp-action="HomeScreen" id="home">Send To New Work Order</a>
+                            <a asp-area="" asp-controller="Home" asp-action="HomeScreen" id="home">New WorkOrder</a>
                         </span>
 
                     </div>
@@ -1216,6 +1222,11 @@
         margin: auto;
     }
 
+    .scanning-text-container1 {
+        padding-top: 79px;
+        text-align: center;
+    }
+
     .product-spec {
         display: flex;
         gap: 15px;
@@ -1493,6 +1504,10 @@
         height: 316px !important;
     }
 
+    #ifu-scan-text {
+        height: 263px !important;
+    }
+
     #after-scan-fail-text {
         height: 303px !important;
         width: 321px;
@@ -1514,7 +1529,7 @@
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
     let inPassScenario = false;
     let inFailScenario = false;
@@ -1526,6 +1541,8 @@
     document.getElementById("home").style.color = "#FFF";
     document.getElementById("nxt-scn-btn").style.color = "#FFF";
     document.getElementById("after-scan-fail-text1").style.display = "none";
+    document.getElementById("ifu-scan-text").style.display = "none";
+    document.getElementById("ifu").disabled = true;
 
 
     document.getElementsByClassName('temp-supervisor-call-button')[0]
@@ -1791,43 +1808,84 @@
     }
 
 
-    $(document).on("click", "#submitBtn", function () {
-        var productLabel = document.getElementById("productLabelInput").value;
-        var productLabelSpec = document.getElementById("productLabelSpec").value;
-        var scannedifu = document.getElementById("ifu").value;
+    var isIfuEditable = false;
+    var submitBtn = document.getElementById("submitBtn");
+    var productLabelInput = document.getElementById("productLabelInput");
+    var productLabelSpec = document.getElementById("productLabelSpec");
+    var ifu = document.getElementById("ifu");
+    var beforeScanText = document.getElementById("before-scan-text");
+    var ifuScanText = document.getElementById("ifu-scan-text");
 
-        var apiUrl = "/SaveProductLabelBarcode";
-        beforeToDuringScan();
-        $.ajax({
-            url: apiUrl,
-            method: "POST",
-            data: { input1:productLabel,input2:productLabelSpec,input3:scannedifu},
-            success: function (response) {
-                console.log(response);
-                if (response.gtinMismatch) {
-                    responseData = response;
-                    GtinMismatch(response);
-                } else {
-                    responseData = response;
-                    processResponse(response);
+    submitBtn.addEventListener("click", function () {
+        if (!isIfuEditable) {
+            // First click behavior
+            var productLabel = productLabelInput.value;
+            var spec = productLabelSpec.value;
+            beforeScanText.style.display = "none";
+            ifuScanText.style.display = "block";
+
+            // Save the values for the second click
+            submitBtn.dataset.productLabel = productLabel;
+            submitBtn.dataset.productLabelSpec = spec;
+
+            isIfuEditable = true; // Enable "ifu" input for the second click
+
+            // Enable the "ifu" input
+            ifu.disabled = false;
+
+            // Disable other inputs
+            productLabelInput.disabled = true;
+            productLabelSpec.disabled = true;
+        } 
+        
+        else {
+            // Second click behavior
+            var productLabel = submitBtn.dataset.productLabel;
+            var spec = submitBtn.dataset.productLabelSpec;
+            var scannedIfu = ifu.value;
+            ifuScanText.style.display = "none";
+
+            var apiUrl = "/SaveProductLabelBarcode";
+            beforeToDuringScan();
+            $.ajax({
+                url: apiUrl,
+                method: "POST",
+                data: { input1: productLabel, input2: spec, input3: scannedIfu },
+                success: function (response) {
+                    console.log(response);
+                    if (response.gtinMismatch) {
+                        responseData = response;
+                        GtinMismatch(response);
+                    } else {
+                        responseData = response;
+                        processResponse(response);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    if (xhr.responseJSON && xhr.responseJSON.errorMessage) {
+                        var errorMessage = xhr.responseJSON.errorMessage;
+                        $("#productLabelInputError").text(errorMessage);
+                        setTimeout(function () {
+                            $("#productLabelInputError").text("");
+                            location.reload();
+                        }, 5000);
+                    } else {
+                        console.log("An error occurred while making the AJAX call:", error);
+                    }
                 }
-            },
-            error: function (xhr, status, error) {
-                if (xhr.responseJSON && xhr.responseJSON.errorMessage) {
-                    var errorMessage = xhr.responseJSON.errorMessage;
-                    $("#productLabelInputError").text(errorMessage);                
-                    setTimeout(function () {
-                        $("#productLabelInputError").text("");           
-                        location.reload();
-                    }, 5000);  
-                } else {
-                    console.log("An error occurred while making the AJAX call:", error);
-                }
-            }
+            });
 
-
-        });
+            
+        }
     });
+  
+
+
+
+
+
+            
+
 
     $(document).on("click", "#rescanBtn", function () {
         var productLabel = document.getElementById("productLabelInput").value;
@@ -1976,7 +2034,7 @@
             document.getElementById("fail-product-label-spec").innerHTML = response.rhsData.dbLabelSpec;
             document.getElementById("fail-product-label-spec").style.color = "black";
         }
-        if (mismatches.calculatedUseByMismatch) {
+        if (mismatches.CalculatedUseByMismatch) {
             document.getElementById("fail-product-use-by").innerHTML = response.rhsData.calculateUseBy;
             document.getElementById("fail-product-use-by").style.color = "red";
             document.getElementById("p-useby").style.color = "red";
@@ -2011,7 +2069,7 @@
             document.getElementById("fail-product-db-ifu").style.color = "black";
 
         }
-        if (mismatches.CalculatedUseByMismatch){
+        if (mismatches.calculatedUseByMismatches) {
             document.getElementById("fail-product-useby").innerHTML = response.rhsData.productUseBy;
             document.getElementById("fail-product-useby").style.color = "red";
             document.getElementById("p-useby").style.color = "red";
@@ -2123,6 +2181,45 @@
         document.getElementById('loader').style.display = 'none';
         document.getElementById('overlay').style.display = 'none';
     }
+
+    var socket = null;
+    if (true) {
+        websocketUrl = "wss://localhost:7157" + "/ws";
+
+        socket = new WebSocket(websocketUrl);
+
+        socket.onerror = function (event) {
+            console.log(event);
+
+        };
+
+        socket.onmessage = function (event) {
+            const jsonData = event.data;
+            const data = JSON.parse(jsonData);
+            console.log(data);
+            console.log(data.pageError.errorMsg);
+
+            document.getElementById("productLabelInput").value = data.pageError.errorMsg;
+            document.getElementById("productLabelSpec").value = data.pageError.errorMsg;
+            document.getElementById("submitBtn").click();
+            document.getElementById("ifu").value = data.pageError.errorMsg;
+            document.getElementById("submitBtn").click();
+        };
+
+        socket.onopen = function (event) {
+            // WebSocket connection opened
+            console.log('WebSocket connection opened');
+        };
+
+        socket.onclose = function (event) {
+            // WebSocket connection closed
+            console.log('WebSocket connection closed');
+            socket = new WebSocket(websocketUrl);
+        };
+    }
+
+
+
 
     //code for session counter
     function startTimer(duration) {

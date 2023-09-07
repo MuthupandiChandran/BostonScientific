@@ -59,7 +59,7 @@ namespace BostonScientificAVS.Controllers
         }
 
         [HttpPost]
-        public IActionResult SaveWorkOrder(string input)
+        public IActionResult SaveWorkOrder(string input,bool udpMessage)
         {
             if (input != null && input.Trim() != "")
             {
@@ -77,9 +77,7 @@ namespace BostonScientificAVS.Controllers
                     _dataContext.Transaction.Add(transaction);
                     _dataContext.SaveChanges();
 
-                    TempData["WorkOrderLotNo"] = transaction.WO_Lot_Num;
-
-                    return RedirectToAction("Result", "Home");
+                    TempData["WorkOrderLotNo"] = transaction.WO_Lot_Num;                 
                 }
                 else
                 {
@@ -88,6 +86,12 @@ namespace BostonScientificAVS.Controllers
                     TempData["ErrorMessage"] = "Work Order Seems To Be Invalid. Please retry again";
                     return View("WorkOrderScan");
                 }
+                if (udpMessage)
+                {
+                    return RedirectToAction("Result", "Home", new {udpMessage= udpMessage });
+                }
+
+                return RedirectToAction("Result", "Home");            
             }
             else
             {
@@ -113,11 +117,16 @@ namespace BostonScientificAVS.Controllers
                 if (match.Success)
                 {
                     latestTransaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
-                    if (latestTransaction.Result != null && udpMessage==false)
+                    if (latestTransaction.Result != null && udpMessage == false)
                     {
                         latestTransaction.Rescan_Initated = true;
                         await SendMessageToUDPclient("R");
-                    }                  
+                    }
+                    if (latestTransaction.Result != null && udpMessage == true)
+                    {
+                        latestTransaction.Rescan_Initated = true;
+                        await SendMessageToUDPclient("R");
+                    }
 
                     if (productLabel.Length == 34 || match.Groups[1].Length == 14 || match.Groups[2].Length == 6 || match.Groups[4].Length == 8)
                     {
@@ -170,13 +179,6 @@ namespace BostonScientificAVS.Controllers
                 }
 
                 // Check udpMessage here, after all other operations
-                if (udpMessage)
-                {
-                    await SendMessageToUDPclient("N");
-                    return RedirectToAction("NextValidateTransaction", new { udpMessage = udpMessage });
-
-                }
-
                 return RedirectToAction("ValidateTransaction");
             }
             else
@@ -222,102 +224,7 @@ namespace BostonScientificAVS.Controllers
             // Handle case when GTINMismatch is not true
             return Ok(); // Return a default response if needed
         }
-        public async Task<IActionResult> NextValidateTransaction(bool udpMessage)
-        {
-
-            var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
-            if (transaction != null)
-            {
-                NextResult result = new NextResult();
-                Mismatchess mismatches = new Mismatchess();
-                Lhss lhsdata = new Lhss();
-                Rhss rhsdata = new Rhss();
-                lhsdata.dbGTIN = transaction.DB_GTIN;
-                lhsdata.workOrderLotNo = transaction.WO_Lot_Num;
-                lhsdata.dbLabelSpec = transaction.DB_Label_Spec;
-                lhsdata.calculatedUseBy = transaction.Calculated_Use_By.ToString();
-                lhsdata.dbCatalogNo = transaction.DB_Catalog_Num;
-
-                rhsdata.productLabelGTIN = transaction.Product_Label_GTIN;
-                rhsdata.productLotNo = transaction.Product_Lot_Num;
-                rhsdata.productLabelSpec = transaction.Product_Label_Spec;
-                rhsdata.productUseBy = transaction.Product_Use_By.ToString();
-                rhsdata.workOrderCatalogNo = transaction.WO_Catalog_Num;
-
-                result.rhsData = rhsdata;
-                result.lhsData = lhsdata;
-                // initially assume all are a match
-                result.allMatch = true;
-                if (transaction.DB_GTIN != transaction.Product_Label_GTIN || transaction.WO_Lot_Num != transaction.Product_Lot_Num
-                    || transaction.DB_Label_Spec != transaction.Product_Label_Spec || transaction.Calculated_Use_By > transaction.Product_Use_By
-                    || transaction.DB_Catalog_Num != transaction.WO_Catalog_Num)
-                {
-                    result.allMatch = false;
-                }
-                if (!result.allMatch)
-                {
-                    if (transaction.DB_GTIN != transaction.Product_Label_GTIN)
-                    {
-                        mismatches.GTINMismatch = true;
-                    }
-                    if (transaction.WO_Lot_Num != transaction.Product_Lot_Num)
-                    {
-                        mismatches.lotNoMismatch = true;
-                    }
-                    if (transaction.DB_Label_Spec != transaction.Product_Label_Spec)
-                    {
-                        mismatches.labelSpecMismatch = true;
-                    }
-                    if (transaction.Calculated_Use_By < transaction.Product_Use_By)
-                    {
-                        mismatches.calculatedUseByMismatch = true;
-                    }
-                    if (transaction.DB_Catalog_Num != transaction.WO_Catalog_Num)
-                    {
-                        mismatches.catalogNumMismatch = true;
-                    }
-                }
-                result.mismatches = mismatches;
-                // setting other fields in the latest transaction record
-                if (result.allMatch)
-                {
-                    transaction.Result = "Pass";
-                    await SendMessageToUDPclient("P");
-                }
-                else
-                {
-                    transaction.Result = "Fail";
-                    await SendMessageToUDPclient("F");
-                }
-                var empId = User.Claims.FirstOrDefault(c => c.Type == "EmpID")?.Value;
-                var user = _dataContext.Users.Where(x => x.EmpID == empId).FirstOrDefault();
-
-                if (user != null)
-                {
-                    transaction.User = user.Id + "";
-                }
-                DateTime currentDateTime = DateTime.Now;
-                transaction.Date_Time = currentDateTime.ToString();
-                await _dataContext.SaveChangesAsync();
-
-                WorkOrderInfo wo = new WorkOrderInfo();
-                var workOrderdetails = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Result != null).Distinct();
-                wo.totalCount = workOrderdetails.Count();
-                wo.passedCount = workOrderdetails.Where(x => x.Result == "Pass").Distinct().Count();
-                wo.failedCount = wo.totalCount - wo.passedCount;
-                wo.scannedCount = workOrderdetails.Where(x => x.Rescan_Initated == true).Count();
-                result.workOrderInfo = wo;
-                result.udpMessage = true;
-                return Json(result);
-            }
-            else
-            {
-                // Transaction records not found in the database for the scanned barcodes
-                TempData["ErrorMessage"] = "Invalid barcodes. One or both of the scanned barcodes are not valid.";
-                return Json(new { success = false, errorMessage = TempData["ErrorMessage"] });
-            }
-        }
-
+        
 
 
 
@@ -543,7 +450,7 @@ namespace BostonScientificAVS.Controllers
                     {
                         mismatches.labelSpecMismatch = true;
                     }
-                    if (transaction.Carton_Use_By != transaction.Calculated_Use_By)
+                    if (transaction.Carton_Use_By == transaction.Calculated_Use_By)
                     {
                         mismatches.calculatedUseByMismatches = true;
                     }
@@ -799,8 +706,7 @@ namespace BostonScientificAVS.Controllers
             }
 
         }
-       
-
+     
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
