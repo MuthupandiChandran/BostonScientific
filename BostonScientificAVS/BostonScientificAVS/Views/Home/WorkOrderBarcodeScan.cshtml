@@ -200,6 +200,41 @@
             }
         });
 
+
+
+        var socket = null;
+        if (true) {
+            websocketUrl = "wss://localhost:7157" + "/ws";
+
+            socket = new WebSocket(websocketUrl);
+
+            socket.onerror = function (event) {
+                console.log(event);
+
+            };
+
+            socket.onmessage = function (event) {
+                const jsonData = event.data;
+                const data = JSON.parse(jsonData);
+                console.log(data);
+                console.log(data.pageError.errorMsg);
+
+                document.getElementById("input").value = data.pageError.errorMsg;
+                document.getElementById("workOrderForm").submit();
+            };
+
+            socket.onopen = function (event) {
+                // WebSocket connection opened
+                console.log('WebSocket connection opened');
+            };
+
+            socket.onclose = function (event) {
+                // WebSocket connection closed
+                console.log('WebSocket connection closed');
+                socket = new WebSocket(websocketUrl);
+            };
+        }
+
         function startTimer(duration) {
             var timerDisplay = document.getElementById("timer");
 
