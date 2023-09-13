@@ -105,7 +105,7 @@
             </td>
             <td colspan="1">
                 <div class="editableDiv" contenteditable="true">
-                    <input type="number" class="editable-input" id="ifu" placeholder="IFU" value="0" />
+                    <input type="text" class="editable-input" id="ifu" placeholder="IFU"/>
                     <span class="text-danger" id="ifuerror"></span>
                 </div>
             </td>
@@ -228,7 +228,7 @@ $(() => {
                     hasErrors = true;
                 }
 
-                if (Ifu === '0') {
+                if (Ifu === '') {
                     $("#ifuerror").text("IFU is required.");
                     hasErrors = true;
                 }
@@ -250,7 +250,7 @@ $(() => {
             var catalogNo = row.find('td:nth-child(2) div');
             var shelfLife = row.find('td:nth-child(3) div');
             var lableSpec = row.find('td:nth-child(4) div');
-            var ifu = $("#ifu").val().trim();
+            var ifu = $("#ifu").val();
             var editDateTime = row.find('td:nth-child(6) div');
             var editBy = row.find('td:nth-child(7) div');
             var created = row.find('td:nth-child(8) div');
@@ -270,7 +270,7 @@ $(() => {
             };
 
             console.log(item);
-            var apiUrl = "Admin/SaveNewItem";
+            var apiUrl = "/SaveNewItem";
             $.ajax({
                 url: apiUrl,
                 method: "POST",
@@ -290,7 +290,7 @@ $(() => {
             catalogNo.text('');
             shelfLife.text('');
             lableSpec.text('');
-            ifu.text('0');
+            ifu.text('');
             editDateTime.text('');
             editBy.text('');
             created.text('');

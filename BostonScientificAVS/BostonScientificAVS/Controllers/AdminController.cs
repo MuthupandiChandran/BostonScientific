@@ -64,7 +64,7 @@ namespace BostonScientificAVS.Controllers
                 if (item != null)
                 {
                     // Get the "CurrentUserName" session string
-                    string currentUserName = HttpContext.Session.GetString("CurrentUserName");
+                    string currentUserName = @User.Identity.Name;
 
                     // If the value is not null or empty, proceed with saving the item
                     if (!string.IsNullOrEmpty(currentUserName))
