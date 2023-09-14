@@ -1999,6 +1999,8 @@
     
 
     $(document).on("click", "#submitBtn", function () {
+        document.getElementById("after-scan-fail-gtin").style.display = "none";
+        document.getElementById("after-scan-fail-text1").style.display = "none";
         var productLabel = document.getElementById("productLabelInput").value;
         var productLabelSpec = document.getElementById("productLabelSpec").value;
         var apiUrl = "/SaveProductLabel";
