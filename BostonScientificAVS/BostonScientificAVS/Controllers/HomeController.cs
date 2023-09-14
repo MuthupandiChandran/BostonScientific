@@ -4,26 +4,32 @@ using System.Diagnostics;
 using BostonScientificAVS.Services;
 using BostonScientificAVS.DTO;
 using Entity;
+using System.Net.WebSockets;
 using System.Text;
 using Context;
 using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
-
+using BostonScientificAVS.Websocket;
+using Azure;
+using System.Reflection.Metadata;
 
 namespace BostonScientificAVS.Controllers
 {
     [Authorize(Roles = "Admin,Supervisor,Operator")]
+
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
         private readonly DataContext _dataContext;
-       
-       public HomeController(ILogger<HomeController> logger,DataContext dataContext)
+        public IWebsocketHandler WebsocketHandler { get; }
+
+        public HomeController(ILogger<HomeController> logger, DataContext dataContext, IWebsocketHandler websocketHandler)
         {
             _logger = logger;
             _dataContext = dataContext;
+            WebsocketHandler = websocketHandler;
 
         }
 
@@ -31,10 +37,16 @@ namespace BostonScientificAVS.Controllers
         {
             return View();
         }
-       
-        public IActionResult Result()
+
+        public IActionResult Result(bool udpMessage)
         {
-         
+            if (udpMessage)
+            {
+                // If udpMessage is "N", send it to the socket method
+                SendMessageToUDPclient("N");
+                udpMessage = true;
+            }
+
             WorkOrderInfo woi = new WorkOrderInfo();
             var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
             var workOrder = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Result != null).Distinct();
@@ -47,39 +59,56 @@ namespace BostonScientificAVS.Controllers
         }
 
         [HttpPost]
-        public IActionResult SaveWorkOrder(string input)
+        public IActionResult SaveWorkOrder(string input,bool udpMessage)
         {
-            string[] barcodeParts = input.Split('_');
-
-            if (barcodeParts.Length == 4 && barcodeParts.All(part => !string.IsNullOrEmpty(part.Trim())))
+            if (input != null && input.Trim() != "")
             {
-                // All parts are non-empty, proceed with saving the data
-                Transaction transaction = new Transaction();
-                transaction.WO_Catalog_Num = barcodeParts[0];
-                DateTime date = DateTime.ParseExact(barcodeParts[2], "MMddyyyy", null);
-                transaction.WO_Mfg_Date = date;
-                transaction.WO_Lot_Num = barcodeParts[3];
+                string[] barcodeParts = input.Split('_');
 
-                _dataContext.Transaction.Add(transaction);
-                _dataContext.SaveChanges();
+                if (barcodeParts.Length == 4 && barcodeParts.All(part => !string.IsNullOrEmpty(part.Trim())))
+                {
+                    // All parts are non-empty, proceed with saving the data
+                    Transaction transaction = new Transaction();
+                    transaction.WO_Catalog_Num = barcodeParts[0];
+                    DateTime date = DateTime.ParseExact(barcodeParts[2], "MMddyyyy", null);
+                    transaction.WO_Mfg_Date = date;
+                    transaction.WO_Lot_Num = barcodeParts[3];
 
-                TempData["WorkOrderLotNo"] = transaction.WO_Lot_Num;
+                    _dataContext.Transaction.Add(transaction);
+                    _dataContext.SaveChanges();
 
-                return RedirectToAction("Result", "Home");
+                    TempData["WorkOrderLotNo"] = transaction.WO_Lot_Num;                 
+                }
+                else
+                {
+                    // Invalid input format, add a model-level error
+                    SendMessageToUDPclient("E");
+                    TempData["ErrorMessage"] = "Work Order Seems To Be Invalid. Please retry again";
+                    return View("WorkOrderScan");
+                }
+                if (udpMessage)
+                {
+                    return RedirectToAction("Result", "Home", new {udpMessage= udpMessage });
+                }
+
+                return RedirectToAction("Result", "Home");            
             }
             else
             {
-                // Invalid input format, add a model-level error
-                TempData["ErrorMessage"] = "Work Order Seems To be Invalid. Please retry again";
+                // Handle the case when input is "Null" or empty
+                SendMessageToUDPclient("E");
+                TempData["ErrorMessage"] = "Work Order is Null or Empty. Please retry with a valid input.";
                 return View("WorkOrderScan");
             }
         }
 
+
         [HttpPost("/SaveProductLabel")]
-        public async Task<IActionResult> SaveProductLabel(string productLabel, string productLabelSpec)
+        public async Task<IActionResult> SaveProductLabel(string productLabel, string productLabelSpec, bool gtinmismatch, bool udpMessage)
         {
             if (ModelState.IsValid)
             {
+                gtinmismatch = false; // Assuming this line is not needed in other scenarios
                 string pattern = @"^\d{2}(\d{14})\d{2}(\d{6})(\d{2})(\w+)";
                 Match match = Regex.Match(productLabel, pattern);
 
@@ -88,12 +117,18 @@ namespace BostonScientificAVS.Controllers
                 if (match.Success)
                 {
                     latestTransaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
-                    if (latestTransaction.Result != null)
+                    if (latestTransaction.Result != null && udpMessage == false)
                     {
                         latestTransaction.Rescan_Initated = true;
+                        await SendMessageToUDPclient("R");
+                    }
+                    if (latestTransaction.Result != null && udpMessage == true)
+                    {
+                        latestTransaction.Rescan_Initated = true;
+                        await SendMessageToUDPclient("R");
                     }
 
-                    if (productLabel.Length == 34)
+                    if (productLabel.Length == 34 || match.Groups[1].Length == 14 || match.Groups[2].Length == 6 || match.Groups[4].Length == 8)
                     {
                         latestTransaction.Product_Label_GTIN = match.Groups[1].Value;
                         DateTime dateTime = DateTime.ParseExact(match.Groups[2].Value, "yyMMdd", null);
@@ -114,18 +149,22 @@ namespace BostonScientificAVS.Controllers
                         }
                         else
                         {
-                            return RedirectToAction("WorkOrderError", "Home");
+                            gtinmismatch = true;
+                            await _dataContext.SaveChangesAsync();
+                            return RedirectToAction("GTINmismatch", new { gtinMismatch = true });
                         }
 
                         latestTransaction.Product_Label_Spec = productLabelSpec;
                     }
                     else
                     {
+                        await SendMessageToUDPclient("E");
                         return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
                     }
                 }
                 else
                 {
+                    await SendMessageToUDPclient("E");
                     return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
                 }
 
@@ -135,9 +174,11 @@ namespace BostonScientificAVS.Controllers
                 }
                 else
                 {
+                    await SendMessageToUDPclient("E");
                     return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
                 }
 
+                // Check udpMessage here, after all other operations
                 return RedirectToAction("ValidateTransaction");
             }
             else
@@ -146,21 +187,59 @@ namespace BostonScientificAVS.Controllers
             }
         }
 
+        public async Task<IActionResult> GTINmismatch(bool gtinMismatch)
+        {
+            if (gtinMismatch)
+            {
+                Result result = new Result();
+                var item = _dataContext.ItemMaster.OrderByDescending(x=>x.GTIN).FirstOrDefault();
+                var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
+                transaction.Result = "Fail";
+                DateTime currentDateTime = DateTime.Now;
+                transaction.Date_Time = currentDateTime.ToString();
+                var product_Gtin = _dataContext.Transaction
+                    .OrderByDescending(x => x.Product_Label_GTIN)
+                    .Select(x => x.Product_Label_GTIN)
+                    .FirstOrDefault();
+
+                
+                var count = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Result != null).Distinct();
+                var countData = new countinfo
+                {
+                    Product_Gtin =product_Gtin,
+                    Db_Gtin = item.GTIN,
+                    GTINMismatch = true, // Set the GTINMismatch flag to true
+                    totalcount = count.Count(),
+                    passedCount = count.Where(x => x.Result == "Pass").Count(),
+                    failedCount = count.Count() - count.Where(x => x.Result == "Pass").Count(),
+                    scannedCount = count.Where(x => x.Rescan_Initated == true).Count()
+                };
+                ;
+                await _dataContext.SaveChangesAsync();
+
+                // Return the countData as JSON response
+                return Json(countData);
+            }
+
+            // Handle case when GTINMismatch is not true
+            return Ok(); // Return a default response if needed
+        }
+        
+
+
 
 
         public async Task<IActionResult> ValidateTransaction()
-        {
-            // Fetch the latest record 
+    {
+        // Fetch the latest record 
             var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
-
-            if (transaction != null)
-            {
-
-                Result result = new Result();
-                Mismatches mismatches = new Mismatches();
-                Lhs lhsData = new Lhs();
-                Rhs rhsData = new Rhs();
-                lhsData.dbGTIN = transaction.DB_GTIN;
+        if (transaction != null)
+        {
+            Result result = new Result();
+            Mismatches mismatches = new Mismatches();
+            Lhs lhsData = new Lhs();
+            Rhs rhsData = new Rhs();
+            lhsData.dbGTIN = transaction.DB_GTIN;
                 lhsData.workOrderLotNo = transaction.WO_Lot_Num;
                 lhsData.dbLabelSpec = transaction.DB_Label_Spec;
                 lhsData.calculatedUseBy = transaction.Calculated_Use_By.ToString();
@@ -210,12 +289,12 @@ namespace BostonScientificAVS.Controllers
                 if (result.allMatch)
                 {
                     transaction.Result = "Pass";
-                    
+                    await SendMessageToUDPclient("P");
                 }
                 else
                 {
                     transaction.Result = "Fail";
-                                         
+                    await SendMessageToUDPclient("F");
                 }
                 var empId = User.Claims.FirstOrDefault(c => c.Type == "EmpID")?.Value;
                 var user = _dataContext.Users.Where(x => x.EmpID == empId).FirstOrDefault();
@@ -228,16 +307,19 @@ namespace BostonScientificAVS.Controllers
                 transaction.Date_Time = currentDateTime.ToString();
                 await _dataContext.SaveChangesAsync();
 
-                WorkOrderInfo woi = new WorkOrderInfo();
-                var workOrder = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Result != null).Distinct();
-                woi.totalCount = workOrder.Count();
-                woi.passedCount = workOrder.Where(x => x.Result == "Pass").Count();
-                woi.failedCount = woi.totalCount - woi.passedCount;
-                woi.scannedCount = workOrder.Where(x => x.Rescan_Initated == true).Count();
+               
+                    WorkOrderInfo woi = new WorkOrderInfo();
+                    var workOrder = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Result != null).Distinct();
+                    woi.totalCount = workOrder.Count();
+                    woi.passedCount = workOrder.Where(x => x.Result == "Pass").Count();
+                    woi.failedCount = woi.totalCount - woi.passedCount;
+                    woi.scannedCount = workOrder.Where(x => x.Rescan_Initated == true).Count();
+                    result.workOrderInfo = woi;
+                    return Json(result);
+                
 
-                result.workOrderInfo = woi;
-                return Json(result);
-            }
+                
+        }
             else
             {
                 // Transaction records not found in the database for the scanned barcodes
@@ -256,12 +338,17 @@ namespace BostonScientificAVS.Controllers
             {
                 int hoursInput = DotNetEnv.Env.GetInt("EXPIRE_TIME");
                 ViewBag.HoursInput = hoursInput;
-            } else
+            }
+            else
             {
                 ViewBag.HoursInput = 0;
             }
+
             return View();
         }
+
+
+
 
         [HttpPost]
         public ActionResult CheckSupervisorId(string supervisorEmpId)
@@ -306,7 +393,7 @@ namespace BostonScientificAVS.Controllers
             woi.workOrderLotNo = transaction.WO_Lot_Num;
             return View(woi);
         }
-       
+
         public async Task<IActionResult> FinalResult()
         {
             var transaction = await _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefaultAsync();
@@ -341,7 +428,7 @@ namespace BostonScientificAVS.Controllers
                 result.rhsData = rhsdata;
                 result.lhsData = lhsdata;
                 result.allMatch = true;
-                if(transaction.Carton_Label_GTIN!=transaction.DB_GTIN||transaction.Carton_Label_GTIN!=transaction.Product_Label_GTIN||transaction.WO_Lot_Num!=transaction.Product_Lot_Num||transaction.Carton_Label_Spec!=transaction.DB_Label_Spec||transaction.Carton_Use_By!=transaction.Calculated_Use_By||transaction.WO_Catalog_Num!=transaction.DB_Catalog_Num||transaction.Carton_Lot_Num!=transaction.Product_Lot_Num||transaction.Scanned_IFU!=transaction.DB_IFU||transaction.Carton_Use_By!=transaction.Product_Use_By)
+                if (transaction.Carton_Label_GTIN != transaction.DB_GTIN || transaction.Carton_Label_GTIN != transaction.Product_Label_GTIN || transaction.WO_Lot_Num != transaction.Product_Lot_Num || transaction.Carton_Label_Spec != transaction.DB_Label_Spec || transaction.Carton_Use_By != transaction.Calculated_Use_By || transaction.WO_Catalog_Num != transaction.DB_Catalog_Num || transaction.Carton_Lot_Num != transaction.Product_Lot_Num || transaction.Scanned_IFU != transaction.DB_IFU || transaction.Carton_Use_By != transaction.Product_Use_By)
                 {
                     result.allMatch = false;
                 }
@@ -363,7 +450,7 @@ namespace BostonScientificAVS.Controllers
                     {
                         mismatches.labelSpecMismatch = true;
                     }
-                    if (transaction.Carton_Use_By != transaction.Calculated_Use_By)
+                    if (transaction.Carton_Use_By == transaction.Calculated_Use_By)
                     {
                         mismatches.calculatedUseByMismatches = true;
                     }
@@ -385,15 +472,17 @@ namespace BostonScientificAVS.Controllers
                         mismatches.CalculatedUseByMismatch = true;
                     }
                 }
-                
+
                 if (result.allMatch)
                 {
-                    transaction.Result = "Pass";                 
+                    transaction.Result = "Pass";
+                    await SendMessageToUDPclient("P");
 
                 }
                 else
                 {
-                    transaction.Result = "Fail";                 
+                    transaction.Result = "Fail";
+                    await SendMessageToUDPclient("F");
                 }
                 var empId = User.Claims.FirstOrDefault(c => c.Type == "EmpID")?.Value;
                 var user = _dataContext.Users.Where(x => x.EmpID == empId).FirstOrDefault();
@@ -420,7 +509,7 @@ namespace BostonScientificAVS.Controllers
             }
             else
             {
-                
+                await SendMessageToUDPclient("E");
                 TempData["ErrorMessage"] = "Invalid barcodes. One or both of the scanned barcodes are not valid.";
                 return Json(new { success = false, errorMessage = TempData["ErrorMessage"] });
             }
@@ -446,6 +535,7 @@ namespace BostonScientificAVS.Controllers
             }
             else
             {
+                 SendMessageToUDPclient("E");
                 TempData["ErrorMessage"] = "Work Order Seems To be Invalid. Please retry again";
                 return View("WorkOrderBarcodeScan");
             }
@@ -464,8 +554,8 @@ namespace BostonScientificAVS.Controllers
                 {
                     transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
 
-                    if (input1.Length==34)
-                    {         
+                    if (input1.Length == 34 || match.Groups[1].Length == 14 || match.Groups[2].Length == 6 || match.Groups[4].Length == 8)
+                    {
                         transaction.Carton_Label_GTIN = match.Groups[1].Value;
                         DateTime dateTime = DateTime.ParseExact(match.Groups[2].Value, "yyMMdd", null);
                         transaction.Carton_Use_By = dateTime;
@@ -486,14 +576,18 @@ namespace BostonScientificAVS.Controllers
                         }
                         else
                         {
-                            return RedirectToAction("WorkOrderError", "Home");
+                            await SendMessageToUDPclient("E");
+                            TempData["ErrorMessage"] = "Carton GTIN value is Invalid";
+                            return View("CartonLabelScan");
+
                         }
-                   
-                            transaction.Carton_Label_Spec = input2;  
+
+                        transaction.Carton_Label_Spec = input2;
 
                     }
                     else
                     {
+                        await SendMessageToUDPclient("E");
                         TempData["ErrorMessage"] = "Carton Label Input is Invalid Format";
                         return View("CartonLabelScan");
                     }
@@ -506,6 +600,7 @@ namespace BostonScientificAVS.Controllers
                 }
                 else
                 {
+                    await SendMessageToUDPclient("E");
                     TempData["ErrorMessage"] = "Carton Label Input is Invalid Format";
                     return View("CartonLabelScan");
                 }
@@ -518,7 +613,7 @@ namespace BostonScientificAVS.Controllers
         }
 
         [HttpPost("/SaveProductLabelBarcode")]
-        public async Task<IActionResult> SaveProductLabelBarcode(string input1, string input2, string input3)
+        public async Task<IActionResult> SaveProductLabelBarcode(string input1, string input2, string input3, bool gtinmismatch)
         {
             if (ModelState.IsValid)
             {
@@ -528,21 +623,22 @@ namespace BostonScientificAVS.Controllers
                 Transaction latestTransaction = null; // Declare before the if block
 
                 if (match.Success)
-                {                  
+                {
                     latestTransaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
                     if (latestTransaction.Result != null)
                     {
                         latestTransaction.Rescan_Initated = true;
+                        await SendMessageToUDPclient("R");
                     }
 
-                    if (input1.Length==34)
+                    if (input1.Length == 34 || match.Groups[1].Length == 14 || match.Groups[2].Length == 6 || match.Groups[4].Length == 8)
                     {
                         latestTransaction.Product_Label_GTIN = match.Groups[1].Value;
                         DateTime dateTime = DateTime.ParseExact(match.Groups[2].Value, "yyMMdd", null);
                         latestTransaction.Product_Use_By = dateTime;
                         latestTransaction.Product_Lot_Num = match.Groups[4].Value;
 
-                        ItemMaster item = await _dataContext.ItemMaster.FirstOrDefaultAsync(i => i.GTIN == latestTransaction.Carton_Label_GTIN);
+                        ItemMaster item = await _dataContext.ItemMaster.FirstOrDefaultAsync(i => i.GTIN == latestTransaction.Product_Label_GTIN);
                         if (item != null)
                         {
                             // Assign values from ItemMaster
@@ -555,7 +651,9 @@ namespace BostonScientificAVS.Controllers
                         }
                         else
                         {
-                            return RedirectToAction("WorkOrderError", "Home");
+                            gtinmismatch = true;
+                            await _dataContext.SaveChangesAsync();
+                            return RedirectToAction("GTINmismatch", new { gtinMismatch = true });
                         }
 
                         latestTransaction.Product_Label_Spec = input2;
@@ -563,12 +661,14 @@ namespace BostonScientificAVS.Controllers
                     }
                     else
                     {
+                        await SendMessageToUDPclient("E");
                         return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
 
                     }
                 }
                 else
                 {
+                    await SendMessageToUDPclient("E");
                     return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
                 }
 
@@ -578,6 +678,7 @@ namespace BostonScientificAVS.Controllers
                 }
                 else
                 {
+                    await SendMessageToUDPclient("E");
                     return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
                 }
 
@@ -588,12 +689,24 @@ namespace BostonScientificAVS.Controllers
                 return RedirectToAction("WorkOrderError", "Home");
             }
         }
-
-            public IActionResult WorkOrderError()
+        public IActionResult WorkOrderError()
         {
             return View();
         }
 
+        public async Task SendMessageToUDPclient(String input)
+        {
+            try
+            {
+                await WebsocketHandler.writeToUDPSocketConnection(input);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+        }
+     
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

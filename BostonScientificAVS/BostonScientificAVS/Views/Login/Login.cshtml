@@ -16,7 +16,7 @@
     <form id="loginForm" asp-controller="Login" asp-action="Login" method="post">
     <div class="login-div">
         <div>
-              <input class="scan-input" placeholder="Enter ID here" asp-for="EmpID"/>
+              <input class="scan-input" placeholder="Enter ID here" asp-for="EmpID" autocomplete="off"/>
         </div>
        <div>
              <a class="login-button" onclick="submitLoginForm()"><span class="login-text">Scan ID/Login</span></a>
@@ -138,5 +138,40 @@ function hideLoader() {
   document.getElementById('loader').style.display = 'none';
   document.getElementById('overlay').style.display = 'none';
 }
+
+    var socket = null;
+    if (true) {
+        websocketUrl = "wss://localhost:7157" + "/ws";
+
+        socket = new WebSocket(websocketUrl);
+
+        socket.onerror = function (event) {
+            console.log(event);
+            
+        };
+
+        socket.onmessage = function (event) {
+            const jsonData = event.data;
+            const data = JSON.parse(jsonData);
+            console.log(data);
+            console.log(data.pageError.errorMsg);
+            document.getElementById("EmpID").value = data.pageError.errorMsg;
+            submitLoginForm();
+        };
+
+        socket.onopen = function (event) {
+            // WebSocket connection opened
+            console.log('WebSocket connection opened');
+        };
+
+        socket.onclose = function (event) {
+            // WebSocket connection closed
+            console.log('WebSocket connection closed');
+            socket = new WebSocket(websocketUrl);
+        };
+    }
+
+   
+    
 
 </script>

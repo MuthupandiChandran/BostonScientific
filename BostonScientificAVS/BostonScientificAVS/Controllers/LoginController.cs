@@ -6,16 +6,19 @@ using Entity;
 using Context;
 using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.Identity;
+using System.Net.WebSockets;
+using BostonScientificAVS.Websocket;
 
 namespace BostonScientificAVS.Controllers
 {
     public class LoginController : Controller
     {
         private readonly DataContext _context;
-
-        public LoginController(DataContext context)
+        public IWebsocketHandler WebsocketHandler { get; }
+        public LoginController(DataContext context, IWebsocketHandler websocketHandler)
         {
             _context = context;
+            WebsocketHandler = websocketHandler;
         }
         public IActionResult Login()
         {
@@ -116,6 +119,31 @@ namespace BostonScientificAVS.Controllers
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login", "Login");
+        }
+
+        [HttpGet("/ws")]
+        public async Task Get()
+        {
+            try
+            {
+                var context = ControllerContext.HttpContext;
+                var isSocketRequest = context.WebSockets.IsWebSocketRequest;
+
+                if (isSocketRequest)
+                {
+                    WebSocket websocket = await context.WebSockets.AcceptWebSocketAsync();
+                    await WebsocketHandler.Handle(Guid.NewGuid(), websocket);
+                }
+                else
+                {
+                    context.Response.StatusCode = 400;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
         }
     }
 }

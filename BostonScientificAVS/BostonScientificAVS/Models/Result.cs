@@ -52,4 +52,17 @@ namespace BostonScientificAVS.Models
         public string workOrderLotNo { get; set; }
 
     }
+
+    public class countinfo
+    {
+        public string Product_Gtin { get; set; }
+        public string Db_Gtin { get; set; }
+        public bool GTINMismatch { get; set; }
+        public int? totalcount { get; set; }
+        public int? passedCount { get; set; }
+        public int? failedCount { get; set; }
+        public int? scannedCount { get; set; }
+
+    }
+
 }

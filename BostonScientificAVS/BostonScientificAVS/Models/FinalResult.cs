@@ -14,13 +14,14 @@
         public bool gtinmismatch { get; set; }
         public bool gtinmismatches { get; set; }
         public bool lotNoMismatch { get; set; }
-        public bool labelSpecMismatch { get; set; }         
-        public bool calculatedUseByMismatches { get; set; }
+        public bool labelSpecMismatch { get; set; }
+        public bool CalculatedUseByMismatch { get; set; }
+        
         public bool catalogNumMismatch { get; set; }
         public bool LotNumberMisMatch { get; set; }
         public bool ifumismatches { get; set; }
-        public bool CalculatedUseByMismatch { get; set; }
-    
+        public bool calculatedUseByMismatches { get; set; }
+
     }
 
     public class LHS
