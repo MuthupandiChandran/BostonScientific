@@ -150,8 +150,9 @@ namespace BostonScientificAVS.Controllers
                         else
                         {
                             gtinmismatch = true;
+                            latestTransaction.Product_Label_Spec = productLabelSpec;
                             await _dataContext.SaveChangesAsync();
-                            return RedirectToAction("GTINmismatch", new { gtinMismatch = true });
+                            return RedirectToAction("GTINmismatch", new { gtinMismatch = true, ProductLabelSpec = productLabelSpec });
                         }
 
                         latestTransaction.Product_Label_Spec = productLabelSpec;
@@ -187,7 +188,7 @@ namespace BostonScientificAVS.Controllers
             }
         }
 
-        public async Task<IActionResult> GTINmismatch(bool gtinMismatch)
+        public async Task<IActionResult> GTINmismatch(bool gtinMismatch,string ProductLabelSpec, string input2, string input3)
         {
             if (gtinMismatch)
             {
@@ -197,28 +198,67 @@ namespace BostonScientificAVS.Controllers
                 transaction.Result = "Fail";
                 DateTime currentDateTime = DateTime.Now;
                 transaction.Date_Time = currentDateTime.ToString();
-                var product_Gtin = _dataContext.Transaction
+                if (string.IsNullOrEmpty(input2) && string.IsNullOrEmpty(input3))
+                {
+
+
+                    var product_Gtin = _dataContext.Transaction
                     .OrderByDescending(x => x.Product_Label_GTIN)
                     .Select(x => x.Product_Label_GTIN)
                     .FirstOrDefault();
+                    var product_spec = _dataContext.Transaction.OrderByDescending(x => x.Product_Label_Spec).Select(x => x.Product_Label_Spec).FirstOrDefault();
+                    var count = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Result != null).Distinct();
+                    var countData = new countinfo
+                    {
+                        Product_Gtin = product_Gtin,
+                        Db_Gtin = item.GTIN,
+                        GTINMismatch = true,// Set the GTINMismatch flag to true
+                        Db_Spec = item.Label_Spec,
+                        Product_Spec = product_spec,
+                        LabelMismatch = item.Label_Spec != ProductLabelSpec, // Conditionally set LabelMismatch
+                        totalcount = count.Count(),
+                        passedCount = count.Where(x => x.Result == "Pass").Count(),
+                        failedCount = count.Count() - count.Where(x => x.Result == "Pass").Count(),
+                        scannedCount = count.Where(x => x.Rescan_Initated == true).Count()
+                    };
 
-                
-                var count = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Result != null).Distinct();
-                var countData = new countinfo
+
+                    await _dataContext.SaveChangesAsync();
+
+                    // Return the countData as JSON response
+                    return Json(countData);
+                }
+                if(string.IsNullOrEmpty(ProductLabelSpec))
                 {
-                    Product_Gtin =product_Gtin,
-                    Db_Gtin = item.GTIN,
-                    GTINMismatch = true, // Set the GTINMismatch flag to true
-                    totalcount = count.Count(),
-                    passedCount = count.Where(x => x.Result == "Pass").Count(),
-                    failedCount = count.Count() - count.Where(x => x.Result == "Pass").Count(),
-                    scannedCount = count.Where(x => x.Rescan_Initated == true).Count()
-                };
-                ;
-                await _dataContext.SaveChangesAsync();
+                    var product_Gtin = _dataContext.Transaction
+                    .OrderByDescending(x => x.Product_Label_GTIN)
+                    .Select(x => x.Product_Label_GTIN)
+                    .FirstOrDefault();
+                    var product_spec = _dataContext.Transaction.OrderByDescending(x => x.Product_Label_Spec).Select(x => x.Product_Label_Spec).FirstOrDefault();
+                    var ifu = _dataContext.Transaction.OrderByDescending(x => x.Scanned_IFU).Select(x => x.Scanned_IFU).FirstOrDefault();
+                    var count = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Result != null).Distinct();
+                    var countData = new countinfo
+                    {
+                        Product_Gtin =product_Gtin,
+                        Db_Gtin = item.GTIN,
+                        GTINMismatch = true,// Set the GTINMismatch flag to true
+                        Db_Spec = item.Label_Spec,
+                        Product_Spec = product_spec,
+                        LabelMismatch = item.Label_Spec != ProductLabelSpec,
+                        Scanned_Ifu = ifu,
+                        Db_Ifu=item.IFU,
+                        IfuMismatch = item.IFU != ifu,
+                        totalcount = count.Count(),
+                        passedCount = count.Where(x => x.Result == "Pass").Count(),
+                        failedCount = count.Count() - count.Where(x => x.Result == "Pass").Count(),
+                        scannedCount = count.Where(x => x.Rescan_Initated == true).Count()
 
-                // Return the countData as JSON response
-                return Json(countData);
+                    };
+                    await _dataContext.SaveChangesAsync();
+
+                    // Return the countData as JSON response
+                    return Json(countData);
+                }
             }
 
             // Handle case when GTINMismatch is not true
@@ -652,6 +692,8 @@ namespace BostonScientificAVS.Controllers
                         else
                         {
                             gtinmismatch = true;
+                            latestTransaction.Product_Label_Spec = input2;
+                            latestTransaction.Scanned_IFU = input3;
                             await _dataContext.SaveChangesAsync();
                             return RedirectToAction("GTINmismatch", new { gtinMismatch = true });
                         }

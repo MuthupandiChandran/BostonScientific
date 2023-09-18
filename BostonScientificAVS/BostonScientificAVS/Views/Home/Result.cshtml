@@ -1010,13 +1010,12 @@
                 </div>
 
 
-                <div class="col-md-4"  style="display:flex;">
-                    <div id="next-scan-button" class="col-6 right-part-container temp-reset-button" style="margin-right:10px;">                      
+                <div class="col-md-4"  style="display:flex;" id="btn-end">
+                    <div id="next-scan-button" class="col-6 right-part-container temp-reset-button disabled" style="margin-right:10px;">                      
                                 <span class="scanning-next-text">
-                              <a asp-area="" asp-controller="Home" asp-action="HomeScreen" id="home">New WorkOrder</a></span>                        
-                        
+                              <a asp-area="" asp-controller="Home" asp-action="WorkOrderScan" id="home">New WorkOrder</a></span>                                              
                         </div>
-                    <div id="next-scan-button1" class="col-6 right-part-container">
+                    <div id="next-scan-button1" class="col-6 right-part-container disabled">
                         <span class="scanning-next-text">
                             <a href="#" id="nxt-scn-btn">Next Scan</a>
                         </span>
@@ -1031,6 +1030,10 @@
         </div>
 </body>
 <style>
+.disabled {
+    pointer-events: none; /* Prevent interaction */
+    cursor: not-allowed; /* Change cursor to not-allowed */
+}
 
     #next-scan-button a {
         text-decoration: none;
@@ -1858,6 +1861,8 @@
 
         document.getElementById("popupContainer").style.display = "none";
         document.getElementById("popupContainer1").style.display = "none";
+        document.getElementById("next-scan-button").classList.remove("disabled");
+        document.getElementById("next-scan-button1").classList.remove("disabled");
     }
     function duringToScanFail(response) {
         document.getElementById("popupContainer").style.display = "none";
@@ -1907,6 +1912,8 @@
 
         document.getElementById("left-part-during-scan").style.display = "none";
         document.getElementById("left-part-after-scan-fail").style.display = "block";
+        $("#btn-end > div").addClass("disabled").off('click');
+
     }
 
     function GtinMismatch(response) {
@@ -1916,7 +1923,7 @@
             document.getElementById("total-failed-val").innerHTML = parseInt(document.getElementById("total-failed-val").innerHTML) + 1;
         }
         document.getElementById("popupContainer").style.display = "none";
-         document.getElementById("popupContainer1").style.display = "none";
+        document.getElementById("popupContainer1").style.display = "none";
         document.getElementById("scanning-icon-div").style.backgroundColor = "#FFB5B5";
 
         document.getElementById("before-scan-text").style.display = "none";
@@ -1929,12 +1936,19 @@
         document.getElementById("during-scan-gtin").style.display = "none";
         document.getElementById("after-scan-fail-gtin").style.display = "block";
         document.getElementById("during-scan-cat-no").style.display = "block";
-        document.getElementById("during-scan-label-spec").style.display = "block";
+        if (response.labelMismatch) {
+            document.getElementById("after-scan-fail-label-spec").style.display = "block";
+            document.getElementById("during-scan-label-spec").style.display = "none";
+        } else {
+            document.getElementById("during-scan-label-spec").style.display = "block";
+        }
         document.getElementById("during-scan-use-date").style.display = "block";
         document.getElementById("left-part-during-scan").style.display = "none";
         document.getElementById("left-part-after-scan-fail").style.display = "block";
+       $("#btn-end > div").addClass("disabled").off('click');
+        
     }
-    
+
     
 
 
@@ -1996,26 +2010,28 @@
         document.getElementById("popupContainer").style.display = "none";
         document.getElementById("popupContainer1").style.display = "none";
     }
-    
+
 
     $(document).on("click", "#submitBtn", function () {
+        // Disable the input fields and button
+        $("#productLabelInput, #productLabelSpec, #submitBtn").prop("disabled", true);
         document.getElementById("after-scan-fail-gtin").style.display = "none";
         document.getElementById("after-scan-fail-text1").style.display = "none";
         var productLabel = document.getElementById("productLabelInput").value;
         var productLabelSpec = document.getElementById("productLabelSpec").value;
         var apiUrl = "/SaveProductLabel";
         beforeToDuringScan();
+
         $.ajax({
             url: apiUrl,
             method: "POST",
-            data: { productLabel: productLabel, productLabelSpec: productLabelSpec,udpMessage:udpMessageValue},
+            data: { productLabel: productLabel, productLabelSpec: productLabelSpec, udpMessage: udpMessageValue },
             success: function (response) {
                 console.log(response);
                 if(response.gtinMismatch) {
                     responseData= response;
                     GtinMismatch(response);
-                }
-                else {
+                }else {
                     responseData = response;
                     processResponse(response);
                 }
@@ -2031,9 +2047,11 @@
                 } else {
                     console.log("An error occurred while making the AJAX call:", error);
                 }
+            },
+            complete: function () {
+                // Re-enable the input fields and button after the AJAX request is complete
+                $("#productLabelInput, #productLabelSpec, #submitBtn").prop("disabled", true);
             }
-
-
         });
     });
 
@@ -2199,9 +2217,13 @@
         document.getElementById("fail-calc-use-by").style.display = "flex";
         document.getElementById("fail-db-catalog-num").style.display = "flex";
         document.getElementById("fail-product-lot-no").style.display = "flex";
-
-        document.getElementById("fail-product-label-spec").style.display = "flex";
-
+        if(LabelMismatch = true){
+            document.getElementById("fail-product-label-spec").innerHTML = response.product_Spec;
+            document.getElementById("fail-product-label-spec").style.color = "red";
+            document.getElementById("p-labelspec").style.color = "red";
+            document.getElementById("fail-db-label-spec").innerHTML = response.db_Spec;
+            document.getElementById("fail-db-label-spec").style.color = "black";
+        }
         document.getElementById("fail-product-use-by").style.display = "flex";
         document.getElementById("fail-wo-catalog-no").style.display = "flex";
 
@@ -2286,6 +2308,9 @@
     $('#nxt-scn-btn').on('click', function (e) {
         e.preventDefault();
         //localStorage.setItem("isBack", true);
+        $("#productLabelInput, #productLabelSpec, #submitBtn").prop("disabled", false);
+        document.getElementById("next-scan-button").style.backgroundColor = "#C5C5C5";
+        document.getElementById("next-scan-button1").style.backgroundColor = "#C5C5C5";
         udpMessageValue = true;
         $('#productLabelInput').val('');
         $('#productLabelSpec').val('');

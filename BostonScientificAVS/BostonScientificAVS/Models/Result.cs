@@ -57,7 +57,13 @@ namespace BostonScientificAVS.Models
     {
         public string Product_Gtin { get; set; }
         public string Db_Gtin { get; set; }
+        public string Db_Spec { get; set; }
+        public string Product_Spec { get; set; }
+        public string Db_Ifu { get; set; }
+        public string Scanned_Ifu { get; set; }
         public bool GTINMismatch { get; set; }
+        public bool LabelMismatch { get; set; }
+        public bool IfuMismatch { get; set; }
         public int? totalcount { get; set; }
         public int? passedCount { get; set; }
         public int? failedCount { get; set; }
