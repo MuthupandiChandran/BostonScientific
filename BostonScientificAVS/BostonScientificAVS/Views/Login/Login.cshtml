@@ -152,11 +152,17 @@ function hideLoader() {
 
         socket.onmessage = function (event) {
             const jsonData = event.data;
+
             const data = JSON.parse(jsonData);
-            console.log(data);
-            console.log(data.pageError.errorMsg);
-            //document.getElementById("EmpID").value = data.pageError.errorMsg;
-            //submitLoginForm();
+            //console.log(data.pageData);
+            //console.log(data.pageData.Barcode);
+            if (data.pageData != null) {
+                console.log(data.pageData.Barcode);
+                document.getElementById("EmpID").value = data.pageData.Barcode;
+                submitLoginForm();
+                //console.log("Logged In");
+            }
+            
         };
 
         socket.onopen = function (event) {

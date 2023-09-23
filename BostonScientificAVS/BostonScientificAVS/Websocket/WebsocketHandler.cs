@@ -53,7 +53,7 @@ namespace BostonScientificAVS.Websocket
             openUDPSocketConnection();
             string scannerip = DotNetEnv.Env.GetString("SCANNER_IP");
             int scannerport = DotNetEnv.Env.GetInt("SCANNER_PORT");
-             //StartListener(scannerip, scannerport);
+             StartListener(scannerip, scannerport);
           }
           var message = await ReceiveMessage(id, webSocket);
 
@@ -218,6 +218,7 @@ namespace BostonScientificAVS.Websocket
                 _tcpListener = new TcpListener(ipAddress, port);
                 Console.WriteLine("TCP Listener connection established");
                 Console.WriteLine("***************************************************");
+                _tcpListener.Start();
                 ListenAsync();
                 // Receive the server response.
 
@@ -253,46 +254,44 @@ namespace BostonScientificAVS.Websocket
                 try
                 {
                     var client = await _tcpListener.AcceptTcpClientAsync();
-                    _stream = client.GetStream();
-                    byte[] buffer = new byte[1024];
-                    int bytesRead;
-                    while ((bytesRead = _stream.Read(buffer, 0, buffer.Length)) > 0)
-                    {
-                        var data = Encoding.ASCII.GetString(buffer, 0, bytesRead);
-                        Console.WriteLine($"Received: {data}");
-                        PageStatus status = new PageStatus();
-                        Error error = new Error();
-                        error.errorMsg = data;
-                        status.pageError = error;
-                        await SendMessageToSockets("FromTCPClient", status);
-                    }
-
-                    client.Close();
+                    ProcessClient(client);
                 }
-                catch (SocketException)
+                catch (Exception e)
                 {
-                    Console.WriteLine("Listener is Stopped..................");
+                    Console.WriteLine($"Exception in Async: {e.Message}");
                     // Handle socket exception, e.g., if the listener is stopped.
                 }
-                // Get a client stream for reading and writing.
-                
-                ////var buffer = new byte[256];
-
-                //// String to store the response ASCII representation.
-                //String responseData = String.Empty;
-
-                //// Read the first batch of the TcpServer response bytes.
-                //Int32 bytes = stream.Read(buffer, 0, buffer.Length);
-                //responseData = System.Text.Encoding.ASCII.GetString(buffer, 0, bytes);
-                //Console.WriteLine("Received: {0}", responseData);
-                //PageStatus status = new PageStatus();
-                //Error error = new Error();
-                //error.errorMsg = responseData;
-                //status.pageError = error;
-                //await SendMessageToSockets("FromTCPClient",status);
             }
         }
+        private async Task ProcessClient(TcpClient client)
+        {
+            // Handle client connection here.
+            // For simplicity, we'll just read data and log it.
+            NetworkStream stream = client.GetStream();
+            byte[] buffer = new byte[1024];
+            int bytesRead;
 
+            while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
+            {
+                var data = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+                Console.WriteLine($"Received: {data}");
+                PageStatus status = new PageStatus();
+                PageData pageData = new PageData();
+                pageData.Barcode = data;
+                status.pageData = pageData;
+                await SendMessageToSockets("FromTCPClient", status);
+                //PageStatus status = new PageStatus();
+                //Error error = new Error();
+                //error.errorMsg = data;
+                //status.pageError = error;
+                //await SendMessageToSockets("FromTCPClient", status);
+
+
+
+            }
+
+            client.Close();
+        }
     }
 
 
