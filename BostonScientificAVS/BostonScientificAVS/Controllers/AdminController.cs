@@ -43,7 +43,7 @@ namespace BostonScientificAVS.Controllers
             {
                 if (itemToEdit != null)
                 {
-                    string currentUserName = HttpContext.Session.GetString("CurrentUserName");
+                    string currentUserName = @User.Identity.Name;
                     _itemService.updateItem(itemToEdit, currentUserName);
                 }
                 return Ok("Successfully updated item");
@@ -64,7 +64,7 @@ namespace BostonScientificAVS.Controllers
                 if (item != null)
                 {
                     // Get the "CurrentUserName" session string
-                    string currentUserName = HttpContext.Session.GetString("CurrentUserName");
+                    string currentUserName = @User.Identity.Name;
 
                     // If the value is not null or empty, proceed with saving the item
                     if (!string.IsNullOrEmpty(currentUserName))
@@ -107,7 +107,7 @@ namespace BostonScientificAVS.Controllers
         {
             try
             {
-                string currentUserName = HttpContext.Session.GetString("CurrentUserName");
+                string currentUserName = @User.Identity.Name;
                 await _itemService.importCsv(file,currentUserName);
                 return "file upload Successfully";
             }
@@ -241,7 +241,7 @@ namespace BostonScientificAVS.Controllers
         {
             DateTime today = DateTime.Today;
             ViewBag.SearchDate = search;
-            string userFullName = HttpContext.Session.GetString("CurrentUserName");
+            string userFullName = @User.Identity.Name;
             ViewBag.UserFullName = userFullName;
 
             var records = _context.Transaction.ToList(); // Fetch all records to memory

@@ -123,8 +123,9 @@
 <script>
     function submitLoginForm() {
         console.log("submit hit");
-        document.getElementById("loginForm").submit();
         showLoader();
+        document.getElementById("loginForm").submit();
+        hideLoader();
     }
 
     // Function to show the loader and overlay
@@ -139,39 +140,67 @@ function hideLoader() {
   document.getElementById('overlay').style.display = 'none';
 }
 
-    var socket = null;
-    if (true) {
-        websocketUrl = "wss://localhost:7157" + "/ws";
+    //var socket = null;
+    //if (true) {
+    //    websocketUrl = "wss://localhost:7157" + "/ws";
 
-        socket = new WebSocket(websocketUrl);
+    //    socket = new WebSocket(websocketUrl);
 
-        socket.onerror = function (event) {
-            console.log(event);
+    //    socket.onerror = function (event) {
+    //        console.log(event);
             
-        };
+    //    };
 
-        socket.onmessage = function (event) {
-            const jsonData = event.data;
-            const data = JSON.parse(jsonData);
-            console.log(data);
-            console.log(data.pageError.errorMsg);
-            document.getElementById("EmpID").value = data.pageError.errorMsg;
-            submitLoginForm();
-        };
+    //    let hasSubmitted = false;
+    //    socket.onmessage = function (event) {
+    //        debugger;
+    //        const jsonData = event.data;
+    //        const data = JSON.parse(jsonData);
+    //        console.log(data);
+    //        console.log(data.pageError.errorMsg);
+    //        if (!hasSubmitted) {
+    //            document.getElementById("EmpID").value = data.pageError.errorMsg;
+    //            submitLoginForm();
+    //            hasSubmitted = true; // Set the flag to true after the first submission
+    //        }
+    //        //if (TempData.ContainsKey("ErrorMessage")) {
+    //        //    const errorMessage = TempData["ErrorMessage"];
+    //        //    displayErrorMessage(errorMessage); // Display the error message
+    //        //    startErrorTimer(); // Start the timer to clear the error message and input field
+    //        //}
+    //    };
 
-        socket.onopen = function (event) {
-            // WebSocket connection opened
-            console.log('WebSocket connection opened');
-        };
+    //    socket.onopen = function (event) {
+    //        // WebSocket connection opened
+    //        console.log('WebSocket connection opened');
+    //    };
 
-        socket.onclose = function (event) {
-            // WebSocket connection closed
-            console.log('WebSocket connection closed');
-            socket = new WebSocket(websocketUrl);
-        };
-    }
+    //    socket.onclose = function (event) {
+    //        // WebSocket connection closed
+    //        console.log('WebSocket connection closed');
+    //        socket = new WebSocket(websocketUrl);
+    //    };
+    //}
 
    
-    
+    //function displayErrorMessage(message) {
+    //    const errorMessageDiv = document.getElementById("loginerror");
+    //    errorMessageDiv.textContent = message;
+    //    errorMessageDiv.style.display = "block";
+    //}
+
+    //function startErrorTimer() {
+    //    setTimeout(function () {
+    //        clearErrorMessage();
+    //        document.getElementById("EmpID").value = "";
+    //        hideLoader(); // Stop page loading
+    //    }, 5000); // 5000 milliseconds (5 seconds)
+    //}
+
+    //function clearErrorMessage() {
+    //    const errorMessageDiv = document.getElementById("loginerror");
+    //    errorMessageDiv.textContent = "";
+    //    errorMessageDiv.style.display = "none";
+    //}
 
 </script>
