@@ -51,7 +51,7 @@
 
     <div class="work-order-scan">
     <div>
-         <h6 class="first-text">Step 1</h6>
+         <h6 class="first-text">Step 1.0</h6>
     </div>
     <div>
         <h6 class="second-text">Place The Work Order Label</h6>
@@ -277,11 +277,16 @@
         socket.onmessage = function (event) {
             const jsonData = event.data;
             const data = JSON.parse(jsonData);
-            console.log(data);
-            console.log(data.pageError.errorMsg);
-
-            document.getElementById("input").value = data.pageError.errorMsg;
-            document.getElementById("workOrderForm").submit();
+            if(data.pageData != null) {
+                console.log(data.pageData.Barcode);
+                //document.getElementById("EmpID").value = data.pageData.Barcode;
+                document.getElementById("input").value = data.pageData.Barcode;
+                document.getElementById("workOrderForm").submit();
+                submitLoginForm();
+                //console.log("Logged In");
+            }
+            //document.getElementById("input").value = data.pageError.errorMsg;
+            //document.getElementById("workOrderForm").submit();
         };
 
         socket.onopen = function (event) {
