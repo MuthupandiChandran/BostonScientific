@@ -45,7 +45,7 @@
                 <form id="workOrderForm" asp-controller="Home" asp-action="SaveCartonLabel" method="post">
                     <div class="work-order-scan-submit">
                         <div>
-                            <input class="scan-input" placeholder="Carton Label" name="input1" id="input1" autocomplete="off" />
+                            <input class="scan-input" placeholder="Please Scan/Enter Carton Label" name="input1" id="input1" autocomplete="off" />
                         </div>
                         <div>
                             <input class="scan-input" placeholder="Carton Label Specification" name="input2" id="input2" autocomplete="off" />
@@ -202,6 +202,15 @@
 
     .scan-input::placeholder {
         font-size: 16px; 
+    }
+
+    .scan-input {
+        width: 228px;
+        height: 67px;
+        border-radius: 10px;
+        border: 1px solid;
+        font-size: 20px;
+        text-align: center;
     }
 
 </style>

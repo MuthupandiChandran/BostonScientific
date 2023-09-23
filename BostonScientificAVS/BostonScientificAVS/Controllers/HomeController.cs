@@ -188,7 +188,7 @@ namespace BostonScientificAVS.Controllers
             }
         }
 
-        public async Task<IActionResult> GTINmismatch(bool gtinMismatch,string ProductLabelSpec, string input2, string input3)
+        public async Task<IActionResult> GTINmismatch(bool gtinMismatch,string ProductLabelSpec)
         {
             if (gtinMismatch)
             {
@@ -198,56 +198,109 @@ namespace BostonScientificAVS.Controllers
                 transaction.Result = "Fail";
                 DateTime currentDateTime = DateTime.Now;
                 transaction.Date_Time = currentDateTime.ToString();
-                if (string.IsNullOrEmpty(input2) && string.IsNullOrEmpty(input3))
+                string Input3 = TempData.ContainsKey("Input3") ? (string)TempData["Input3"] : null;
+                if (!string.IsNullOrEmpty(ProductLabelSpec))
                 {
-
-
                     var product_Gtin = _dataContext.Transaction
-                    .OrderByDescending(x => x.Product_Label_GTIN)
-                    .Select(x => x.Product_Label_GTIN)
-                    .FirstOrDefault();
-                    var product_spec = _dataContext.Transaction.OrderByDescending(x => x.Product_Label_Spec).Select(x => x.Product_Label_Spec).FirstOrDefault();
-                    var count = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Result != null).Distinct();
-                    var countData = new countinfo
+                        .OrderByDescending(x => x.Transaction_Id)
+                        .Select(x => x.Product_Label_GTIN)
+                        .FirstOrDefault();
+
+                    var product_spec = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).Select(x => x.Product_Label_Spec).FirstOrDefault();
+                    var product_lot_no = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).Select(x => x.Product_Lot_Num).FirstOrDefault();
+                    var wo_lot_no = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).Select(x => x.WO_Lot_Num).FirstOrDefault();
+                    DateTime? workOrderDT = null;
+                    var date1 = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).Select(x => x.WO_Mfg_Date).FirstOrDefault();
+                    var date2 = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).Select(x => x.Product_Use_By).FirstOrDefault();
+                    int shelfLife = item.Shelf_Life ?? 0;
+
+                    if (date1 != null)
                     {
-                        Product_Gtin = product_Gtin,
-                        Db_Gtin = item.GTIN,
-                        GTINMismatch = true,// Set the GTINMismatch flag to true
-                        Db_Spec = item.Label_Spec,
-                        Product_Spec = product_spec,
-                        LabelMismatch = item.Label_Spec != ProductLabelSpec, // Conditionally set LabelMismatch
-                        totalcount = count.Count(),
-                        passedCount = count.Where(x => x.Result == "Pass").Count(),
-                        failedCount = count.Count() - count.Where(x => x.Result == "Pass").Count(),
-                        scannedCount = count.Where(x => x.Rescan_Initated == true).Count()
-                    };
+                        workOrderDT = (DateTime)date1;
+                    }
 
+                    if (workOrderDT.HasValue)
+                    {
+                        var date3 = workOrderDT.Value.AddDays((double)shelfLife);
+                        var productuseby = date2.HasValue ? date2.Value.ToString("yyyy-MM-dd") : null;
+                        var wo_catalog_no = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).Select(x => x.WO_Catalog_Num).FirstOrDefault();
+                        var count = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Result != null).Distinct();
+                        var countData = new countinfo
+                        {
+                            Product_Gtin = product_Gtin,
+                            Db_Gtin = item.GTIN,
+                            GTINMismatch = true, // Set the GTINMismatch flag to true
+                            Db_Spec = item.Label_Spec,
+                            Product_Spec = product_spec,
+                            LabelMismatch = item.Label_Spec != ProductLabelSpec, // Conditionally set LabelMismatch
+                            Product_Lot_No = product_lot_no,
+                            WO_Lot_No = wo_lot_no,
+                            LotnoMismatch = product_lot_no != wo_lot_no,
+                            Calculate_Use_By = date3.ToString("yyyy-MM-dd"),
+                            Pro_Use_By = productuseby,
+                            FirstUseby_Mismatch = date3.ToString("yyyy-MM-dd") != productuseby, // Compare as strings
+                            Wo_Catalog_Num = wo_catalog_no,
+                            Db_Catalog_No = item.Catalog_Num,
+                            CatalogMismatch = item.Catalog_Num != wo_catalog_no,
+                            totalcount = count.Count(),
+                            passedCount = count.Where(x => x.Result == "Pass").Count(),
+                            failedCount = count.Count() - count.Where(x => x.Result == "Pass").Count(),
+                            scannedCount = count.Where(x => x.Rescan_Initated == true).Count()
+                        };
 
-                    await _dataContext.SaveChangesAsync();
+                        await _dataContext.SaveChangesAsync();
 
-                    // Return the countData as JSON response
-                    return Json(countData);
+                        // Return the countData as JSON response
+                        return Json(countData);
+                    }
+
                 }
-                if(string.IsNullOrEmpty(ProductLabelSpec))
+                if (string.IsNullOrEmpty(ProductLabelSpec))
                 {
                     var product_Gtin = _dataContext.Transaction
-                    .OrderByDescending(x => x.Product_Label_GTIN)
+                    .OrderByDescending(x => x.Transaction_Id)
                     .Select(x => x.Product_Label_GTIN)
                     .FirstOrDefault();
-                    var product_spec = _dataContext.Transaction.OrderByDescending(x => x.Product_Label_Spec).Select(x => x.Product_Label_Spec).FirstOrDefault();
-                    var ifu = _dataContext.Transaction.OrderByDescending(x => x.Scanned_IFU).Select(x => x.Scanned_IFU).FirstOrDefault();
+                    var ifu = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).Select(x => x.Scanned_IFU).FirstOrDefault();
+                    var carton_gtin = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).Select(x => x.Carton_Label_GTIN).FirstOrDefault();
+                    var carton_spec = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).Select(x => x.Carton_Label_Spec).FirstOrDefault();
+                    var wo_lot_no = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).Select(x => x.WO_Lot_Num).FirstOrDefault();
+                    var product_lot_no = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).Select(x => x.Product_Lot_Num).FirstOrDefault();
+                    var date1 = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).Select(x => x.Carton_Use_By).FirstOrDefault();
+                    var date2 = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).Select(x => x.Calculated_Use_By).FirstOrDefault();
+                    var date3 = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).Select(x => x.Product_Use_By).FirstOrDefault(); 
+                    var carton_use_by = date1.HasValue ? date1.Value.ToString("yyyy-MM-dd") : null;
+                    var calculate_use_by = date2.HasValue ? date2.Value.ToString("yyyy-MM-dd") : null;
+                    var product_use_by = date3.HasValue ? date3.Value.ToString("yyy-MM-dd") : null;
+                    var wo_catalog_no = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).Select(x => x.WO_Catalog_Num).FirstOrDefault();
+                    var carton_lot_no = _dataContext.Transaction.OrderByDescending(x=>x.Transaction_Id).Select(x=>x.Carton_Lot_Num).FirstOrDefault();
                     var count = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Result != null).Distinct();
                     var countData = new countinfo
                     {
                         Product_Gtin =product_Gtin,
+                        Carton_Gtin = carton_gtin,
                         Db_Gtin = item.GTIN,
                         GTINMismatch = true,// Set the GTINMismatch flag to true
+                        DB_GTIN_Mismatch =item.GTIN!=carton_gtin,
+                        Carton_Spec = carton_spec,
                         Db_Spec = item.Label_Spec,
-                        Product_Spec = product_spec,
-                        LabelMismatch = item.Label_Spec != ProductLabelSpec,
-                        Scanned_Ifu = ifu,
+                        LabelMismatch = carton_spec !=item.Label_Spec,
+                        Scanned_Ifu = Input3,
                         Db_Ifu=item.IFU,
                         IfuMismatch = item.IFU != ifu,
+                        WO_Lot_No = wo_lot_no,
+                        Product_Lot_No = product_lot_no,
+                        LotnoMismatch =wo_lot_no!=product_lot_no,
+                        Carton_Use_By = carton_use_by,
+                        Calculate_Use_By = calculate_use_by,
+                        FirstUseby_Mismatch = carton_use_by != calculate_use_by,
+                        Pro_Use_By = product_use_by,
+                        SecondUseby_Mismatch = carton_use_by!=product_use_by,
+                        Db_Catalog_No = item.Catalog_Num,
+                        Wo_Catalog_Num = wo_catalog_no,
+                        CatalogMismatch = item.Catalog_Num!= wo_catalog_no,
+                        Carton_Lot_No = carton_lot_no,
+                        LotNoMismatches = carton_lot_no!=product_lot_no,
                         totalcount = count.Count(),
                         passedCount = count.Where(x => x.Result == "Pass").Count(),
                         failedCount = count.Count() - count.Where(x => x.Result == "Pass").Count(),
@@ -296,8 +349,8 @@ namespace BostonScientificAVS.Controllers
                 // initially assume all are a match
                 result.allMatch = true;
                 if (transaction.DB_GTIN != transaction.Product_Label_GTIN || transaction.WO_Lot_Num != transaction.Product_Lot_Num
-                    || transaction.DB_Label_Spec != transaction.Product_Label_Spec || transaction.Calculated_Use_By > transaction.Product_Use_By
-                    || transaction.DB_Catalog_Num != transaction.WO_Catalog_Num)
+                    || transaction.DB_Label_Spec != transaction.Product_Label_Spec || transaction.Calculated_Use_By <= transaction.Product_Use_By
+                    || transaction.DB_Catalog_Num != transaction.WO_Catalog_Num) //(mismatches = true)
                 {
                     result.allMatch = false;
                 }
@@ -315,7 +368,7 @@ namespace BostonScientificAVS.Controllers
                     {
                         mismatches.labelSpecMismatch = true;
                     }
-                    if (transaction.Calculated_Use_By < transaction.Product_Use_By)
+                    if (transaction.Calculated_Use_By <= transaction.Product_Use_By)
                     {
                         mismatches.calculatedUseByMismatch = true;
                     }
@@ -434,7 +487,7 @@ namespace BostonScientificAVS.Controllers
             return View(woi);
         }
 
-        public async Task<IActionResult> FinalResult()
+        public async Task<IActionResult> FinalResult(bool rescanmsg)
         {
             var transaction = await _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefaultAsync();
 
@@ -485,12 +538,13 @@ namespace BostonScientificAVS.Controllers
                     if (transaction.WO_Lot_Num != transaction.Product_Lot_Num)
                     {
                         mismatches.lotNoMismatch = true;
+                        mismatches.rescan_lotno = true;
                     }
                     if (transaction.Carton_Label_Spec != transaction.DB_Label_Spec)
                     {
                         mismatches.labelSpecMismatch = true;
                     }
-                    if (transaction.Carton_Use_By == transaction.Calculated_Use_By)
+                    if (transaction.Carton_Use_By != transaction.Calculated_Use_By)
                     {
                         mismatches.calculatedUseByMismatches = true;
                     }
@@ -498,6 +552,7 @@ namespace BostonScientificAVS.Controllers
                     if (transaction.WO_Catalog_Num != transaction.DB_Catalog_Num)
                     {
                         mismatches.catalogNumMismatch = true;
+                        mismatches.rescan_catalog = true;
                     }
                     if (transaction.Carton_Lot_Num != transaction.Product_Lot_Num)
                     {
@@ -506,6 +561,7 @@ namespace BostonScientificAVS.Controllers
                     if (transaction.Scanned_IFU != transaction.DB_IFU)
                     {
                         mismatches.ifumismatches = true;
+                        mismatches.rescan_ifu = true;
                     }
                     if (transaction.Carton_Use_By != transaction.Product_Use_By)
                     {
@@ -545,7 +601,13 @@ namespace BostonScientificAVS.Controllers
                 result.workOrderInfo = woi;
                 result.mismatches = mismatches;
                 var objdata = result;
-                return Json(objdata);
+
+                if (rescanmsg == true)
+                {
+                    result.cartonscan = true;
+                   
+                }
+                    return  Json(objdata);   
             }
             else
             {
@@ -653,7 +715,7 @@ namespace BostonScientificAVS.Controllers
         }
 
         [HttpPost("/SaveProductLabelBarcode")]
-        public async Task<IActionResult> SaveProductLabelBarcode(string input1, string input2, string input3, bool gtinmismatch)
+        public async Task<IActionResult> SaveProductLabelBarcode(string input1, string input2, string input3, bool gtinmismatch,bool rescanmsg)
         {
             if (ModelState.IsValid)
             {
@@ -695,6 +757,7 @@ namespace BostonScientificAVS.Controllers
                             latestTransaction.Product_Label_Spec = input2;
                             latestTransaction.Scanned_IFU = input3;
                             await _dataContext.SaveChangesAsync();
+                            TempData["Input3"] = input3;
                             return RedirectToAction("GTINmismatch", new { gtinMismatch = true });
                         }
 
@@ -724,7 +787,7 @@ namespace BostonScientificAVS.Controllers
                     return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
                 }
 
-                return RedirectToAction("FinalResult");
+                return RedirectToAction("FinalResult", new {rescanmsg});
             }
             else
             {
