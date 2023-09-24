@@ -275,6 +275,7 @@ namespace BostonScientificAVS.Websocket
             {
                 var data = Encoding.ASCII.GetString(buffer, 0, bytesRead);
                 Console.WriteLine($"Received: {data}");
+                Console.WriteLine("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
                 PageStatus status = new PageStatus();
                 PageData pageData = new PageData();
                 pageData.Barcode = data;

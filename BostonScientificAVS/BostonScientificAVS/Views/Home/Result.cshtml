@@ -2352,23 +2352,28 @@
             const jsonData = event.data;
             const data = JSON.parse(jsonData);
             console.log(data);
-            console.log(data.pageError.errorMsg);
+            if (data.pageData != null) {
+                //console.log(data.pageData.Barcode);
+                product_barcode_scans = data.pageData.Barcode.split(/\r?\n/);
+                console.log(product_barcode_scans);
+                document.getElementById("productLabelInput").value = product_barcode_scans[0];
+                document.getElementById("productLabelSpec").value = product_barcode_scans[1];
+                document.getElementById("submitBtn").click();
+            }
 
-            document.getElementById("productLabelInput").value = data.pageError.errorMsg;
-            document.getElementById("productLabelSpec").value = data.pageError.errorMsg;
-            document.getElementById("submitBtn").click();
+            
             document.getElementById("greenButton").addEventListener("click", function () {
                 document.getElementById("greenButton").value = data.pageError.errorMsg;
                 configureContinueButton('supervisorInput');
-            }
+            });
 
-                    document.getElementById("redButton").addEventListener("click", function () {
+            document.getElementById("redButton").addEventListener("click", function () {
                 document.getElementById("redButton").value = data.pageError.errorMsg;
                 redbutton('supervisorInput1');
 
-            }
+            });
 
-            };
+        };
 
         socket.onopen = function (event) {
             // WebSocket connection opened
