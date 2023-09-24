@@ -7,6 +7,7 @@
         public LHS lhsData { get; set; }
         public RHS rhsData { get; set; }
         public workOrderInfo workOrderInfo { get; set; }
+        public bool cartonscan { get; set; }
     }
 
     public class mismatchess
@@ -21,6 +22,9 @@
         public bool LotNumberMisMatch { get; set; }
         public bool ifumismatches { get; set; }
         public bool calculatedUseByMismatches { get; set; }
+        public bool rescan_ifu { get; set; }
+        public bool rescan_catalog { get; set; }
+        public bool rescan_lotno { get; set; }
 
     }
 

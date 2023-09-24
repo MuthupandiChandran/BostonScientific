@@ -45,7 +45,7 @@
                 <form id="workOrderForm" asp-controller="Home" asp-action="SaveWorkOrderBarcode" method="post">
                     <div class="work-order-scan-submit">
                         <div>
-                            <input class="scan-input" placeholder="Please Enter Work Order" name="input" id="input" autocomplete="off" />
+                            <input class="scan-input" placeholder="Please Scan/Enter Work Order" name="input" id="input" autocomplete="off" />
                         </div>
                         <div>
                             <button type="submit" class="login-button" id="submitBtn">
@@ -187,6 +187,15 @@
 
     .scan-input::placeholder {
         font-size: 16px;
+    }
+
+    .scan-input {
+        width: 228px;
+        height: 67px;
+        border-radius: 10px;
+        border: 1px solid;
+        font-size: 20px;
+        text-align: center;
     }
 
 </style>
