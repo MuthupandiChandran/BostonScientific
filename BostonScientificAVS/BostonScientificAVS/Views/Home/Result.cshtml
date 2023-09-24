@@ -2003,17 +2003,17 @@
 
     function setScannedData(response) {
         console.log("set data called");
-        document.getElementById("fail-db-gtin").innerHTML = response.lhsData.dbGTIN;
-        document.getElementById("fail-wo-lot-no").innerHTML = response.lhsData.workOrderLotNo;
-        document.getElementById("fail-db-label-spec").innerHTML = response.lhsData.dbLabelSpec;
-        document.getElementById("fail-calc-use-by").innerHTML = response.lhsData.calculatedUseBy;
-        document.getElementById("fail-db-catalog-num").innerHTML = response.lhsData.dbCatalogNo;
+        document.getElementById("fail-gtin-error").innerHTML = response.lhsData.dbGTIN;
+        document.getElementById("fail-lotno-error").innerHTML = response.lhsData.workOrderLotNo;
+        document.getElementById("fail-label-spec-error").innerHTML = response.lhsData.dbLabelSpec;
+        document.getElementById("fail-calc-use-by-error").innerHTML = response.lhsData.calculatedUseBy;
+        document.getElementById("fail-db-catalog-num-error").innerHTML = response.lhsData.dbCatalogNo;
 
-        document.getElementById("fail-product-gtin").innerHTML = response.rhsData.productLabelGTIN;
-        document.getElementById("fail-product-lot-no").innerHTML = response.rhsData.productLotNo;
-        document.getElementById("fail-product-label-spec").innerHTML = response.rhsData.productLabelSpec;
-        document.getElementById("fail-product-use-by").innerHTML = response.rhsData.productUseBy;
-        document.getElementById("fail-wo-catalog-no").innerHTML = response.rhsData.workOrderCatalogNo;
+        document.getElementById("fail-product-gtin-error").innerHTML = response.rhsData.productLabelGTIN;
+        document.getElementById("fail-product-lot-no-error").innerHTML = response.rhsData.productLotNo;
+        document.getElementById("fail-product-label-spec-error").innerHTML = response.rhsData.productLabelSpec;
+        document.getElementById("fail-product-use-by-error").innerHTML = response.rhsData.productUseBy;
+        document.getElementById("fail-wo-catalog-no-error").innerHTML = response.rhsData.workOrderCatalogNo;
 
     }
 
@@ -2088,14 +2088,14 @@
         document.getElementById("navigation-container").style.display = "block";
         document.getElementById("next-scan-button").style.backgroundColor = "#C5C5C5";
         document.getElementById("next-scan-button1").style.backgroundColor = "#C5C5C5";
-        if (GTINMismatch = true) {
+        if (response.gtinMismatch == true) {
             document.getElementById("pa-gtin").style.color = "red";
             document.getElementById("fail-product-gtin-error").innerHTML = response.product_Gtin;
             document.getElementById("fail-product-gtin-error").style.color = "red";
             document.getElementById("fail-gtin-error").innerHTML = response.db_Gtin;
             document.getElementById("fail-gtin-error").style.color= "black";
         }
-        if (LotnoMismatch=true){
+        if (response.lotnoMismatch == true){
             document.getElementById("fail-lotno-error").innerHTML = response.wO_Lot_No;
             document.getElementById("fail-lotno-error").style.color = "black";
             document.getElementById("p-lotnum-error").style.color = "red";
@@ -2108,7 +2108,7 @@
             document.getElementById("fail-product-lot-no-error").innerHTML = response.product_Lot_No;
             document.getElementById("fail-product-lot-no-error").style.color = "black";
         }
-        if(FirstUseby_Mismatch=true)
+        if(response.firstUseby_Mismatch == true)
         {
             document.getElementById("fail-calc-use-by-error").style.color = "black";
             document.getElementById("fail-calc-use-by-error").innerHTML = response.calculate_Use_By;
@@ -2123,7 +2123,7 @@
             document.getElementById("fail-product-use-by-error").innerHTML = response.pro_Use_By;
             document.getElementById("fail-product-use-by-error").style.color = "black";
         }
-        if(CatalogMismatch = true) 
+        if(response.catalogMismatch == true) 
         {
             document.getElementById("fail-db-catalog-num-error").style.color = "black";
             document.getElementById("fail-db-catalog-num-error").innerHTML = response.db_Catalog_No;
@@ -2139,7 +2139,7 @@
             document.getElementById("fail-wo-catalog-no-error").innerHTML = response.wo_Catalog_Num;
             document.getElementById("fail-wo-catalog-no-error").style.color = "black";
         }
-        if(LabelMismatch = true)
+        if(response.labelMismatch == true)
         {
             document.getElementById("fail-label-spec-error").style.color ="black";
             document.getElementById("fail-label-spec-error").innerHTML = response.db_Spec;
