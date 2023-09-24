@@ -245,7 +245,7 @@ namespace BostonScientificAVS.Controllers
                                 LotnoMismatch = product_lot_no != wo_lot_no,
                                 Calculate_Use_By = date3.ToString("yyyy-MM-dd"),
                                 Pro_Use_By = productuseby,
-                                FirstUseby_Mismatch = date3DateTime <= productusebyDateTime, // Compare as DateTime objects
+                                FirstUseby_Mismatch = date3DateTime < productusebyDateTime, // Compare as DateTime objects
                                 Wo_Catalog_Num = wo_catalog_no,
                                 Db_Catalog_No = item.Catalog_Num,
                                 CatalogMismatch = item.Catalog_Num != wo_catalog_no,
