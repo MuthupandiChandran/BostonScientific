@@ -215,12 +215,12 @@
                 <div class="card-body">
                         <div class="form-group">
                             <label for="empid">EmpID:</label>
-                            <input type="text" class="form-control" id="empid" name="empid">
+                            <input type="text" class="form-control" id="empid" name="empid" autocomplete="off">
                             <span class="text-danger" id="empidError"></span>
                         </div>
                         <div class="form-group">
                             <label for="userfullname">UserFullName:</label>
-                            <input type="text" class="form-control" id="userfullname" name="userfullname">
+                            <input type="text" class="form-control" id="userfullname" name="userfullname" autocomplete="off">
                             <span class="text-danger" id="userfullnameError"></span>
                         </div>
                         <div class="form-group">
@@ -368,7 +368,7 @@
 
             document.getElementById("empid").value = empID;
             document.getElementById("userfullname").value = userFullName;
-
+            document.getElementById("empid").readOnly = true;
 
         var select = document.getElementById("UserRole");
         for (var i = 0; i < select.options.length; i++) {
@@ -481,6 +481,8 @@
         });
 
             isEditing = false;
+          document.getElementById("empid").readOnly = false;
+          document.getElementById("empid").value = "";
 
     }
 

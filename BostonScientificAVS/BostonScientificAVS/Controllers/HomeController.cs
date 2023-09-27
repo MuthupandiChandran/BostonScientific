@@ -223,37 +223,44 @@ namespace BostonScientificAVS.Controllers
                     {
                         var date3 = workOrderDT.Value.AddDays((double)shelfLife);
                         var productuseby = date2.HasValue ? date2.Value.ToString("yyyy-MM-dd") : null;
-                        var wo_catalog_no = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).Select(x => x.WO_Catalog_Num).FirstOrDefault();
-                        var count = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Result != null).Distinct();
-                        var countData = new countinfo
+
+                        DateTime date3DateTime;
+                        DateTime productusebyDateTime;
+
+                        if (DateTime.TryParseExact(date3.ToString("yyyy-MM-dd"), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out date3DateTime) &&
+                            DateTime.TryParseExact(productuseby, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out productusebyDateTime))
                         {
-                            Product_Gtin = product_Gtin,
-                            Db_Gtin = item.GTIN,
-                            GTINMismatch = true, // Set the GTINMismatch flag to true
-                            Db_Spec = item.Label_Spec,
-                            Product_Spec = product_spec,
-                            LabelMismatch = item.Label_Spec != ProductLabelSpec, // Conditionally set LabelMismatch
-                            Product_Lot_No = product_lot_no,
-                            WO_Lot_No = wo_lot_no,
-                            LotnoMismatch = product_lot_no != wo_lot_no,
-                            Calculate_Use_By = date3.ToString("yyyy-MM-dd"),
-                            Pro_Use_By = productuseby,
-                            FirstUseby_Mismatch = date3.ToString("yyyy-MM-dd") != productuseby, // Compare as strings
-                            Wo_Catalog_Num = wo_catalog_no,
-                            Db_Catalog_No = item.Catalog_Num,
-                            CatalogMismatch = item.Catalog_Num != wo_catalog_no,
-                            totalcount = count.Count(),
-                            passedCount = count.Where(x => x.Result == "Pass").Count(),
-                            failedCount = count.Count() - count.Where(x => x.Result == "Pass").Count(),
-                            scannedCount = count.Where(x => x.Rescan_Initated == true).Count()
-                        };
+                            var wo_catalog_no = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).Select(x => x.WO_Catalog_Num).FirstOrDefault();
+                            var count = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Result != null).Distinct();
+                            var countData = new countinfo
+                            {
+                                Product_Gtin = product_Gtin,
+                                Db_Gtin = item.GTIN,
+                                GTINMismatch = true, // Set the GTINMismatch flag to true
+                                Db_Spec = item.Label_Spec,
+                                Product_Spec = product_spec,
+                                LabelMismatch = item.Label_Spec != ProductLabelSpec, // Conditionally set LabelMismatch
+                                Product_Lot_No = product_lot_no,
+                                WO_Lot_No = wo_lot_no,
+                                LotnoMismatch = product_lot_no != wo_lot_no,
+                                Calculate_Use_By = date3.ToString("yyyy-MM-dd"),
+                                Pro_Use_By = productuseby,
+                                FirstUseby_Mismatch = date3DateTime < productusebyDateTime, // Compare as DateTime objects
+                                Wo_Catalog_Num = wo_catalog_no,
+                                Db_Catalog_No = item.Catalog_Num,
+                                CatalogMismatch = item.Catalog_Num != wo_catalog_no,
+                                totalcount = count.Count(),
+                                passedCount = count.Where(x => x.Result == "Pass").Count(),
+                                failedCount = count.Count() - count.Where(x => x.Result == "Pass").Count(),
+                                scannedCount = count.Where(x => x.Rescan_Initated == true).Count()
+                            };
 
-                        await _dataContext.SaveChangesAsync();
+                            await _dataContext.SaveChangesAsync();
 
-                        // Return the countData as JSON response
-                        return Json(countData);
+                            // Return the countData as JSON response
+                            return Json(countData);
+                        }
                     }
-
                 }
                 if (string.IsNullOrEmpty(ProductLabelSpec))
                 {
@@ -277,34 +284,35 @@ namespace BostonScientificAVS.Controllers
                     var count = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Result != null).Distinct();
                     var countData = new countinfo
                     {
-                        Product_Gtin =product_Gtin,
+                        Product_Gtin = product_Gtin,
                         Carton_Gtin = carton_gtin,
                         Db_Gtin = item.GTIN,
                         GTINMismatch = true,// Set the GTINMismatch flag to true
-                        DB_GTIN_Mismatch =item.GTIN!=carton_gtin,
+                        DB_GTIN_Mismatch = item.GTIN != carton_gtin,
                         Carton_Spec = carton_spec,
                         Db_Spec = item.Label_Spec,
-                        LabelMismatch = carton_spec !=item.Label_Spec,
+                        LabelMismatch = carton_spec != item.Label_Spec,
                         Scanned_Ifu = Input3,
-                        Db_Ifu=item.IFU,
+                        Db_Ifu = item.IFU,
                         IfuMismatch = item.IFU != ifu,
                         WO_Lot_No = wo_lot_no,
                         Product_Lot_No = product_lot_no,
-                        LotnoMismatch =wo_lot_no!=product_lot_no,
+                        LotnoMismatch = wo_lot_no != product_lot_no,
                         Carton_Use_By = carton_use_by,
                         Calculate_Use_By = calculate_use_by,
                         FirstUseby_Mismatch = carton_use_by != calculate_use_by,
                         Pro_Use_By = product_use_by,
-                        SecondUseby_Mismatch = carton_use_by!=product_use_by,
+                        SecondUseby_Mismatch = carton_use_by != product_use_by,
                         Db_Catalog_No = item.Catalog_Num,
                         Wo_Catalog_Num = wo_catalog_no,
-                        CatalogMismatch = item.Catalog_Num!= wo_catalog_no,
+                        CatalogMismatch = item.Catalog_Num != wo_catalog_no,
                         Carton_Lot_No = carton_lot_no,
-                        LotNoMismatches = carton_lot_no!=product_lot_no,
+                        LotNoMismatches = carton_lot_no != product_lot_no,
                         totalcount = count.Count(),
                         passedCount = count.Where(x => x.Result == "Pass").Count(),
                         failedCount = count.Count() - count.Where(x => x.Result == "Pass").Count(),
                         scannedCount = count.Where(x => x.Rescan_Initated == true).Count()
+
 
                     };
                     await _dataContext.SaveChangesAsync();
@@ -349,7 +357,7 @@ namespace BostonScientificAVS.Controllers
                 // initially assume all are a match
                 result.allMatch = true;
                 if (transaction.DB_GTIN != transaction.Product_Label_GTIN || transaction.WO_Lot_Num != transaction.Product_Lot_Num
-                    || transaction.DB_Label_Spec != transaction.Product_Label_Spec || transaction.Calculated_Use_By <= transaction.Product_Use_By
+                    || transaction.DB_Label_Spec != transaction.Product_Label_Spec || transaction.Calculated_Use_By < transaction.Product_Use_By
                     || transaction.DB_Catalog_Num != transaction.WO_Catalog_Num) //(mismatches = true)
                 {
                     result.allMatch = false;
@@ -368,7 +376,7 @@ namespace BostonScientificAVS.Controllers
                     {
                         mismatches.labelSpecMismatch = true;
                     }
-                    if (transaction.Calculated_Use_By <= transaction.Product_Use_By)
+                    if (transaction.Calculated_Use_By < transaction.Product_Use_By)
                     {
                         mismatches.calculatedUseByMismatch = true;
                     }
