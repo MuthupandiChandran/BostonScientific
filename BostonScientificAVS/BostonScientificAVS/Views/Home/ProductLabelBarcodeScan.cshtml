@@ -45,14 +45,16 @@
                 <div class="col-md-8">
                     <div class="row">
                         <div class="col-md-3">
-                            <input id="productLabelInput" class="scan-input" placeholder="Product label" name="input" autocomplete="off" />
+                            <input id="productLabelInput" class="scan-input" placeholder="Product label" name="input" autocomplete="off" required/>
                             <div id="productLabelInputError" class="text-danger"></div>
                         </div>
                         <div class="col-md-3">
-                            <input id="productLabelSpec" class="scan-input" placeholder="Label Spec" name="input1" autocomplete="off" />
+                            <input id="productLabelSpec" class="scan-input" placeholder="Label Spec" name="input1" autocomplete="off" required/>
+                            <div id="productLabelInputError1" class="text-danger"></div>
                         </div>
                         <div class="col-md-3">
-                            <input id="ifu" class="scan-input" placeholder="Ifu Value" name="input2" autocomplete="off" />
+                            <input id="ifu" class="scan-input" placeholder="Ifu Value" name="input2" autocomplete="off" required/>
+                            <div id="productLabelInputError2" class="text-danger"></div>
                         </div>
                         <div class="col-md-3">
                             <button type="submit" class="login-button btn btn-primary" id="submitBtn">
@@ -1881,7 +1883,14 @@
             var productLabel = productLabelInput.value;
             var spec = productLabelSpec.value;
             beforeScanText.style.display = "none";
-            ifuScanText.style.display = "block";
+            if (productLabelInput.value === '' && productLabelInput.hasAttribute('required')) {
+                displayValidationError("productLabelInput", "Product Label Input is Invalid Format");
+            }
+
+            if (productLabelSpec.value === '' && productLabelSpec.hasAttribute('required')) {
+                displayValidationError1("productLabelSpec", "Product Label spec Input is Invalid Format");
+            }
+
 
             // Save the values for the second click
             submitBtn.dataset.productLabel = productLabel;
@@ -1891,7 +1900,7 @@
 
             // Enable the "ifu" input
             ifu.disabled = false;
-
+             ifuScanText.style.display = "block";
             // Disable other inputs
             productLabelInput.disabled = true;
             productLabelSpec.disabled = true;
@@ -1902,6 +1911,20 @@
             var productLabel = submitBtn.dataset.productLabel;
             var spec = submitBtn.dataset.productLabelSpec;
             var scannedIfu = ifu.value;
+            if(ifu.value ==='' && ifu.hasAttribute('required')){
+                var errorDivId = document.getElementById("ifu"); // Generate the error div id based on the input field id
+                var errorDiv = document.getElementById("productLabelInputError2");
+                var errorMessage = "Ifu Input is Invalid Format";
+                if (errorDiv) {
+                    errorDiv.textContent = errorMessage;
+                    setTimeout(function () {
+                        errorDiv.textContent = "";
+                        location.reload();
+                    }, 5000); 
+                    return;
+                }
+            }
+
             ifuScanText.style.display = "none";
             $("#productLabelInput, #productLabelSpec,#ifu, #submitBtn").prop("disabled", true);
 
@@ -1943,6 +1966,34 @@
 
         }
     });
+
+    function displayValidationError(inputId, errorMessage) {
+        var errorDivId = inputId + "productLabelInput"; // Generate the error div id based on the input field id
+        var errorDiv = document.getElementById("productLabelInputError");
+
+        if (errorDiv) {
+            errorDiv.textContent = errorMessage;
+            setTimeout(function () {
+                errorDiv.textContent = "";
+                location.reload();
+            }, 5000);
+        }
+    }
+
+
+    function displayValidationError1(inputId, errorMessage) {
+        var errorDivId = inputId + "productLabelSpec"; // Generate the error div id based on the input field id
+        var errorDiv = document.getElementById("productLabelInputError1");
+
+        if (errorDiv) {
+            errorDiv.textContent = errorMessage;
+            setTimeout(function () {
+                errorDiv.textContent = "";
+                location.reload();
+            }, 5000);
+        }
+    }
+
 
     let cartonscan = false;
     $(document).on("click", "#rescanBtn", function () {
