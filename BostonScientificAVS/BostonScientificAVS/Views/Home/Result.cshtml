@@ -2309,11 +2309,14 @@
             console.log(data);
             if (data.pageData != null) {
                 //console.log(data.pageData.Barcode);
-                product_barcode_scans = data.pageData.Barcode.split(/\r?\n/);
-                console.log(product_barcode_scans);
-                document.getElementById("productLabelInput").value = product_barcode_scans[0];
-                document.getElementById("productLabelSpec").value = product_barcode_scans[1];
-                document.getElementById("submitBtn").click();
+                if(data.pageData.Barcode.length < 25){
+                    document.getElementById("productLabelSpec").value = data.pageData.Barcode;
+                }else{
+                    document.getElementById("productLabelInput").value = data.pageData.Barcode;
+                }
+                if (document.getElementById("productLabelInput").value !=='' && document.getElementById("productLabelSpec").value !==''){
+                    document.getElementById("submitBtn").click();
+                }
             }
 
             

@@ -225,11 +225,18 @@
             socket.onmessage = function (event) {
                 const jsonData = event.data;
                 const data = JSON.parse(jsonData);
-                console.log(data);
-                console.log(data.pageError.errorMsg);
+                if (data.pageData != null) {
+                    if (data.pageData.Barcode.length >= 35) {
+                        document.getElementById("input").value = data.pageData.Barcode;
+                        document.getElementById("workOrderForm").submit();
+                        //submitLoginForm();
+                    }
+                    console.log(data.pageData.Barcode)
+                    //console.log("Logged In");
+                }
 
-                document.getElementById("input").value = data.pageError.errorMsg;
-                document.getElementById("workOrderForm").submit();
+                //document.getElementById("input").value = data.pageError.errorMsg;
+                //document.getElementById("workOrderForm").submit();
             };
 
             socket.onopen = function (event) {
