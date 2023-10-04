@@ -11,6 +11,8 @@ using System.IO.Ports;
 using Microsoft.Extensions.Logging;
 using System.Net.Sockets;
 using System.Net;
+using System.IO;
+using System.Net.Http;
 
 namespace BostonScientificAVS.Websocket
 {
@@ -18,8 +20,9 @@ namespace BostonScientificAVS.Websocket
   {
     public List<SocketConnection> websocketConnections = new List<SocketConnection>();
     public UdpClient _udpSocket;
-        private TcpClient tcpClient;
-        private NetworkStream stream;
+        private TcpListener _tcpListener;
+        private NetworkStream _stream;
+        private CancellationTokenSource _cancellationTokenSource;
         public WebsocketHandler(UdpClient udpSocket)
     {
       Console.WriteLine("Constructor Called.....................");
@@ -204,14 +207,18 @@ namespace BostonScientificAVS.Websocket
         {
             try
             {
+                _cancellationTokenSource = new CancellationTokenSource();
                 // Create a TcpClient.
                 // Note, for this client to work you need to have a TcpServer
                 // connected to the same address as specified by the server, port
                 // combination.
 
                 // Prefer a using declaration to ensure the instance is Disposed later.
-                tcpClient = new TcpClient(ip, port);
-
+                IPAddress ipAddress = IPAddress.Parse(ip);
+                _tcpListener = new TcpListener(ipAddress, port);
+                Console.WriteLine("TCP Listener connection established");
+                Console.WriteLine("***************************************************");
+                _tcpListener.Start();
                 ListenAsync();
                 // Receive the server response.
 
@@ -219,6 +226,7 @@ namespace BostonScientificAVS.Websocket
             catch (SocketException e)
             {
                 Console.WriteLine("SocketException: {0}", e);
+                Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             }
 
 
@@ -227,8 +235,8 @@ namespace BostonScientificAVS.Websocket
         {
             try
             {
-                stream.Close();
-                tcpClient.Close();
+                _stream.Close();
+                _tcpListener.Stop();
 
             }
             catch (SocketException e)
@@ -241,27 +249,50 @@ namespace BostonScientificAVS.Websocket
 
         private async Task ListenAsync()
         {
-            while (tcpClient.Connected)
+            while (!_cancellationTokenSource.Token.IsCancellationRequested)
             {
-                // Get a client stream for reading and writing.
-                stream = tcpClient.GetStream();
-                var buffer = new byte[256];
-
-                // String to store the response ASCII representation.
-                String responseData = String.Empty;
-
-                // Read the first batch of the TcpServer response bytes.
-                Int32 bytes = stream.Read(buffer, 0, buffer.Length);
-                responseData = System.Text.Encoding.ASCII.GetString(buffer, 0, bytes);
-                Console.WriteLine("Received: {0}", responseData);
-                PageStatus status = new PageStatus();
-                Error error = new Error();
-                error.errorMsg = responseData;
-                status.pageError = error;
-                await SendMessageToSockets("FromTCPClient",status);
+                try
+                {
+                    var client = await _tcpListener.AcceptTcpClientAsync();
+                    ProcessClient(client);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Exception in Async: {e.Message}");
+                    // Handle socket exception, e.g., if the listener is stopped.
+                }
             }
         }
+        private async Task ProcessClient(TcpClient client)
+        {
+            // Handle client connection here.
+            // For simplicity, we'll just read data and log it.
+            NetworkStream stream = client.GetStream();
+            byte[] buffer = new byte[1024];
+            int bytesRead;
 
+            while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
+            {
+                var data = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+                Console.WriteLine($"Received: {data}");
+                Console.WriteLine("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+                PageStatus status = new PageStatus();
+                PageData pageData = new PageData();
+                pageData.Barcode = data;
+                status.pageData = pageData;
+                await SendMessageToSockets("FromTCPClient", status);
+                //PageStatus status = new PageStatus();
+                //Error error = new Error();
+                //error.errorMsg = data;
+                //status.pageError = error;
+                //await SendMessageToSockets("FromTCPClient", status);
+
+
+
+            }
+
+            client.Close();
+        }
     }
 
 

@@ -1921,6 +1921,62 @@
         document.getElementById('loader').style.display = 'none';
         document.getElementById('overlay').style.display = 'none';
     }
+    var socket = null;
+    if (true) {
+        websocketUrl = "wss://localhost:7157" + "/ws";
+
+        socket = new WebSocket(websocketUrl);
+
+        socket.onerror = function (event) {
+            console.log(event);
+
+        };
+
+        socket.onmessage = function (event) {
+            const jsonData = event.data;
+            const data = JSON.parse(jsonData);
+            console.log(data);
+            if (data.pageData != null) {
+                //console.log(data.pageData.Barcode);
+                if(data.pageData.Barcode.length < 25){
+                    document.getElementById("productLabelSpec").value = data.pageData.Barcode;
+                }else{
+                    document.getElementById("productLabelInput").value = data.pageData.Barcode;
+                }
+                if (document.getElementById("productLabelInput").value !=='' && document.getElementById("productLabelSpec").value !==''){
+                    document.getElementById("submitBtn").click();
+                }
+            }
+
+            
+            document.getElementById("greenButton").addEventListener("click", function () {
+                document.getElementById("greenButton").value = data.pageError.errorMsg;
+                configureContinueButton('supervisorInput');
+            });
+
+            document.getElementById("redButton").addEventListener("click", function () {
+                document.getElementById("redButton").value = data.pageError.errorMsg;
+                redbutton('supervisorInput1');
+
+            });
+
+        };
+
+        socket.onopen = function (event) {
+            // WebSocket connection opened
+            console.log('WebSocket connection opened');
+        };
+
+        socket.onclose = function (event) {
+            // WebSocket connection closed
+            console.log('WebSocket connection closed');
+            socket = new WebSocket(websocketUrl);
+        };
+    }
+
+
+
+
 
     //code for session counter
     function startTimer(duration) {

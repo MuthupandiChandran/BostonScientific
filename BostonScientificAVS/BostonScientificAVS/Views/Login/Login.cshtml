@@ -140,17 +140,32 @@ function hideLoader() {
   document.getElementById('overlay').style.display = 'none';
 }
 
-    //var socket = null;
-    //if (true) {
-    //    websocketUrl = "wss://localhost:7157" + "/ws";
+    var socket = null;
+    if (true) {
+        websocketUrl = "wss://localhost:7157" + "/ws";
 
-    //    socket = new WebSocket(websocketUrl);
+        socket = new WebSocket(websocketUrl);
 
-    //    socket.onerror = function (event) {
-    //        console.log(event);
+        socket.onerror = function (event) {
+            console.log(event);
             
-    //    };
+        };
 
+        socket.onmessage = function (event) {
+            const jsonData = event.data;
+
+            const data = JSON.parse(jsonData);
+            //console.log(data.pageData);
+            //console.log(data.pageData.Barcode);
+            if (data.pageData != null) {
+                console.log(data.pageData.Barcode);
+                document.getElementById("EmpID").value = data.pageData.Barcode;
+                submitLoginForm();
+                //console.log("Logged In");
+            }
+            
+        };
+    }
     //    let hasSubmitted = false;
     //    socket.onmessage = function (event) {
     //        debugger;
