@@ -234,7 +234,7 @@
 
         var socket = null;
         if (true) {
-            websocketUrl = "wss://localhost:7157" + "/ws";
+            websocketUrl = "ws://localhost:7157" + "/ws";
 
             socket = new WebSocket(websocketUrl);
 
@@ -246,13 +246,18 @@
             socket.onmessage = function (event) {
                 const jsonData = event.data;
                 const data = JSON.parse(jsonData);
-                console.log(data);
-                console.log(data.pageError.errorMsg);
-
-                document.getElementById("input1").value = data.pageError.errorMsg;
-                document.getElementById("input2").value = data.pageError.errorMsg;
-                document.getElementById("workOrderForm").submit();
-            };
+                if (data.pageData != null) {
+                    console.log(data.pageData.Barcode);
+                    if (data.pageData.Barcode.length < 25) {
+                        document.getElementById("input2").value = data.pageData.Barcode;
+                    } else {
+                        document.getElementById("input1").value = data.pageData.Barcode;
+                    }
+                    if (document.getElementById("input1").value !== '' && document.getElementById("input2").value !== '') {
+                        document.getElementById("workOrderForm").submit();
+                    }
+                }
+            }
 
             socket.onopen = function (event) {
                 // WebSocket connection opened

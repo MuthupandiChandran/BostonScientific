@@ -213,7 +213,7 @@
 
         var socket = null;
         if (true) {
-            websocketUrl = "wss://localhost:7157" + "/ws";
+            websocketUrl = "ws://localhost:7157" + "/ws";
 
             socket = new WebSocket(websocketUrl);
 
@@ -225,9 +225,14 @@
             socket.onmessage = function (event) {
                 const jsonData = event.data;
                 const data = JSON.parse(jsonData);
+                console.log(data.pageData);
                 if (data.pageData != null) {
                     if (data.pageData.Barcode.length >= 35) {
-                        document.getElementById("input").value = data.pageData.Barcode;
+                        w_o_a=data.pageData.Barcode.split('\r\n');
+                        work_order = w_o_a.sort(function (a, b) {
+                            return b.length - a.length;
+                        })[0];
+                        document.getElementById("input").value = work_order;
                         document.getElementById("workOrderForm").submit();
                         //submitLoginForm();
                     }
@@ -250,7 +255,7 @@
                 socket = new WebSocket(websocketUrl);
             };
         }
-
+        
         function startTimer(duration) {
             var timerDisplay = document.getElementById("timer");
 
