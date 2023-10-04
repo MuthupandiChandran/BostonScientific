@@ -1171,6 +1171,7 @@
     let inPassScenario = false;
     let inFailScenario = false;
     let responseData = null;
+    let superVisorInput = false;
     document.getElementById("error").style.display = "none";
     //document.getElementById("error1").style.display = "none";
     //document.getElementById("navigation-container").style.display = "none";
@@ -1458,12 +1459,23 @@
         document.getElementById("scanning-icon-div").style.backgroundColor = "#FFB5B5";
         document.getElementById("after-scan-fail-text").style.display = "flex";
         document.getElementById("popupContainer").style.display = "block";
+        document.getElementById("popupContainer1").style.display = "none";
+        superVisorInput = true;
     }
 
-
+    function showPopup1() {
+        document.getElementById("scanning-icon-div").style.backgroundColor = "#FFB5B5";
+        document.getElementById("after-scan-fail-image").style.display = "block";
+        document.getElementById("after-scan-fail-text1").style.display = "flex";
+        document.getElementById("popupContainer").style.display = "none";
+        document.getElementById("popupContainer1").style.display = "block";
+        superVisorInput = true;
+    }
 
     function closePopup() {
         document.getElementById("popupContainer").style.display = "none";
+        document.getElementById("popupContainer1").style.display = "none";
+        superVisorInput = false;
     }
 
 
@@ -1923,7 +1935,7 @@
     }
     var socket = null;
     if (true) {
-        websocketUrl = "wss://localhost:7157" + "/ws";
+        websocketUrl = "ws://localhost:7157" + "/ws";
 
         socket = new WebSocket(websocketUrl);
 
@@ -1938,13 +1950,17 @@
             console.log(data);
             if (data.pageData != null) {
                 //console.log(data.pageData.Barcode);
-                if(data.pageData.Barcode.length < 25){
+                if (data.pageData.Barcode.length < 25 && superVisorInput == false) {
                     document.getElementById("productLabelSpec").value = data.pageData.Barcode;
-                }else{
+                } else if (data.pageData.Barcode.length > 25 && superVisorInput == false) {
                     document.getElementById("productLabelInput").value = data.pageData.Barcode;
                 }
                 if (document.getElementById("productLabelInput").value !=='' && document.getElementById("productLabelSpec").value !==''){
                     document.getElementById("submitBtn").click();
+                }
+                if(superVisorInput == true){
+                    document.getElementById("supervisorInput").value = data.pageData.Barcode;
+                    configureContinueButton('supervisorInput');
                 }
             }
 

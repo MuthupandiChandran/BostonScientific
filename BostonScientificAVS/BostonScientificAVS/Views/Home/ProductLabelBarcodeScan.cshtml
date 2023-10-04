@@ -1314,7 +1314,9 @@
     let inPassScenario = false;
     let inFailScenario = false;
     let responseData = null;
-    //document.getElementById("navigation-container").style.display = "none";
+    let IFUScanActive = false;
+    let superVisorInput = false;
+    document.getElementById("navigation-container").style.display = "none";
     document.getElementById("next-scan-button").style.backgroundColor = "#C5C5C5";
     document.getElementById("next-scan-button1").style.backgroundColor = "#C5C5C5";
      document.getElementById("next-scan-button2").style.display = "none";
@@ -1625,11 +1627,22 @@
 
     function showPopup() {
         document.getElementById("after-scan-fail-text").style.display = "flex";
+        document.getElementById("popupContainer").style.display = "block";
+        document.getElementById("popupContainer1").style.display = "none";
+        superVisorInput = true;
+    }
+    function showPopup1() {
+        document.getElementById("scanning-icon-div").style.backgroundColor = "#FFB5B5";
+        document.getElementById("after-scan-fail-image").style.display = "block";
+        document.getElementById("after-scan-fail-text1").style.display = "flex";
+        document.getElementById("popupContainer").style.display = "none";
         document.getElementById("popupContainer1").style.display = "block";
+        superVisorInput = true;
     }
     
     function closePopup() {
         document.getElementById("popupContainer1").style.display = "none";
+        superVisorInput = false;
     }
 
 
@@ -1707,6 +1720,7 @@
                         responseData = response;
                         processResponse(response);
                     }
+                    IFUScanActive = true;
                 },
                 error: function (xhr, status, error) {
                     if (xhr.responseJSON && xhr.responseJSON.errorMessage) {
@@ -2278,9 +2292,11 @@
         document.getElementById('overlay').style.display = 'none';
     }
 
+    //function initiateWebsocket() {
+
     var socket = null;
     if (true) {
-        websocketUrl = "wss://localhost:7157" + "/ws";
+        websocketUrl = "ws://localhost:7157" + "/ws";
 
         socket = new WebSocket(websocketUrl);
 
@@ -2288,30 +2304,56 @@
             console.log(event);
 
         };
-
+        
         socket.onmessage = function (event) {
             const jsonData = event.data;
             const data = JSON.parse(jsonData);
-            console.log(data);
-            console.log(data.pageError.errorMsg);
+            console.log(data.pageData);
+            if (superVisorInput == false && data.pageData != null && (document.getElementById("productLabelInput").value == '' || document.getElementById("productLabelSpec").value == '')) {
+                //console.log(data.pageData.Barcode);
+                if (data.pageData.Barcode.length < 25) {
+                    document.getElementById("productLabelSpec").value = data.pageData.Barcode;
+                } else {
+                    document.getElementById("productLabelInput").value = data.pageData.Barcode;
+                }
+                if (document.getElementById("productLabelInput").value !== '' && document.getElementById("productLabelSpec").value !== '') {
+                    //IFUScanActive = true;
+                    console.log("Submitting First Time");
+                    data.pageData = null;
+                    document.getElementById("submitBtn").click();
+                }
+            }
+            console.log(isIfuEditable);
+            if (data.pageData != null && isIfuEditable == true && superVisorInput == false) {
+                console.log("Filling UP IFU");
+                    //console.log(data.pageData.Barcode);
+                    document.getElementById("ifu").value = data.pageData.Barcode;
+                //IFUScanActive = false;
+                    document.getElementById("submitBtn").click();
+            }
+            if(data.pageData != null && superVisorInput == true){
+                document.getElementById("supervisorInput").value = data.pageData.Barcode;
+                configureContinueButton('supervisorInput');
+            }
+            
+            
 
-            document.getElementById("productLabelInput").value = data.pageError.errorMsg;
-            document.getElementById("productLabelSpec").value = data.pageError.errorMsg;
-            document.getElementById("submitBtn").click();
-            document.getElementById("ifu").value = data.pageError.errorMsg;
-            document.getElementById("submitBtn").click();
+            //document.getElementById("productLabelInput").value = data.pageError.errorMsg;
+            //document.getElementById("productLabelSpec").value = data.pageError.errorMsg;
+            //document.getElementById("submitBtn").click();
+            
 
             document.getElementById("greenButton").addEventListener("click", function () {
                 document.getElementById("greenButton").value = data.pageError.errorMsg;
                 configureContinueButton('supervisorInput');
-            }
+            });
 
-                        document.getElementById("redButton").addEventListener("click", function () {
+            document.getElementById("redButton").addEventListener("click", function () {
                 document.getElementById("redButton").value = data.pageError.errorMsg;
                 redbutton('supervisorInput1');
 
-            }
-        };
+            });
+        }
 
         socket.onopen = function (event) {
             // WebSocket connection opened
@@ -2324,6 +2366,7 @@
             socket = new WebSocket(websocketUrl);
         };
     }
+    //}
 
 
 
