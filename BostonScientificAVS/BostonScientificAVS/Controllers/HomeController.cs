@@ -198,6 +198,13 @@ namespace BostonScientificAVS.Controllers
                 transaction.Result = "Fail";
                 DateTime currentDateTime = DateTime.Now;
                 transaction.Date_Time = currentDateTime.ToString();
+                var empId = User.Claims.FirstOrDefault(c => c.Type == "EmpID")?.Value;
+                var user = _dataContext.Users.Where(x => x.EmpID == empId).FirstOrDefault();
+
+                if (user != null)
+                {
+                    transaction.User = user.Id + "";
+                }
                 string Input3 = TempData.ContainsKey("Input3") ? (string)TempData["Input3"] : null;
                 if (!string.IsNullOrEmpty(ProductLabelSpec))
                 {
