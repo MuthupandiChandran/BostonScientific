@@ -142,6 +142,17 @@
                     </div>
                     <div class="col-md-4" id="p-dls">
                         Pacakaging Lot Number Details
+                        <div class="col-12 center1">
+                            <div id="after-scan-fail-image" class="scanning-gif temp-display">
+                                <img class="barcode-img-size1" src="/assets/images/fail-image.png" style="background-color: #F46D67" />
+                            </div>
+                        </div>
+                        <div class="col-12 lbl1">
+                            <div id="after-scan-fail-text" style="display:none;background-color: #003C71;" class="scanning-text-container scanning-failed-instruction temp-supervisor-call-button">
+                                <h6 class="scanning-text-2">supervisor required to approve mismatch</h6>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
                 <div class="col-md-8 right-scan">
@@ -858,6 +869,11 @@
         align-items: center;
     }
 
+    .center1 {
+        justify-content: center;
+        align-items: center;
+    }
+
     .processing-lot-text {
         padding-top: 5px;
         padding-left: 17px;
@@ -930,6 +946,13 @@
         background-color: aliceblue;
     }
 
+    .barcode-img-size1 {
+        height: 52%;
+        width: 35%;
+        display: flex;
+        margin-left: 100px;
+    }
+
 
     .scanning-icon {
         max-height: 300px;
@@ -961,12 +984,28 @@
         text-align: center;
     }
 
+    .scanning-text-2 {
+        color: white;
+        font-size: 22px;
+        font-weight: 700;
+        text-align: center;
+        padding: 21px;
+    }
+
     .lbl {
         border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
     }
+
+    .lbl1 {
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
 
     .scanning-text-container {
         margin: auto;
@@ -1265,9 +1304,10 @@
     }
 
     #after-scan-fail-text {
-        height: 283px !important;
-        width: 390px;
-        margin-left: 220px;
+        min-height: 168px !important;
+        width: 386px;
+        margin-top: 37px;
+        margin-left: 8px;
     }
 
     #after-scan-fail-text1 {
@@ -1316,7 +1356,6 @@
     let responseData = null;
     let IFUScanActive = false;
     let superVisorInput = false;
-    document.getElementById("navigation-container").style.display = "none";
     document.getElementById("next-scan-button").style.backgroundColor = "#C5C5C5";
     document.getElementById("next-scan-button1").style.backgroundColor = "#C5C5C5";
      document.getElementById("next-scan-button2").style.display = "none";
@@ -1325,6 +1364,8 @@
     document.getElementById("after-scan-fail-text1").style.display = "none";
     document.getElementById("ifu-scan-text").style.display = "none";
     document.getElementById("ifu").disabled = true;
+    document.getElementsByClassName('center1')[0].style.display = "none";
+    document.getElementsByClassName('lbl1')[0].style.display = "none";
 
 
     document.getElementsByClassName('temp-supervisor-call-button')[0]
@@ -1500,17 +1541,196 @@
     }
 
     function scanfail(response) {
-        document.getElementById("supervisor-intervention").style.display = "none";
-        document.getElementsByClassName('center')[0].style.display = "flex";
-        document.getElementsByClassName('lbl')[0].style.display = "flex";
+        document.getElementById("error1").style.display ="flex"
+        document.getElementById("supervisor-intervention").style.display = "flex";
+        document.getElementsByClassName('center1')[0].style.display = "flex";
+        document.getElementsByClassName('lbl1')[0].style.display = "flex";
         document.getElementById("before-scan-image").style.display = "none";
         document.getElementById("before-scan-text").style.display = "none";
         document.getElementById("after-scan-fail-image").style.display = "block";
         document.getElementById("after-scan-fail-text").style.display = "block";
         document.getElementById("left-part-during-scan").style.display = "none";
         document.getElementById("left-part-after-scan-fail").style.display = "block";
+        if(responseData.gtinMismatch == true){
+            gtinmismatchblink();
+        }
+        else{
+            mismatchblink();
+        }
         $("#btn-end > div").addClass("disabled").off('click');
     }
+    function gtinmismatchblink(){
+        document.getElementById("during-scan-dbgtin-no").style.display = "none";
+        document.getElementById("after-scan-pass-dbgtin-no").style.display = "block";
+           if (responseData.lotnoMismatch == true){
+            document.getElementById("during-scan-gtin").style.display = "none";
+            document.getElementById("after-scan-fail-gtin").style.display = "block";
+            }
+           else {
+                document.getElementById("during-scan-gtin").style.display = "none";
+                document.getElementById("after-scan-pass-gtin").style.display = "block";
+            }
+
+            if (responseData.labelMismatch == true) {
+                document.getElementById("during-scan-lot-no").style.display = "none";
+                document.getElementById("after-scan-fail-lot-no").style.display = "block";
+            }
+            else {
+                document.getElementById("during-scan-lot-no").style.display = "none";
+                document.getElementById("after-scan-pass-lot-no").style.display = "block";
+            }
+
+            if (responseData.firstUseby_Mismatch == true) {
+                document.getElementById("during-scan-label-spec").style.display = "none";
+                document.getElementById("after-scan-fail-label-spec").style.display = "block";
+            }
+            else {
+                document.getElementById("during-scan-label-spec").style.display = "none";
+                document.getElementById("after-scan-pass-label-spec").style.display = "block";
+            }
+
+            if (responseData.catalogMismatch == true) {
+                document.getElementById("during-scan-use-date").style.display = "none";
+                document.getElementById("after-scan-fail-use-date").style.display = "block";
+            }
+            else {
+                document.getElementById("during-scan-use-date").style.display = "none";
+                document.getElementById("after-scan-pass-use-date").style.display = "block";
+            }
+
+            if (responseData.gtinMismatch == true) {
+                document.getElementById("during-scan-catalog").style.display = "none";
+                document.getElementById("after-scan-fail-catalog").style.display = "block";
+            }
+            if (responseData.secondUseby_Mismatch == true) {
+                document.getElementById("during-scan-lot-no1").style.display = "none";
+                document.getElementById("after-scan-fail-lot-no1").style.display = "block";
+
+            }
+            else {
+                document.getElementById("during-scan-lot-no1").style.display = "none";
+                document.getElementById("after-scan-pass-lot-no1").style.display = "block";
+            }
+
+            if (responseData.lotNoMismatches == true) {
+                document.getElementById("during-scan-ifu").style.display = "none";
+                document.getElementById("after-scan-fail-ifu").style.display = "block";
+
+            }
+            else {
+                document.getElementById("during-scan-ifu").style.display = "none";
+                document.getElementById("after-scan-pass-ifu").style.display = "block";
+
+            }
+
+            if (responseData.ifuMismatch == true) {
+                document.getElementById("during-scan-product-useby").style.display = "none";
+                document.getElementById("after-scan-fail-product-useby").style.display = "block";
+            }
+
+            else {
+                document.getElementById("during-scan-product-useby").style.display = "none";
+                document.getElementById("after-scan-pass-product-useby").style.display = "block";
+            } 
+    }
+
+   function mismatchblink(){
+        if (mismatches.gtinmismatch) {
+            document.getElementById("during-scan-dbgtin-no").style.display = "none";
+            document.getElementById("after-scan-fail-dbgtin-no").style.display = "block";
+
+        }
+        else {
+            document.getElementById("during-scan-dbgtin-no").style.display = "none";
+            document.getElementById("after-scan-pass-dbgtin-no").style.display = "block";
+
+        }
+
+        if (mismatches.lotNoMismatch) {
+            document.getElementById("during-scan-gtin").style.display = "none";
+            document.getElementById("after-scan-fail-gtin").style.display = "block";
+        }
+
+        else {
+            document.getElementById("during-scan-gtin").style.display = "none";
+            document.getElementById("after-scan-pass-gtin").style.display = "block";
+        }
+
+
+        if (mismatches.labelSpecMismatch) {
+            document.getElementById("during-scan-lot-no").style.display = "none";
+            document.getElementById("after-scan-fail-lot-no").style.display = "block";
+        }
+
+        else {
+            document.getElementById("during-scan-lot-no").style.display = "none";
+            document.getElementById("after-scan-pass-lot-no").style.display = "block";
+
+        }
+        if (mismatches.calculatedUseByMismatches) {
+            document.getElementById("during-scan-label-spec").style.display = "none";
+            document.getElementById("after-scan-fail-label-spec").style.display = "block";
+        }
+        else {
+            document.getElementById("during-scan-label-spec").style.display = "none";
+            document.getElementById("after-scan-pass-label-spec").style.display = "block";
+        }
+
+        if (mismatches.catalogNumMismatch) {
+            document.getElementById("during-scan-use-date").style.display = "none";
+            document.getElementById("after-scan-fail-use-date").style.display = "block";
+        }
+
+        else {
+            document.getElementById("during-scan-use-date").style.display = "none";
+            document.getElementById("after-scan-pass-use-date").style.display = "block";
+        }
+
+        if (mismatches.gtinmismatches) {
+            document.getElementById("during-scan-catalog").style.display = "none";
+            document.getElementById("after-scan-fail-catalog").style.display = "block";
+        }
+
+        else {
+            document.getElementById("during-scan-catalog").style.display = "none";
+            document.getElementById("after-scan-pass-catalog").style.display = "block";
+
+        }
+
+        if (mismatches.calculatedUseByMismatch) {
+            document.getElementById("during-scan-lot-no1").style.display = "none";
+            document.getElementById("after-scan-fail-lot-no1").style.display = "block";
+        }
+
+        else {
+            document.getElementById("during-scan-lot-no1").style.display = "none";
+            document.getElementById("after-scan-pass-lot-no1").style.display = "block";
+        }
+
+
+        if (mismatches.lotNumberMisMatch) {
+            document.getElementById("during-scan-ifu").style.display = "none";
+            document.getElementById("after-scan-fail-ifu").style.display = "block";
+        }
+
+        else {
+            document.getElementById("during-scan-ifu").style.display = "none";
+            document.getElementById("after-scan-pass-ifu").style.display = "block";
+
+        }
+
+        if (mismatches.ifumismatches) {
+            document.getElementById("during-scan-product-useby").style.display = "none";
+            document.getElementById("after-scan-fail-product-useby").style.display = "block";
+        }
+
+        else {
+            document.getElementById("during-scan-product-useby").style.display = "none";
+            document.getElementById("after-scan-pass-product-useby").style.display = "block";
+        }
+
+    }
+
     function GtinMismatch(response) {
         if (response.gtinMismatch) {
             // Increment both values by 1
@@ -1627,19 +1847,10 @@
 
     function showPopup() {
         document.getElementById("after-scan-fail-text").style.display = "flex";
-        document.getElementById("popupContainer").style.display = "block";
-        document.getElementById("popupContainer1").style.display = "none";
-        superVisorInput = true;
-    }
-    function showPopup1() {
-        document.getElementById("scanning-icon-div").style.backgroundColor = "#FFB5B5";
-        document.getElementById("after-scan-fail-image").style.display = "block";
-        document.getElementById("after-scan-fail-text1").style.display = "flex";
-        document.getElementById("popupContainer").style.display = "none";
         document.getElementById("popupContainer1").style.display = "block";
         superVisorInput = true;
     }
-    
+   
     function closePopup() {
         document.getElementById("popupContainer1").style.display = "none";
         superVisorInput = false;
@@ -1866,12 +2077,12 @@
         if (response.allMatch == true) {
             //setTimeout(duringToScanPass, 3000);
             duringToScanPass();
+            setScannedData(response);
         } else {
             //setTimeout(duringToScanFail, 3000);
             scanfail(response);
         }
-        setWorkOrderInfo(response);
-        setScannedData(response);
+        setWorkOrderInfo(response); 
     }
 
     function setScannedData(response) {
