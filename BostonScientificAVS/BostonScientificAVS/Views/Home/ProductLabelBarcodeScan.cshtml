@@ -1635,7 +1635,7 @@
     }
 
    function mismatchblink(){
-        if (mismatches.gtinmismatch) {
+        if (responseData.mismatches.gtinmismatch == true) {
             document.getElementById("during-scan-dbgtin-no").style.display = "none";
             document.getElementById("after-scan-fail-dbgtin-no").style.display = "block";
 
@@ -1646,7 +1646,7 @@
 
         }
 
-        if (mismatches.lotNoMismatch) {
+        if (responseData.mismatches.lotNoMismatch == true) {
             document.getElementById("during-scan-gtin").style.display = "none";
             document.getElementById("after-scan-fail-gtin").style.display = "block";
         }
@@ -1657,7 +1657,7 @@
         }
 
 
-        if (mismatches.labelSpecMismatch) {
+        if (responseData.mismatches.labelSpecMismatch == true) {
             document.getElementById("during-scan-lot-no").style.display = "none";
             document.getElementById("after-scan-fail-lot-no").style.display = "block";
         }
@@ -1667,7 +1667,7 @@
             document.getElementById("after-scan-pass-lot-no").style.display = "block";
 
         }
-        if (mismatches.calculatedUseByMismatches) {
+        if (responseData.mismatches.calculatedUseByMismatches == true) {
             document.getElementById("during-scan-label-spec").style.display = "none";
             document.getElementById("after-scan-fail-label-spec").style.display = "block";
         }
@@ -1676,7 +1676,7 @@
             document.getElementById("after-scan-pass-label-spec").style.display = "block";
         }
 
-        if (mismatches.catalogNumMismatch) {
+        if (responseData.mismatches.catalogNumMismatch == true) {
             document.getElementById("during-scan-use-date").style.display = "none";
             document.getElementById("after-scan-fail-use-date").style.display = "block";
         }
@@ -1686,7 +1686,7 @@
             document.getElementById("after-scan-pass-use-date").style.display = "block";
         }
 
-        if (mismatches.gtinmismatches) {
+        if (responseData.mismatches.gtinmismatches == true) {
             document.getElementById("during-scan-catalog").style.display = "none";
             document.getElementById("after-scan-fail-catalog").style.display = "block";
         }
@@ -1697,7 +1697,7 @@
 
         }
 
-        if (mismatches.calculatedUseByMismatch) {
+        if (responseData.mismatches.calculatedUseByMismatch == true) {
             document.getElementById("during-scan-lot-no1").style.display = "none";
             document.getElementById("after-scan-fail-lot-no1").style.display = "block";
         }
@@ -1708,7 +1708,7 @@
         }
 
 
-        if (mismatches.lotNumberMisMatch) {
+        if (responseData.mismatches.lotNumberMisMatch == true) {
             document.getElementById("during-scan-ifu").style.display = "none";
             document.getElementById("after-scan-fail-ifu").style.display = "block";
         }
@@ -1719,7 +1719,7 @@
 
         }
 
-        if (mismatches.ifumismatches) {
+        if (responseData.mismatches.ifumismatches == true) {
             document.getElementById("during-scan-product-useby").style.display = "none";
             document.getElementById("after-scan-fail-product-useby").style.display = "block";
         }
