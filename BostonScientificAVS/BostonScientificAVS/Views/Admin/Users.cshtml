@@ -282,6 +282,12 @@
         var js = jQuery.noConflict(true)
         js(document).ready(function () {
             js('#myTable').DataTable({
+                "columnDefs": [
+                    {
+                        "targets": 'action', // The CSS class of the header cell you want to disable sorting for
+                        "orderable": false,  // Disable sorting for this column
+                    }
+                ]
 
 
         });
