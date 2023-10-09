@@ -336,7 +336,7 @@ $(() => {
                 column_name: columnName,
                 gtin_value: gtinValue
             }
-               var apiUrl = "Admin/UpdateItem";
+               var apiUrl = "/UpdateItem";
 
         $.ajax({
             url: apiUrl,
@@ -368,7 +368,7 @@ $(() => {
 
     function updateItem(itemToUpdate) {
         // Replace the URL below with your API endpoint
-        var apiUrl = "Admin/UpdateItem";
+        var apiUrl = "/UpdateItem";
 
         $.ajax({
             url: apiUrl,
