@@ -129,7 +129,11 @@ namespace BostonScientificAVS.Controllers
                 Catalog_Num = "Catalog_Num",
                 Shelf_Life = "Shelf_Life",
                 Label_Spec = "Label_Spec",
-                IFU = "IFU"
+                IFU = "IFU",
+                Edit_Date_Time = "Edit_Date_Time",
+                Edit_By = "Edit_By",
+                Created = "Created",
+                Created_by = "Created_by"
                 // Add more header column values as needed
             };
 

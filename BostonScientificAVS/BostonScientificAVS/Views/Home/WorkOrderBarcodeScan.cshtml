@@ -69,6 +69,11 @@
 
 
 <style>
+    .text-danger {
+        text-align: center;
+        font-weight: bolder;
+        font-size: 20px;
+    }
 
     .work-order-scan-submit {
         display: flex;
@@ -203,6 +208,22 @@
 
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function () {
+            var isBack = localStorage.getItem("isBack") === 'true';
+
+            // Check if the page is loaded as a result of clicking the back button
+            if (isBack) {
+                var workOrderValue = localStorage.getItem("workOrderValue");
+                if (workOrderValue) {
+                    // Set the input field value from localStorage
+                    document.getElementById("input").value = workOrderValue;
+
+                    // Remove the "isBack" flag from localStorage (to prevent it from being used again)
+                    localStorage.removeItem("isBack");
+                }
+            }
+
+
+
             var inputField = document.getElementById("input");
             if (inputField) {
                 inputField.value = "";

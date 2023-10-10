@@ -65,7 +65,7 @@ namespace BostonScientificAVS.Controllers
             {
                 string[] barcodeParts = input.Split('_');
 
-                if (barcodeParts.Length == 4 && barcodeParts.All(part => !string.IsNullOrEmpty(part.Trim())))
+                if (barcodeParts.Length == 4 && barcodeParts[0].Length == 10 && barcodeParts[1].Length == 8 && barcodeParts[2].Length == 8 && barcodeParts[3].Length == 8 && barcodeParts.All(part => !string.IsNullOrEmpty(part.Trim())))
                 {
                     // All parts are non-empty, proceed with saving the data
                     Transaction transaction = new Transaction();
@@ -119,16 +119,15 @@ namespace BostonScientificAVS.Controllers
                     latestTransaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
                     if (latestTransaction.Result != null && udpMessage == false)
                     {
-                        latestTransaction.Rescan_Initated = true;
+                        latestTransaction.Rescan_Initated = true;                       
                         await SendMessageToUDPclient("R");
                     }
                     if (latestTransaction.Result != null && udpMessage == true)
                     {
-                        latestTransaction.Rescan_Initated = true;
-                        await SendMessageToUDPclient("R");
+                        await SendMessageToUDPclient("N");
                     }
 
-                    if (productLabel.Length == 34 || match.Groups[1].Length == 14 || match.Groups[2].Length == 6 || match.Groups[4].Length == 8)
+                    if (productLabel.Length == 34 && match.Groups[1].Length == 14 && match.Groups[2].Length == 6 && match.Groups[4].Length == 8)
                     {
                         latestTransaction.Product_Label_GTIN = match.Groups[1].Value;
                         DateTime dateTime = DateTime.ParseExact(match.Groups[2].Value, "yyMMdd", null);
@@ -635,7 +634,7 @@ namespace BostonScientificAVS.Controllers
         public IActionResult SaveWorkOrderBarcode(string input)
         {
             string[] barcodeParts = input.Split('_');
-            if (barcodeParts.Length == 4 && barcodeParts.All(part => !string.IsNullOrEmpty(part.Trim())))
+            if (barcodeParts.Length == 4 && barcodeParts[0].Length == 10 && barcodeParts[1].Length == 8 && barcodeParts[2].Length == 8 && barcodeParts[3].Length == 8 && barcodeParts.All(part => !string.IsNullOrEmpty(part.Trim())))
             {
 
                 Transaction transaction = new Transaction();
@@ -748,7 +747,7 @@ namespace BostonScientificAVS.Controllers
                         await SendMessageToUDPclient("R");
                     }
 
-                    if (input1.Length == 34 || match.Groups[1].Length == 14 || match.Groups[2].Length == 6 || match.Groups[4].Length == 8)
+                    if (input1.Length == 34 && match.Groups[1].Length == 14 && match.Groups[2].Length == 6 && match.Groups[4].Length == 8)
                     {
                         latestTransaction.Product_Label_GTIN = match.Groups[1].Value;
                         DateTime dateTime = DateTime.ParseExact(match.Groups[2].Value, "yyMMdd", null);

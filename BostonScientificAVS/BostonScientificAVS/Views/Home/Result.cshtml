@@ -137,7 +137,7 @@
                         </div>
                     </div>
                     <div class="col-md-4" id="p-dls">
-                        Pacakaging Lot Number Details
+                        Packaging Lot Number Details
                          <div class="col-12 center1">
                             <div id="after-scan-fail-image" class="scanning-gif temp-display">
                                 <img class="barcode-img-size1" src="/assets/images/fail-image.png" style="background-color: #F46D67" />
@@ -1196,8 +1196,6 @@
     let responseData = null;
     let superVisorInput = false;
     document.getElementById("error").style.display = "none";
-    //document.getElementById("error1").style.display = "none";
-    //document.getElementById("navigation-container").style.display = "none";
     document.getElementById("next-scan-button").style.backgroundColor = "#C5C5C5";
     document.getElementById("next-scan-button1").style.backgroundColor = "#C5C5C5";
     document.getElementById("next-scan-button2").style.display = "none";
@@ -1663,7 +1661,7 @@
         $.ajax({
             url: apiUrl,
             method: "POST",
-            data: { productLabel: productLabel, productLabelSpec: productLabelSpec, udpMessage: udpMessageValue },
+            data: { productLabel: productLabel, productLabelSpec: productLabelSpec, udpMessage: udpMessageValue, rescanMessage: rescanbutton },
             success: function (response) {
                 console.log(response);
                 location.reload();
@@ -1677,30 +1675,7 @@
 
         });
     });
-     $(document).on("click", "#rescanBtn1", function () {
-        var productLabel = document.getElementById("productLabelInput").value;
-        var productLabelSpec = document.getElementById("productLabelSpec").value;
-
-        var apiUrl = "/SaveProductLabel";
-        beforeToDuringScan();
-        $.ajax({
-            url: apiUrl,
-            method: "POST",
-            data: { productLabel: productLabel, productLabelSpec: productLabelSpec, udpMessage: udpMessageValue },
-            success: function (response) {
-                console.log(response);
-                location.reload();
-                responseData = response;
-                processResponse(response);
-            },
-            error: function (xhr, status, error) {
-                console.log("An error occurred while making the AJAX call:", error);
-            }
-
-
-        });
-    });
-
+     
 
     function processResponse(response) {
         console.log("response hit");
