@@ -654,7 +654,6 @@ namespace BostonScientificAVS.Controllers
 
                     TempData["WorkOrderLotNo"] = transaction.WO_Lot_Num;
                 }
-
                 else
                 {
                     SendMessageToUDPclient("E");
