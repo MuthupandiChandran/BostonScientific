@@ -88,10 +88,13 @@ namespace BostonScientificAVS.Controllers
                 }
                 if (udpMessage)
                 {
-                    return RedirectToAction("Result", "Home", new {udpMessage= udpMessage });
+                    return RedirectToAction("Result", "Home", new { udpMessage = udpMessage });
                 }
+                else
+                {
 
-                return RedirectToAction("Result", "Home");            
+                    return RedirectToAction("Result", "Home");
+                }
             }
             else
             {
@@ -104,7 +107,7 @@ namespace BostonScientificAVS.Controllers
 
 
         [HttpPost("/SaveProductLabel")]
-        public async Task<IActionResult> SaveProductLabel(string productLabel, string productLabelSpec, bool gtinmismatch, bool udpMessage)
+        public async Task<IActionResult> SaveProductLabel(string productLabel, string productLabelSpec, bool gtinmismatch)
         {
             if (ModelState.IsValid)
             {
@@ -117,14 +120,10 @@ namespace BostonScientificAVS.Controllers
                 if (match.Success)
                 {
                     latestTransaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
-                    if (latestTransaction.Result != null && udpMessage == false)
+                    if (latestTransaction.Result != null)
                     {
                         latestTransaction.Rescan_Initated = true;                       
                         await SendMessageToUDPclient("R");
-                    }
-                    if (latestTransaction.Result != null && udpMessage == true)
-                    {
-                        await SendMessageToUDPclient("N");
                     }
 
                     if (productLabel.Length == 34 && match.Groups[1].Length == 14 && match.Groups[2].Length == 6 && match.Groups[4].Length == 8)
@@ -484,8 +483,13 @@ namespace BostonScientificAVS.Controllers
         {
             return View();
         }
-        public IActionResult CartonLabelScan()
+        public IActionResult CartonLabelScan(bool udpMsg)
         {
+            if (udpMsg)
+            {
+                // If udpMessage is "N", send it to the socket method
+                SendMessageToUDPclient("N");
+            }
             return View();
         }
         public IActionResult ProductLabelBarcodeScan()
@@ -631,30 +635,51 @@ namespace BostonScientificAVS.Controllers
             }
         }
         [HttpPost]
-        public IActionResult SaveWorkOrderBarcode(string input)
+        public IActionResult SaveWorkOrderBarcode(string input,bool udpMsg)
         {
-            string[] barcodeParts = input.Split('_');
-            if (barcodeParts.Length == 4 && barcodeParts[0].Length == 10 && barcodeParts[1].Length == 8 && barcodeParts[2].Length == 8 && barcodeParts[3].Length == 8 && barcodeParts.All(part => !string.IsNullOrEmpty(part.Trim())))
+            if (input != null && input.Trim() != "")
             {
+                string[] barcodeParts = input.Split('_');
+                if (barcodeParts.Length == 4 && barcodeParts[0].Length == 10 && barcodeParts[1].Length == 8 && barcodeParts[2].Length == 8 && barcodeParts[3].Length == 8 && barcodeParts.All(part => !string.IsNullOrEmpty(part.Trim())))
+                {
 
-                Transaction transaction = new Transaction();
-                transaction.WO_Catalog_Num = barcodeParts[0];
-                DateTime date = DateTime.ParseExact(barcodeParts[2], "MMddyyyy", null);
-                transaction.WO_Mfg_Date = date;
-                transaction.WO_Lot_Num = barcodeParts[3];
+                    Transaction transaction = new Transaction();
+                    transaction.WO_Catalog_Num = barcodeParts[0];
+                    DateTime date = DateTime.ParseExact(barcodeParts[2], "MMddyyyy", null);
+                    transaction.WO_Mfg_Date = date;
+                    transaction.WO_Lot_Num = barcodeParts[3];
 
-                _dataContext.Transaction.Add(transaction);
-                _dataContext.SaveChanges();
+                    _dataContext.Transaction.Add(transaction);
+                    _dataContext.SaveChanges();
 
-                TempData["WorkOrderLotNo"] = transaction.WO_Lot_Num;
-                return RedirectToAction("CartonLabelScan", "Home");
+                    TempData["WorkOrderLotNo"] = transaction.WO_Lot_Num;
+                }
+
+                else
+                {
+                    SendMessageToUDPclient("E");
+                    TempData["ErrorMessage"] = "Work Order Seems To be Invalid. Please retry again";
+                    return View("WorkOrderBarcodeScan");
+                }
+                if (udpMsg)
+                {
+                    return Json(new { redirectTo = "/Home/CartonLabelScan" });
+                }
+
+                else 
+                { 
+                   return RedirectToAction("CartonLabelScan", "Home");
+                }
             }
+
             else
             {
-                 SendMessageToUDPclient("E");
-                TempData["ErrorMessage"] = "Work Order Seems To be Invalid. Please retry again";
-                return View("WorkOrderBarcodeScan");
+                // Handle the case when input is "Null" or empty
+                SendMessageToUDPclient("E");
+                TempData["ErrorMessage"] = "Work Order is Null or Empty. Please retry with a valid input.";
+                return View("WorkOrderScan");
             }
+
         }
         [HttpPost]
         public async Task<IActionResult> SaveCartonLabel(string input1, string input2)
@@ -746,7 +771,6 @@ namespace BostonScientificAVS.Controllers
                         latestTransaction.Rescan_Initated = true;
                         await SendMessageToUDPclient("R");
                     }
-
                     if (input1.Length == 34 && match.Groups[1].Length == 14 && match.Groups[2].Length == 6 && match.Groups[4].Length == 8)
                     {
                         latestTransaction.Product_Label_GTIN = match.Groups[1].Value;

@@ -2471,25 +2471,28 @@
             }
         });
     }
-    $('#nxt-scn-btn').on('click', function (e) {
-        e.preventDefault(); // Prevent the default link behavior
-
-        // Make an AJAX request to your controller method
-        $.ajax({
-            url: '/Home/ProductLabelBarcodeScan', // Replace with the correct URL
+    var udpMessageValue = false;
+ $('#nxt-scn-btn').on('click', function (e) {
+  e.preventDefault();
+ udpMessageValue = true;
+var workOrderValue = localStorage.getItem("workOrderValue");
+ $.ajax({
+            url: '/Home/SaveWorkOrderBarcode', // Replace with the correct URL
             method: 'POST', // Use POST or GET as appropriate
-            data: { udpMessage: 'N' }, // Send udpMessage as "N"
+            data: { input: workOrderValue, udpMsg: udpMessageValue },
             success: function (response) {
                 // Handle the response from the controller here
                 console.log(response);
+                 if (response.redirectTo) {
+            window.location.href = response.redirectTo; // Redirect based on the response
+        }
             },
             error: function (error) {
-                // Handle any errors here
+                // Handle any errors here   
                 console.error(error);
             }
         });
-    });
-
+ });
 
 
     function showLoader() {
