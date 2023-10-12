@@ -146,7 +146,7 @@ namespace BostonScientificAVS.Controllers
             }
 
             memoryStream.Seek(0, SeekOrigin.Begin);
-            return File(memoryStream, "text/csv", "users.csv");
+            return File(memoryStream, "text/csv", "Data.csv");
         }
 
         [HttpGet]

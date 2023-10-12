@@ -362,7 +362,7 @@ namespace BostonScientificAVS.Controllers
                 // initially assume all are a match
                 result.allMatch = true;
                 if (transaction.DB_GTIN != transaction.Product_Label_GTIN || transaction.WO_Lot_Num != transaction.Product_Lot_Num
-                    || transaction.DB_Label_Spec != transaction.Product_Label_Spec || transaction.Calculated_Use_By < transaction.Product_Use_By
+                    || transaction.DB_Label_Spec != transaction.Product_Label_Spec || transaction.Calculated_Use_By != transaction.Product_Use_By
                     || transaction.DB_Catalog_Num != transaction.WO_Catalog_Num) //(mismatches = true)
                 {
                     result.allMatch = false;
@@ -381,7 +381,7 @@ namespace BostonScientificAVS.Controllers
                     {
                         mismatches.labelSpecMismatch = true;
                     }
-                    if (transaction.Calculated_Use_By < transaction.Product_Use_By)
+                    if (transaction.Calculated_Use_By != transaction.Product_Use_By)
                     {
                         mismatches.calculatedUseByMismatch = true;
                     }
