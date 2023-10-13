@@ -286,7 +286,6 @@ $(() => {
                 method: "POST",
                 data: item,
                 success: function (response) {
-                    debugger;
                     if (response.success == true) 
                     {
                         hideLoader();
@@ -407,32 +406,7 @@ $(() => {
 
     }
 
-    function saveItem(item) {
-            var apiUrl = "Admin/SaveNewItem";
-
-            $.ajax({
-                url: apiUrl,
-                method: "POST",
-                data: item,
-                success: function(response) {
-                    debugger;
-                    console.log("Item saved successfully");
-                    alert("Item saved successfully");
-                    gtin.text(''),
-                    catalogNo.text(''),
-                    shelfLife.text(''),
-                    lableSpec.text(''),
-                    ifu.text(''),
-                    editDateTime.text(''),
-                    editBy.text(''),
-                    created.text(''),
-                    createdBy.text('')         
-                },
-                error: function(xhr, status, error) {
-                    console.log("An error occurred while saving the data:", error);
-                }
-            });
-    }
+   
 
         $(".bi-trash").click(function () {
             var gtin = $(this).data("user-id");
