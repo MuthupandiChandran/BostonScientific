@@ -55,7 +55,7 @@ namespace BostonScientificAVS.Controllers
             }
         }
 
-
+        
         [HttpPost("/SaveNewItem")]
         public ActionResult SaveNewItem(ItemMaster item)
         {
@@ -69,16 +69,18 @@ namespace BostonScientificAVS.Controllers
                     // If the value is not null or empty, proceed with saving the item
                     if (!string.IsNullOrEmpty(currentUserName))
                     {
-                        // Assign the current user name to the "Created_by" property only if it's a new item
                         if (!string.IsNullOrEmpty(item.GTIN))
                         {
+                            // Check if a record with the same GTIN already exists
+                            var existingItem = _context.ItemMaster.FirstOrDefaultAsync(u => u.GTIN == item.GTIN);
+                            if (existingItem != null)
+                            {
+                                return Json( new { success = false, message ="GTIN is already in use." });
+                            }
+
                             // Assign the current date and time to the "Created" property for new items
                             item.Created = DateTime.Now;
                             item.Created_by = currentUserName;
-                            //if (item.Edit_Date_Time == default(DateTime))
-                            //{
-                            //    item.Edit_Date_Time = null;
-                            //}
 
                             _itemService.saveNewItem(item);
                             return Ok("success");
@@ -86,7 +88,6 @@ namespace BostonScientificAVS.Controllers
                     }
                     else
                     {
-
                         return BadRequest("User not authenticated or session expired.");
                     }
                 }
@@ -98,6 +99,7 @@ namespace BostonScientificAVS.Controllers
                 return Ok("error while adding item");
             }
         }
+
 
         [HttpPost("/DeleteItem")]
 

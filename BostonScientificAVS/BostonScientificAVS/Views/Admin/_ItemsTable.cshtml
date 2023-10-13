@@ -286,10 +286,19 @@ $(() => {
                 method: "POST",
                 data: item,
                 success: function (response) {
-                    hideLoader();
-                    console.log("Item saved successfully");
-                    alert("Item saved successfully");
-                    location.reload();
+                    debugger;
+                    if (response.success == true) 
+                    {
+                        hideLoader();
+                        console.log("Item saved successfully");
+                        alert("Item saved successfully");
+                        location.reload();
+                     }
+                     else{
+                        console.log("GTIN already Exists");
+                        alert(response.message);
+                        location.reload();
+                     }
                 },
                 error: function(xhr, status, error) {
                     console.log("An error occurred while saving the data:", error);
@@ -301,7 +310,7 @@ $(() => {
             catalogNo.text('');
             shelfLife.text('');
             lableSpec.text('');
-            ifu.text('');
+            $("#ifu").val('');
             editDateTime.text('');
             editBy.text('');
             created.text('');
@@ -399,7 +408,6 @@ $(() => {
     }
 
     function saveItem(item) {
-        
             var apiUrl = "Admin/SaveNewItem";
 
             $.ajax({
@@ -407,6 +415,7 @@ $(() => {
                 method: "POST",
                 data: item,
                 success: function(response) {
+                    debugger;
                     console.log("Item saved successfully");
                     alert("Item saved successfully");
                     gtin.text(''),
