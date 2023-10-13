@@ -65,7 +65,7 @@ namespace BostonScientificAVS.Controllers
             {
                 string[] barcodeParts = input.Split('_');
 
-                if (barcodeParts.Length == 4 && barcodeParts[0].Length == 10 && barcodeParts[1].Length == 8 && barcodeParts[2].Length == 8 && barcodeParts[3].Length == 8 && barcodeParts.All(part => !string.IsNullOrEmpty(part.Trim())))
+                if (barcodeParts.Length == 4 && barcodeParts[2].Length == 8 && barcodeParts.All(part => !string.IsNullOrEmpty(part.Trim())))
                 {
                     // All parts are non-empty, proceed with saving the data
                     Transaction transaction = new Transaction();
@@ -640,7 +640,7 @@ namespace BostonScientificAVS.Controllers
             if (input != null && input.Trim() != "")
             {
                 string[] barcodeParts = input.Split('_');
-                if (barcodeParts.Length == 4 && barcodeParts[0].Length == 10 && barcodeParts[1].Length == 8 && barcodeParts[2].Length == 8 && barcodeParts[3].Length == 8 && barcodeParts.All(part => !string.IsNullOrEmpty(part.Trim())))
+                if (barcodeParts.Length == 4 && barcodeParts[2].Length == 8 && barcodeParts.All(part => !string.IsNullOrEmpty(part.Trim())))
                 {
 
                     Transaction transaction = new Transaction();

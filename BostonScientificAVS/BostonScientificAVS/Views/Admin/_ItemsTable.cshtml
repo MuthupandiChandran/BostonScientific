@@ -36,6 +36,9 @@
             <th>
                 Created by
             </th>
+            <th>
+                Action
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -78,6 +81,9 @@
                 <td>
 
                     <div data-gtin=@item.GTIN data-column="Created_by" contenteditable="false" class="editableContent">@item.Created_by</div>
+                </td>
+                <td>
+                    <i class="bi bi-trash" data-user-id=@item.GTIN contenteditable="false"></i>
                 </td>
             </tr>
         }
@@ -185,12 +191,16 @@
              padding-top:10px;
          }
 </style>
-<script>
+
+<script type="text/javascript">
+
 $(() => {
-  
-  new DataTable('#itemsTable', {
-     dom: '<"top"f>rt<"bottom"lpi><"clear">'
-});
+
+        console.log("Initializing DataTables...");
+        new DataTable('#itemsTable', {
+            dom: '<"top"f>rt<"bottom"lpi><"clear">'
+        });
+        console.log("DataTables initialized.");
                    
         document.getElementsByClassName('add-button')[0]
             .addEventListener('click', function (event) {
@@ -278,6 +288,7 @@ $(() => {
                 success: function (response) {
                     hideLoader();
                     console.log("Item saved successfully");
+                    alert("Item saved successfully");
                     location.reload();
                 },
                 error: function(xhr, status, error) {
@@ -344,6 +355,7 @@ $(() => {
             data: itemToUpdate,
             success: function(response) {
                 console.log("Item updated successfully");
+                    alert("Item updated successfully");
             },
             error: function(xhr, status, error) {
                 console.log("An error occurred while updating the data:", error);
@@ -376,6 +388,7 @@ $(() => {
             data: itemToUpdate,
             success: function(response) {
                 console.log("Item updated successfully");
+                    alert("Item updated successfully");
                 location.reload();
             },
             error: function(xhr, status, error) {
@@ -395,6 +408,7 @@ $(() => {
                 data: item,
                 success: function(response) {
                     console.log("Item saved successfully");
+                    alert("Item saved successfully");
                     gtin.text(''),
                     catalogNo.text(''),
                     shelfLife.text(''),
@@ -410,6 +424,39 @@ $(() => {
                 }
             });
     }
+
+        $(".bi-trash").click(function () {
+            var gtin = $(this).data("user-id");
+
+            if (confirm("Are you sure you want to delete this user?")) {
+                var $row = $(this).closest('tr'); // Store a reference to the row
+
+                // User confirmed, so send an AJAX request to delete the user
+                $.ajax({
+                    type: 'POST',
+                    url: '/DeleteItem', // Update the URL to match your controller action
+                    data: { GTIN: gtin },
+                    success: function (data) {
+                        if (data.success) {
+                            // User was deleted successfully, remove the row
+                            $row.remove();
+                            alert(data.message);
+                        } else {
+                            alert(data.message);
+                        }
+                    },
+                    error: function () {
+                        alert("An error occurred while deleting the user.");
+                    }
+                });
+            }
+        });
+
+
+
+
+
+
 
         function showLoader() {
             document.getElementById('loader').style.display = 'block';

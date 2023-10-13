@@ -99,6 +99,33 @@ namespace BostonScientificAVS.Controllers
             }
         }
 
+        [HttpPost("/DeleteItem")]
+
+        public async Task<IActionResult>DeleteItem (ItemMaster item)
+        {
+            try
+            {
+                var deleterecord = await _context.ItemMaster.FirstOrDefaultAsync(u => u.GTIN == item.GTIN);
+                if(deleterecord!=null)
+                {
+                    _context.ItemMaster.Remove(deleterecord);
+                    await _context.SaveChangesAsync();
+                    return Json(new { success = true, message = "User deleted successfully" });
+                }
+
+                else
+                {
+                    return Json(new { success = false, message = "User not found" });
+                }
+            }
+            catch(Exception ex)
+            {
+                return Json(new { success = false, message = "Error deleting user: " + ex.Message });
+
+            }
+        }
+
+
 
 
         // MVC Controller action method to handle file upload
@@ -202,6 +229,31 @@ namespace BostonScientificAVS.Controllers
                 return Json(new { success = true });
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult>DeleteUser(ApplicationUser user)
+        {
+            try
+            {
+                var existingRecord = await _context.Users.FirstOrDefaultAsync(u => u.EmpID == user.EmpID);
+                if (existingRecord != null)
+                {
+                    _context.Users.Remove(existingRecord);
+                    await _context.SaveChangesAsync();
+                    return Json(new { success = true, message = "User deleted successfully" });
+                }
+                
+                else
+                {
+                    return Json(new { success = false, message = "User not found" });
+                }
+            }
+            catch(Exception ex)
+            {
+                return Json(new { success = false, message = "Error deleting user: " + ex.Message });
+            }
+        }
+
 
 
         public async Task importCsv(IFormFile file)

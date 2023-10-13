@@ -10,6 +10,10 @@
 
 <style>
 
+    .gap {
+       margin-left:15px;
+    }
+
     #myTable {
         width: 100%;
         margin: 0 auto;
@@ -199,6 +203,8 @@
                             <td width="2px">@us.UserRole</td>
                             <td width="2px">
                                 <i class="bi bi-pencil-square" onclick="editUser(this)"></i>
+                                <span class="gap"></span>
+                                <i class="bi bi-trash" data-user-id="@us.EmpID"></i>
                             </td>
                         </tr>
                     }
@@ -296,27 +302,38 @@
     });
 
         $(function () {
-
             $('#userfullname').keydown(function (e) {
+                var key = e.keyCode;
 
-                if (e.shiftKey || e.ctrlKey || e.altKey) {
-
+                if (
+                    !(
+                        (e.shiftKey && key == 187) || // Shift key + Plus (+)
+                        (key == 8) || // Backspace
+                        (key == 32) || // Space
+                        (key == 46) || // Delete
+                        (key >= 35 && key <= 40) || // Home, End, Arrow keys
+                        (key >= 65 && key <= 90) || // Letters (A-Z)
+                        (key >= 48 && key <= 57) || // Numbers (0-9)
+                        (key >= 96 && key <= 105) || // Numpad numbers
+                        (key == 189) || // Hyphen (-)
+                        (key == 220) || // Backslash (\)
+                        (key == 191) || // Forward Slash (/)
+                        (key == 192) || // Grave Accent / Backtick (`)
+                        (key == 219) || // Opening Bracket ([)
+                        (key == 221) || // Closing Bracket (])
+                        (key == 186) || // Semicolon (;)
+                        (key == 222) || // Single Quote (')
+                        (key == 188) || // Comma (,)
+                        (key == 190) || // Period (.)
+                        (key == 191) // Forward Slash (/)
+                    )
+                ) {
                     e.preventDefault();
-
-                } else {
-                    var key = e.keyCode;
-
-                    if (!((key == 8) || (key == 32) || (key == 46) || (key >= 35 && key <= 40) || (key >= 65 && key <= 90))) {
-
-                        e.preventDefault();
-
-                    }
-
                 }
-
             });
-
         });
+
+
 
         function showLoader() {
             document.getElementById('loader').style.display = 'block';
@@ -388,6 +405,33 @@
 
             isEditing = true;
         }
+
+        $(".bi-trash").click(function () {
+            var userId = $(this).data("user-id");
+
+            if (confirm("Are you sure you want to delete this user?")) {
+                var $row = $(this).closest('tr'); // Store a reference to the row
+
+                // User confirmed, so send an AJAX request to delete the user
+                $.ajax({
+                    type: 'POST',
+                    url: '/Admin/DeleteUser', // Update the URL to match your controller action
+                    data: { EmpID: userId },
+                    success: function (data) {
+                        if (data.success) {
+                            // User was deleted successfully, remove the row
+                            $row.remove();
+                            alert(data.message);
+                        } else {
+                            alert(data.message);
+                        }
+                    },
+                    error: function () {
+                        alert("An error occurred while deleting the user.");
+                    }
+                });
+            }
+        });
 
 
 
