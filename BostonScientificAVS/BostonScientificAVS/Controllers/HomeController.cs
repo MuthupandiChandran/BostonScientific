@@ -461,9 +461,11 @@ namespace BostonScientificAVS.Controllers
         {
             // Get the user corresponding to the provided EmpID
             ApplicationUser user = _dataContext.Users.FirstOrDefault(u => u.EmpID == supervisorEmpId);
-
+            var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
             if (user != null && user.UserRole == UserRole.Supervisor)
             {
+                transaction.Supervisor_Name = user.UserFullName;
+                _dataContext.SaveChanges();
                 // Supervisor ID is valid
                 return Json(true);
             }
