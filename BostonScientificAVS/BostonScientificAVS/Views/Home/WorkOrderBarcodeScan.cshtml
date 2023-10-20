@@ -64,11 +64,27 @@
             </div>
         </div>
     </div>
+    <div id="toast" style="visibility: hidden;">
+        User time limit reached, it will automatically logout.
+    </div>
 </div>
 
 
 
 <style>
+    #toast {
+        max-width: 300px;
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 16px;
+        position: fixed;
+        z-index: 1;
+        left: 50%;
+        bottom: 30px;
+        transform: translateX(-50%);
+    }
     .text-danger {
         text-align: center;
         font-weight: bolder;
@@ -207,6 +223,12 @@
 @section Scripts{
 
     <script type="text/javascript">
+        var toastVisible = true; // Initially set to true so the message is not displayed
+        var timerHasStarted = false;
+        var intervalId;
+        var isPaused = false;
+        var pauseDuration = 60;
+
         document.addEventListener("DOMContentLoaded", function () {
             var inputField = document.getElementById("input");
             if (inputField) {
@@ -275,14 +297,28 @@
                 socket = new WebSocket(websocketUrl);
             };
         }
-        
+        function displayToast() {
+            if (toastVisible) {
+                var toast = document.getElementById("toast");
+                toast.style.visibility = "visible";
+                toastVisible = false; // Set to false to hide the message
+
+                setTimeout(function () {
+                    toast.style.visibility = "hidden";
+                    isPaused = false;
+                }, pauseDuration * 1000); // Display the toast message for 1 minute
+            }
+        }
+
+
         function startTimer(duration) {
+            if (!isPaused) {
             var timerDisplay = document.getElementById("timer");
 
             var timer = duration;
             var hours, minutes, seconds;
 
-            var intervalId = setInterval(function () {
+            intervalId = setInterval(function () {
                 hours = parseInt(timer / 3600, 10);
                 minutes = parseInt((timer % 3600) / 60, 10);
                 seconds = parseInt(timer % 60, 10);
@@ -292,7 +328,13 @@
                 seconds = seconds < 10 ? "0" + seconds : seconds;
 
                 timerDisplay.textContent = hours + ":" + minutes + ":" + seconds;
-
+                    if (timer == 1800) {
+                        if (!timerHasStarted) {
+                            displayToast();
+                            timerHasStarted = true;
+                            isPaused = true;
+                        }
+                    }
                 if (--timer < 0) {
                     clearInterval(intervalId);
                     // Perform any action you need when the timer reaches 00:00:00
@@ -300,6 +342,7 @@
                     //alert("Timer has expired!");
                 }
             }, 1000);
+            }
         }
 
         // Local Storage is already set in homescreen so just obtain it here
