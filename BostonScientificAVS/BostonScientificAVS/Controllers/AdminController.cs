@@ -9,6 +9,8 @@ using System.Globalization;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Mime;
+using Microsoft.VisualBasic;
 
 namespace BostonScientificAVS.Controllers
 {
@@ -295,29 +297,79 @@ namespace BostonScientificAVS.Controllers
             return File(memoryStream, "text/csv", "users.csv");
         }
         [HttpGet]
-        public IActionResult TransactionTable(string search)
-        {
-            DateTime today = DateTime.Today;
-            ViewBag.SearchDate = search;
-            string userFullName = @User.Identity.Name;
-            ViewBag.UserFullName = userFullName;
+        public IActionResult TransactionTable(string startDate, string endDate)
+        {        
+            var records = _context.Transaction.ToList();
 
-            var records = _context.Transaction.ToList(); // Fetch all records to memory
-
-            if (!string.IsNullOrEmpty(search))
+            if (!string.IsNullOrEmpty(startDate) && !string.IsNullOrEmpty(endDate))
             {
-                var searchDate = DateTime.ParseExact(search, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-                var formattedSearchDate = searchDate.ToString("dd-MM-yyyy");
+                // Convert the submitted date strings to DateTime objects
+                if (DateTime.TryParse(startDate, out DateTime startSearchDate) && DateTime.TryParse(endDate, out DateTime endSearchDate))
+                {
+                    // Filter records within the specified date range
+                    var filteredRecords = records.Where(t =>
+                        t.Date_Time != null &&
+                        DateTime.ParseExact(t.Date_Time, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture) >= startSearchDate &&
+                        DateTime.ParseExact(t.Date_Time, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture) <= endSearchDate).ToList();
 
-                records = records.Where(t => t.Date_Time != null &&
-                                              t.Date_Time.StartsWith(formattedSearchDate)).ToList();
+                    // Display the filtered records in the view
+                    return View("Transaction", filteredRecords);
+                }
             }
             else
             {
-                records = records.Where(t => t.Date_Time != null && t.Date_Time.Contains(today.ToString("dd-MM-yyyy"))).ToList();
+                // Filter records for today by default
+                DateTime today = DateTime.Today;
+                records = records.Where(t =>
+                    t.Date_Time != null &&
+                    DateTime.ParseExact(t.Date_Time, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture).Date == today).ToList();
             }
 
+
             return View("Transaction", records); // Specify the view name and pass the records
+        }
+
+
+
+        [HttpGet]
+        public IActionResult ExportTransactionData(string hiddenStartDate, string hiddenEndDate)
+        {
+            var records = _context.Transaction.ToList();
+
+            if (!string.IsNullOrEmpty(hiddenStartDate) && !string.IsNullOrEmpty(hiddenEndDate))
+            {
+                // Define the correct date format "dd-MM-yyyy HH:mm:ss" to parse the dates
+                string dateFormat = "dd-MM-yyyy HH:mm:ss";
+                var startSearchDate = DateTime.ParseExact(hiddenStartDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                var endSearchDate = DateTime.ParseExact(hiddenEndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+                records = records.Where(t =>
+                    t.Date_Time != null &&
+                    DateTime.ParseExact(t.Date_Time, dateFormat, CultureInfo.InvariantCulture) >= startSearchDate &&
+                    DateTime.ParseExact(t.Date_Time, dateFormat, CultureInfo.InvariantCulture) <= endSearchDate).ToList();
+            }
+
+            // Create a CSV content string with headers and data
+            var csvData = new StringBuilder();
+            csvData.AppendLine("Transaction Id,Product Label GTIN,Carton Label GTIN,DB GTIN,WO Lot No,Product Lot No,Carton Lot No,WO Catalog No,DB Catalog No,ShelfLife,WO Mfg Date,Calculated Use By,Product Use By,Carton Use By,DB Label Spec,Product Label Spec,Carton Label Spec,DB IFU,Scanned IFU,User,Date Time,Rescan Initiated,Result,Failure Reason,Supervisor Name");
+
+            foreach (var record in records)
+            {
+                csvData.AppendLine($"{record.Transaction_Id},{record.Product_Label_GTIN},{record.Carton_Label_GTIN},{record.DB_GTIN},{record.WO_Lot_Num},{record.Product_Lot_Num},{record.Carton_Lot_Num},{record.WO_Catalog_Num},{record.DB_Catalog_Num},{record.Shelf_Life},{record.WO_Mfg_Date},{record.Calculated_Use_By},{record.Product_Use_By},{record.Carton_Use_By},{record.DB_Label_Spec},{record.Product_Label_Spec},{record.Carton_Label_Spec},{record.DB_IFU},{record.Scanned_IFU},{User.Identity.Name},{record.Date_Time},{record.Rescan_Initated},{record.Result},{record.Failure_Reason},{record.Supervisor_Name}");
+            }
+
+            // Return the CSV file as a response
+            var fileName = "ExportedData.csv";
+            var contentDisposition = new ContentDisposition
+            {
+                FileName = fileName,
+                Inline = false
+            };
+            Response.Headers.Add("Content-Disposition", contentDisposition.ToString());
+
+            // Convert the CSV content to a byte array and return as a file
+            var csvBytes = Encoding.UTF8.GetBytes(csvData.ToString());
+            return File(csvBytes, "text/csv");
         }
     }
 }

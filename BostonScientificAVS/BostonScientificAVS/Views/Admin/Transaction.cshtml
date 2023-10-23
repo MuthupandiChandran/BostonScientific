@@ -36,10 +36,16 @@
 <h2>Transaction Table</h2>
 <hr/>
 
-<form id ="tbl-search"method="get" action="@Url.Action("TransactionTable")">
-    <label for="search">Search Date:</label>
-    <input type="date" id="search" name="search" autocomplete="off" />
+<form id="tbl-search" method="get" action="@Url.Action("TransactionTable")">
+    <label for="startDate">Start Date:</label>
+    <input type="date" id="startDate" name="startDate" autocomplete="off" />
+    <label for="endDate">End Date:</label>
+    <input type="date" id="endDate" name="endDate" autocomplete="off" />
     <button type="submit">Search</button>
+    <a href="@Url.Action("ExportTransactionData")" id="exportLink">Export Data</a>
+    <!-- Hidden input fields for startDate and endDate -->
+    <input type="hidden" id="hiddenStartDate" name="hiddenStartDate" />
+    <input type="hidden" id="hiddenEndDate" name="hiddenEndDate" />
 </form>
 
 <table class="table">
@@ -181,7 +187,7 @@
 
             timerDisplay.textContent = hours + ":" + minutes + ":" + seconds;
 
-                    if (timer == 3480) {
+                    if (timer == 1800) {
                         if (!timerHasStarted) {
                             displayToast();
                             timerHasStarted = true;
@@ -221,6 +227,25 @@
     var remainingTime = expirationTime - currentTime;
     startTimer(remainingTime);
 
+    });
+    document.getElementById("exportLink").addEventListener("click", function (e) {
+        e.preventDefault(); // Prevent the link from navigating
+
+        // Get the selected startDate and endDate values
+        var startDate = document.getElementById("startDate").value;
+        var endDate = document.getElementById("endDate").value;
+
+        // Set the hidden input fields with the selected values
+        document.getElementById("hiddenStartDate").value = startDate;
+        document.getElementById("hiddenEndDate").value = endDate;
+
+        // Submit the form to the ExportTransactionData action
+        document.getElementById("tbl-search").action = "@Url.Action("ExportTransactionData")";
+        document.getElementById("tbl-search").submit();
+
+        // Clear the selected date values
+        document.getElementById("startDate").value = "";
+        document.getElementById("endDate").value = "";
     });
 </script>
 
