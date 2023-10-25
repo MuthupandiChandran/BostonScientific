@@ -48,6 +48,13 @@
     <input type="hidden" id="hiddenEndDate" name="hiddenEndDate" />
 </form>
 
+<select id="searchbar" onchange="myFunction()">
+    <option value="All">All</option>
+    <option value="Packaging">Packaging</option>
+    <option value="Boxing">Boxing</option>
+</select>
+
+
 <table class="table">
     <thead>
         <tr>
@@ -157,8 +164,6 @@
 </style>
 
 
-
-
 <script type="text/javascript">
     var toastVisible = true; // Initially set to true so the message is not displayed
     var timerHasStarted = false;
@@ -247,5 +252,37 @@
         document.getElementById("startDate").value = "";
         document.getElementById("endDate").value = "";
     });
+
+        function myFunction() {
+            var selectedFilter = document.getElementById("searchbar").value;
+            var tableRows = document.querySelectorAll("tbody tr");
+
+            tableRows.forEach(function (row) {
+                // Get the values of the Carton-related columns
+                var cartonLotNum = row.querySelector("td:nth-child(7)").textContent.trim();
+                var cartonUseBy = row.querySelector("td:nth-child(13)").textContent.trim();
+                var cartonLabelSpec = row.querySelector("td:nth-child(16)").textContent.trim();
+
+                if (selectedFilter === "Boxing") {
+                    // Check if all three Carton columns have non-null values
+                    if (cartonLotNum && cartonUseBy && cartonLabelSpec) {
+                        row.style.display = "table-row"; // Display the row
+                    } else {
+                        row.style.display = "none"; // Hide the row
+                    }
+                } else if (selectedFilter === "Packaging") {
+                    // Check if any of the Carton columns are null or empty
+                    if (!cartonLotNum || !cartonUseBy || !cartonLabelSpec) {
+                        row.style.display = "table-row"; // Display the row
+                    } else {
+                        row.style.display = "none"; // Hide the row
+                    }
+                } else {
+                    // Show all rows when "ALL" is selected
+                    row.style.display = "table-row";
+                }
+            });
+        }
+
 </script>
 
