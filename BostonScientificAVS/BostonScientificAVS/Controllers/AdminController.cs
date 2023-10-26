@@ -31,11 +31,34 @@ namespace BostonScientificAVS.Controllers
         {
             return View();
         }
+        public IActionResult Settings()
+        {
+            return View();
+        }
 
         public PartialViewResult RefreshItemsGrid()
         {
             var items = _itemService.getItems();
             return PartialView("_ItemsTable", items);
+        }
+
+        [HttpPost]
+        public IActionResult UpdateExpiration(float expirationTime)
+        {
+            // Validate the expirationTime, make sure it's a positive float
+            if (expirationTime <= 0)
+            {
+                ModelState.AddModelError("expirationTime", "Expiration time must be a positive number.");
+                return View("Settings");
+            }
+
+            // Store the updated expiration time in a shared storage, such as Local Storage or Session Storage
+            // So that it's accessible from other pages
+            TempData["ExpirationTime"] = expirationTime;
+
+            // Redirect to the admin page with a success message
+            TempData["SuccessMessage"] = "Session expiration time updated successfully.";
+            return View("Settings");
         }
 
         [HttpPost("/UpdateItem")]
