@@ -50,6 +50,7 @@ namespace BostonScientificAVS.Models
         public int? scannedCount { get; set; }
 
         public string workOrderLotNo { get; set; }
+        public string workOrderCatalogNo { get; set; }
 
     }
 

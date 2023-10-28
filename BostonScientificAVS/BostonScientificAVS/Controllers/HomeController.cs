@@ -55,6 +55,7 @@ namespace BostonScientificAVS.Controllers
             woi.failedCount = woi.totalCount - woi.passedCount;
             woi.scannedCount = workOrder.Where(x => x.Rescan_Initated == true).Count();
             woi.workOrderLotNo = transaction.WO_Lot_Num;
+            woi.workOrderCatalogNo = transaction.WO_Catalog_Num;
             return View(woi);
         }
 
