@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Mime;
 using Microsoft.VisualBasic;
+using Microsoft.AspNetCore.Http;
 
 namespace BostonScientificAVS.Controllers
 {
@@ -40,6 +41,18 @@ namespace BostonScientificAVS.Controllers
         {
             var items = _itemService.getItems();
             return PartialView("_ItemsTable", items);
+        }
+
+        [HttpPost]
+        public IActionResult UpdateExpiration(float expirationTime)
+        {
+           
+            var result = new
+            {
+                NewExpirationTime = expirationTime, // Pass the newExpirationTime
+                Admin = true // Set this based on your condition           
+           };
+            return Json(result);
         }
 
         [HttpPost("/UpdateItem")]

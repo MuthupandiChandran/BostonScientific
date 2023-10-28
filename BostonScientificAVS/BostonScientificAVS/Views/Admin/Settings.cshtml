@@ -1,5 +1,4 @@
-﻿
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
  <head>
 @{
@@ -33,23 +32,39 @@
             <h6 id="timer" class="session-expire-time text-color-blue"></h6>
         </div>
         <div>
-            <a class="button" href="javascript:history.go(-1)" @*asp-area="" asp-controller="Home" asp-action="HomeScreen"*@><img class="back-button-img" src="/assets/images/back-arrow.png" /><span class="back-text">Back</span></a>
+            <a class="button" href="javascript:history.go(-1)"><img class="back-button-img" src="/assets/images/back-arrow.png" /><span class="back-text">Back</span></a>
         </div>
     </div>
 </div>
 
     <form id="submit" action="/Admin/UpdateExpiration" method="post">
         <label for="expirationTime">Session Expiration Time (in hours):</label>
-        <input type="text" id="expirationTime" name="expirationTime" required pattern="^\d+(\.\d+)?$" title="Enter a valid floating-point number (e.g., 1.5)" />
+        <input type="text" id="expirationTime" name="expirationTime" required pattern="^\d+(\.\d+)?$" title="Enter a valid floating-point number (e.g., 1.5)" autocomplete="off"/>
         <button type="submit">Update</button>
     </form>
+    <div id="toast" style="visibility: hidden;">
+        User time limit reached, it will automatically logout.
+    </div>
 </body>
 </html>
 
 <style>
+    #toast {
+        max-width: 300px;
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 16px;
+        position: fixed;
+        z-index: 1;
+        left: 50%;
+        bottom: 30px;
+        transform: translateX(-50%);
+    }
 
     .navigation-back-settings {
-        margin-top: -46px;
+        margin-top: -30px;
         display: flex;
         gap: 20px;
         float: right;
@@ -74,6 +89,7 @@
     var intervalId;
     var isPaused = false;
     var pauseDuration = 60;
+    var admin = false;
 
     $(() => {
 
@@ -129,12 +145,54 @@
 
         // Local Storage is already set in homescreen so just obtain it here
         var expirationTime = localStorage.getItem("expiration_time");
-
-
-        // Get the expiration time from localStorage
         var currentTime = Math.floor(Date.now() / 1000);
         var remainingTime = expirationTime - currentTime;
         startTimer(remainingTime);
+
+
+        $('#submit').on('submit', function (e) {
+            e.preventDefault(); // Prevent the default form submission
+
+            var expirationTime = parseFloat($('#expirationTime').val());
+
+            // Fetch newExpirationTime and admin from the controller using AJAX
+            $.post("/Admin/UpdateExpiration", { expirationTime: expirationTime }, function (data) {
+                var newExpirationTime = data.newExpirationTime;
+                var admin = data.admin;
+
+                if (admin) {
+                    // Admin-specific logic
+                    if (intervalId) {
+                        clearInterval(intervalId);
+                    }
+
+                    var newDuration = newExpirationTime * 3600;
+                    var hours = Math.floor(newDuration / 3600);
+                    var minutes = Math.floor((newDuration % 3600) / 60);
+                    var seconds = newDuration % 60;
+
+                    var timeString = hours.toString().padStart(2, "0") + ":" +
+                        minutes.toString().padStart(2, "0") + ":" +
+                        seconds.toString().padStart(2, "0");
+
+                    // Display the formatted time in your HTML element
+                    document.getElementById("timer").textContent = timeString;
+
+                    // Start the new timer
+                    startTimer(newDuration);
+
+                    // Store the timer value in localStorage
+                    localStorage.setItem("timerValue", timeString);
+                    localStorage.setItem("timerValueSet", "true"); // Set a flag to indicate that timerValue is set
+                } else {
+                    // Non-admin specific logic
+                    var expirationTime = localStorage.getItem("expiration_time");
+                    var currentTime = Math.floor(Date.now() / 1000);
+                    var remainingTime = expirationTime - currentTime;
+                    startTimer(remainingTime);
+                }
+            });
+        });
 
     });
 </script>

@@ -44,9 +44,10 @@
         <a class="login-button" asp-area="" asp-controller="Home" asp-action="WorkOrderBarcodeScan"><span class="login-text">Boxing/Carton</span></a>
     </div>
     </div>
-   @*  <div>
-        <a class="login-button" asp-area="" asp-controller="Home" asp-action="Items"><span class="login-text">Manage Items</span></a>
-    </div>*@
+   
+    <div id="toast" style="visibility: hidden;">
+        User time limit reached, it will automatically logout.
+    </div>
 </div>
 
 @*<div class="logout-container">
@@ -58,6 +59,19 @@
 </div>*@
 
 <style>
+    #toast {
+        max-width: 300px;
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 16px;
+        position: fixed;
+        z-index: 1;
+        left: 50%;
+        bottom: 30px;
+        transform: translateX(-50%);
+    }
 
   .mid-container{
        display: flex;
@@ -161,14 +175,21 @@
 </style>
 
 <script>
+    var toastVisible = true; // Initially set to true so the message is not displayed
+    var timerHasStarted = false;
+    var intervalId;
+    var isPaused = false;
+    var pauseDuration = 60;
+
     const myElement = document.getElementById('hoursInput');
     function startTimer(duration) {
+        if (!isPaused) {
     var timerDisplay = document.getElementById("timer");
 
     var timer = duration;
     var hours, minutes, seconds;
 
-    var intervalId = setInterval(function () {
+    intervalId = setInterval(function () {
         hours = parseInt(timer / 3600, 10);
         minutes = parseInt((timer % 3600) / 60, 10);
         seconds = parseInt(timer % 60, 10);
@@ -179,6 +200,14 @@
 
         timerDisplay.textContent = hours + ":" + minutes + ":" + seconds;
 
+                if (timer == 1800) {
+                    if (!timerHasStarted) {
+                        displayToast();
+                        timerHasStarted = true;
+                        isPaused = true;
+                    }
+                }
+
         if (--timer < 0) {
             clearInterval(intervalId);
             // Perform any action you need when the timer reaches 00:00:00
@@ -186,7 +215,23 @@
             //alert("Timer has expired!");
         }
     }, 1000);
+  }
 }
+
+    function displayToast() {
+        if (toastVisible) {
+            var toast = document.getElementById("toast");
+            toast.style.visibility = "visible";
+            toastVisible = false; // Set to false to hide the message
+
+            setTimeout(function () {
+                toast.style.visibility = "hidden";
+                isPaused = false;
+            }, pauseDuration * 1000); // Display the toast message for 1 minute
+        }
+    }
+
+
 
     // Set the initial expiration time in JavaScript (2 hours in this example)
     var hoursInput = myElement.dataset.hoursInput;; // Replace this with the desired hours from your input*/
@@ -199,11 +244,28 @@
     localStorage.setItem("expiration_time", expirationTime);
     }
 
-
-
-
+    var timerValueSet = localStorage.getItem("timerValueSet");
+    if (timerValueSet == "true"){
+        // Retrieve the timerValue
+        var timerValue = localStorage.getItem("timerValue");
+        // Use the timerValue as needed
+        document.getElementById("timer").textContent = timerValue;
+        const timeString = timerValue;
+        const totalSeconds = timeToSeconds(timeString);
+        function timeToSeconds(timeString) {
+            const [hours, minutes] = timeString.split(":").map(Number);
+            return hours * 3600 + minutes * 60;
+        }
+        var currentTime = Math.floor(Date.now() / 1000);
+        var remainingTime = totalSeconds - currentTime;
+        // Remove the flag since the timerValue is retrieved
+        startTimer(remainingTime);
+        localStorage.removeItem("timerValueSet");
+    }
+    else{
     // Get the expiration time from localStorage
     var currentTime = Math.floor(Date.now() / 1000);
     var remainingTime = expirationTime - currentTime;
     startTimer(remainingTime);
+    }
 </script>
