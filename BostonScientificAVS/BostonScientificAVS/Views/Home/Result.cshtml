@@ -62,12 +62,12 @@
         </div>
             <div class="row p-4 w-100">
                 <div class="col-md-8">
-                    <card>
+                   <div class="card">
                         <div class="card-header bg-card-header">Scanner Details</div>
-                        <div class="card-body bg-card-body">
-                            <table class="table table-borderless  TFtable">
+                        <div class="card-body">
+                            <table class="table-borderless  TFtable">
                                 <tbody>
-                                    <tr class="bg-color">
+                                    <tr class="bg-row-color">
                                         <td>
                                             <div>
                                                 <h6 class="comparison-lable-text bld">Work Order Catalog Number</h6>
@@ -108,7 +108,7 @@
                                             </div>
                                             <div>
 
-                                                <h6 id="wo-mfg-date" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                <h6 id="wo-mfg-date" class="comparison-lable-text">@Model.workOrderMfgDate</h6>
                                             </div>
                                         </td>
                                         <td>
@@ -128,11 +128,11 @@
                                             </div>
                                         </td>
                                     </tr>
-                                    <tr class="bg-color">
+                                <tr class="bg-row-color">
                                         <td>
                                         <div class="comparison-lable-text bld" id="shelf-life">Shelf-Life Days</div>
                                             <div>
-                                                <h6 id="fail-shelf-life-by-error" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                <h6 id="fail-shelf-life-by-error" class="comparison-lable-text">@Model.shelflife</h6>
                                             </div>
                                         </td>
                                         <td>
@@ -154,12 +154,12 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            <div><h6 class="comparison-lable-text bld" id="p-useby-error">Calculate Use By</h6></div>
-                                            <div> <h6 id="fail-product-use-by-error" class="comparison-lable-text">xxxxxxxxxxx</h6></div>
+                                            <div><h6 class="comparison-lable-text bld" >Calculate Use By</h6></div>
+                                        <div> <h6 id="fail-calc-use-by-error" class="comparison-lable-text">xxxxxxxxxxx</h6></div>
                                         </td>
                                         <td>
-                                            <div> <h6 class="comparison-lable-text bld">Product Label Use by Date</h6></div>
-                                            <div><h6 id="fail-calc-use-by-error" class="comparison-lable-text">xxxxxxxxxxx</h6></div>
+                                             <div> <h6 class="comparison-lable-text bld" id="p-useby-error">Product Label Use by Date</h6></div>
+                                        <div><h6 id="fail-product-use-by-error" class="comparison-lable-text">xxxxxxxxxxx</h6></div>
                                         </td>
                                         <td>
                                         <div id="before-scan-use-date">
@@ -176,7 +176,7 @@
                                             </div>
                                         </td>
                                     </tr>
-                                    <tr class="bg-color">
+                                <tr class="bg-row-color">
                                         <td>
                                             <div><h6 class="comparison-lable-text bld">Work Order Lot Number</h6></div>
                                         <div><h6 id="fail-lotno-error" class="comparison-lable-text">@Model.workOrderLotNo</h6></div>
@@ -224,7 +224,7 @@
                                             </div>
                                         </td>
                                     </tr>
-                                    <tr class="bg-color">
+                                    <tr class="bg-row-color">
                                         <td>
                                             <div> <h6 class="comparison-lable-text bld">Product Label Specification</h6></div>
                                             <div><h6 id="fail-label-spec-error" class="comparison-lable-text">xxxxxxxxxxx</h6></div>
@@ -251,7 +251,8 @@
                                 </tbody>
                             </table>
                         </div>
-                    </card>
+                </div>
+                   
 
 
                     <div class="row">
@@ -283,40 +284,32 @@
                     <div class="scan-container">
                         Scan Product Label
                     </div>
-                </div>
-                <div class="work-btn" id="before-workorder">New Work Order</div>
-            </div>
-
-             <div class="col-md-4" id="after-fail-side-scan">
-            <div class="status-wrapper p-2 bg-light-blue">
-                <div class="status-container failed-status">
-                    Failed
-                </div>
-                <div class="scan-container">
+                    <div class="work-btn" id="before-workorder">New Work Order</div>
+                </div>  
+                
+                    <div class="status-wrapper p-2 bg-light-blue" id="after-fail-side-scan">
+                        <div class="status-container failed-status">
+                            Failed
+                        </div>
+                        <div class="scan-container">
+                            Scan Product Label
+                        </div>
+                    <div class="work-btn" id="after-fail-workorder">New Work Order</div>
+                    <div class="work-btn-1" id="rescanBtn">Rescan</div>
+                    </div>
+                   
+  
+                   <div class="status-wrapper p-2 bg-light-blue" id="after-success-side-scan">
+                     <div class="status-container passed-status">
+                      Passed
+                    </div>
+                  <div class="scan-container">
                     Scan Product Label
+                   </div>
+                    <a asp-area="" asp-controller="Home" asp-action="WorkOrderScan" id="after-pass-workorder" class="work-btn">New Work Order</a>
                 </div>
+              
             </div>
-            <div class="work-btn" id="after-fail-workorder">New Work Order</div>
-            </div>
-
-                <div class="col-md-4" id="after-success-side-scan">
-            <div class="status-wrapper p-2 bg-light-blue">
-                <div class="status-container passed-status">
-                    Passed
-                </div>
-                <div class="scan-container">
-                    Scan Product Label
-                </div>
-            </div>
-            <div class="work-btn" id="after-pass-workorder">New Work Order</div>
-
-        </div>
-
-        <div class="col-12 lbl1">
-            <div id="after-scan-fail-text" style="display:none;background-color: #003C71;" class="scanning-text-container scanning-failed-instruction temp-supervisor-call-button">
-                <h6 class="scanning-text-2">supervisor required to approve mismatch</h6>
-            </div>
-        </div>
 
         <div id="popupContainer">
             <div id="popupContent">
@@ -340,8 +333,31 @@
 
 
 <style>
+ 
+    .work-btn-1 {
+  display: inline-block;
+  padding: 10px 20px; /* Adjust padding as needed */
+  background-color: #FFB246;
+  color: #FFF;
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+  text-decoration: none;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  /* Additional styles (hover, focus, etc.) can be added for better user interaction */
+}
+
+.work-btn:hover {
+        background-color: #FFB246; /* Change color on hover as desired */
+}
 
 
+
+    .bg-row-color{
+        background-color:aliceblue !important;
+    }
 
     body {
         background: #f9fafb;
@@ -564,8 +580,6 @@
 
     .work-btn {
         display: flex;
-        /* width: 405px; */
-        /* height: 25%; */
         padding: 20px 24px;
         justify-content: center;
         align-items: center;
@@ -573,12 +587,12 @@
         background: #003C71;
         color: #FFF;
         text-align: center;
-        /* font-family: Inter; */
         font-size: 16px;
         font-style: normal;
         font-weight: 700;
         border-radius: 10px;
         margin: 10px 0;
+        text-decoration:none;
     }
 
     .sm-card {
@@ -1382,6 +1396,12 @@
             background: #ffffff !important;
         }
 
+        table{
+            width:100%;
+        }
+        
+
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
 
@@ -1398,8 +1418,9 @@
     let inPassScenario = false;
     let inFailScenario = false;
     let responseData = null;
-    let superVisorInput = false; 
- var toastVisible = true; // Initially set to true so the message is not displayed
+    let superVisorInput = false;
+    let rescanbutton = false;
+    var toastVisible = true; // Initially set to true so the message is not displayed
     var timerHasStarted = false;
     var intervalId;
     var isPaused = false;
@@ -1413,11 +1434,12 @@
     //document.getElementById("after-scan-fail-image").style.display ="none";
     //document.getElementById("after-scan-fail-text").style.display = "none";
     //document.getElementsByClassName('center1')[0].style.display = "none";
-    document.getElementsByClassName('lbl1')[0].style.display = "none";
+    //document.getElementsByClassName('lbl1')[0].style.display = "none";
     document.getElementById("after-fail-side-scan").style.display = "none";
     document.getElementById("after-success-side-scan").style.display = "none";
     document.getElementById("after-pass-workorder").style.display = "none";
     document.getElementById("after-fail-workorder").style.display = "none";
+  
     
     //document.getElementsByClassName('temp-button')[0]
     //    .addEventListener('click', function (event) {
@@ -1426,10 +1448,10 @@
 
     //    });
 
-    document.getElementsByClassName('temp-supervisor-call-button')[0]
-       .addEventListener('click', function (event) {
-           showPopup();
-       });
+    //document.getElementsByClassName('temp-supervisor-call-button')[0]
+    //   .addEventListener('click', function (event) {
+    //       showPopup();
+    //   });
     //document.getElementsByClassName('temp-supervisor-call-button1')[0]
     //    .addEventListener('click', function (event) {
     //        showPopup1();
@@ -1476,22 +1498,23 @@
     // });
 
     function beforeToDuringScan() {
-         
-          document.getElementsByClassName('lbl1')[0].style.display="none";
+          document.getElementById("before-scan-cat-no").style.display = "none";
+          document.getElementById("during-scan-cat-no").style.display = "block";
+          document.getElementById("before-scan-wo-mfg-date").style.display ="none";
+          document.getElementById("during-scan-wo-mfg-date").style.display ="block";
+          document.getElementById("before-shelflife").style.display="none";
+          document.getElementById("during-shelflife").style.display = "block";
+          document.getElementById("before-scan-use-date").style.display = "none";
+          document.getElementById("during-scan-use-date").style.display = "block";
+
           document.getElementById("before-scan-lot-no").style.display = "none";
           document.getElementById("during-scan-lot-no").style.display = "block";
 
           document.getElementById("before-scan-gtin").style.display = "none";
           document.getElementById("during-scan-gtin").style.display = "block";
 
-          document.getElementById("before-scan-cat-no").style.display = "none";
-          document.getElementById("during-scan-cat-no").style.display = "block";
-
           document.getElementById("before-scan-label-spec").style.display = "none";
           document.getElementById("during-scan-label-spec").style.display = "block";
-
-          document.getElementById("before-scan-use-date").style.display = "none";
-          document.getElementById("during-scan-use-date").style.display = "block";
           document.getElementById("popupContainer").style.display = "none";
     }
 
@@ -1500,12 +1523,12 @@
         document.getElementById("fail-gtin-error").innerHTML = responseData.rhsData.productLabelGTIN;
         document.getElementById("fail-lotno-error").innerHTML = responseData.lhsData.workOrderLotNo;
         document.getElementById("fail-label-spec-error").innerHTML = responseData.rhsData.productLabelSpec;
-        document.getElementById("fail-calc-use-by-error").innerHTML = responseData.rhsData.productUseBy;
+        document.getElementById("fail-product-use-by-error").innerHTML = responseData.rhsData.productUseBy;
         document.getElementById("fail-db-catalog-num-error").innerHTML = responseData.rhsData.workOrderCatalogNo;
         document.getElementById("fail-product-gtin-error").innerHTML = responseData.lhsData.dbGTIN;
         document.getElementById("fail-product-lot-no-error").innerHTML = responseData.rhsData.productLotNo;
         document.getElementById("fail-product-label-spec-error").innerHTML = responseData.lhsData.dbLabelSpec;
-        document.getElementById("fail-product-use-by-error").innerHTML = responseData.lhsData.calculatedUseBy;
+        document.getElementById("fail-calc-use-by-error").innerHTML = responseData.lhsData.calculatedUseBy;
         document.getElementById("fail-wo-catalog-no-error").innerHTML = responseData.lhsData.dbCatalogNo;
 
         document.getElementById("during-scan-lot-no").style.display = "none";
@@ -1522,17 +1545,17 @@
 
         document.getElementById("during-scan-use-date").style.display = "none";
         document.getElementById("after-scan-pass-use-date").style.display = "block";
-
-        document.getElementById("left-part-during-scan").style.display = "none";
-        document.getElementById("left-part-after-scan-pass").style.display = "block";
         
-        document.getElementById("next-scan-button").style.backgroundColor = "#003C71";
-         document.getElementById("next-scan-button1").style.backgroundColor = "#003C71";
-        //document.getElementById("before-scan-text").style.display = "block";
+        document.getElementById("during-scan-wo-mfg-date").style.display="none";
+        document.getElementById("after-scan-pass-wo-mfg-date").style.display ="block";
+        document.getElementById("during-shelflife").style.display="none";
+        document.getElementById("after-scan-pass-shelflife").style.display="block";
 
-        document.getElementById("popupContainer").style.display = "none";
-        document.getElementById("next-scan-button").classList.remove("disabled");
-        document.getElementById("next-scan-button1").classList.remove("disabled");
+        document.getElementById("container").style.backgroundColor="#BAFFCD";
+        document.getElementById("before-side-scan").style.display="none";
+        document.getElementById("after-success-side-scan").style.display="block";
+        document.getElementById("after-pass-workorder").style.display="block";
+        document.getElementById("popupContainer").style.display = "none"
    
     }
     function duringToScanFail(response) {
@@ -1583,22 +1606,20 @@
 
         document.getElementById("left-part-during-scan").style.display = "none";
         document.getElementById("left-part-after-scan-fail").style.display = "block";
-        $("#btn-end > div").addClass("disabled").off('click');
+       
 
     }
 
     function scanfail(response){
-        document.getElementById("error").style.display = "flex";
-        document.getElementById("supervisor-intervention").style.display = "flex";
-        //document.getElementById("p-dls").style.display = "flex";
-        document.getElementsByClassName('center1')[0].style.display = "flex";
-        document.getElementsByClassName('lbl1')[0].style.display="flex";
-        document.getElementById("before-scan-image").style.display ="none";
-        document.getElementById("before-scan-text").style.display = "none";
-        document.getElementById("after-scan-fail-image").style.display ="block";
-        document.getElementById("after-scan-fail-text").style.display = "block";
-        document.getElementById("left-part-during-scan").style.display = "none";
-        document.getElementById("left-part-after-scan-fail").style.display = "block";
+        document.getElementById("during-scan-wo-mfg-date").style.display = "none";
+        document.getElementById("after-scan-pass-wo-mfg-date").style.display = "block";
+        document.getElementById("during-shelflife").style.display = "none";
+        document.getElementById("after-scan-pass-shelflife").style.display = "block";
+        document.getElementById("container").style.backgroundColor = "#FFCACA";
+        document.getElementById("before-side-scan").style.display="none";
+        document.getElementById("after-fail-side-scan").style.display="block";
+        document.getElementById("after-fail-workorder").style.display="block";
+        document.getElementById("rescanBtn").style.display = "block";
         if(responseData.gtinMismatch==true)
         {
          gtinmismatchblink();
@@ -1606,43 +1627,34 @@
         else{
             mismatchblink();
         }
-        $("#btn-end > div").addClass("disabled").off('click');
     }
 
     function gtinmismatchblink()
     {
         if (responseData.gtinMismatch == true) {
-            document.getElementById("during-scan-lot-no").style.display = "none";
-            document.getElementById("after-scan-fail-lot-no").style.display = "block";
-        }
-        if (responseData.lotnoMismatch == true) {
             document.getElementById("during-scan-gtin").style.display = "none";
             document.getElementById("after-scan-fail-gtin").style.display = "block";
         }
+        if (responseData.lotnoMismatch == true) {
+            document.getElementById("during-scan-lot-no").style.display = "none";
+            document.getElementById("after-scan-fail-lot-no").style.display = "block";
+        }
         else {
-            document.getElementById("during-scan-gtin").style.display = "none";
-            document.getElementById("after-scan-pass-gtin").style.display = "block";
+            document.getElementById("during-scan-lot-no").style.display = "none";
+            document.getElementById("after-scan-pass-lot-no").style.display = "block";
 
         }
 
         if (responseData.labelMismatch == true) {
-            document.getElementById("during-scan-cat-no").style.display = "none";
-            document.getElementById("after-scan-fail-cat-no").style.display = "block";
-        }
-        else {
-
-            document.getElementById("during-scan-cat-no").style.display = "none";
-            document.getElementById("after-scan-pass-cat-no").style.display = "block";
-        }
-        if (responseData.firstUseby_Mismatch == true) {
             document.getElementById("during-scan-label-spec").style.display = "none";
             document.getElementById("after-scan-fail-label-spec").style.display = "block";
         }
         else {
+
             document.getElementById("during-scan-label-spec").style.display = "none";
             document.getElementById("after-scan-pass-label-spec").style.display = "block";
         }
-        if (responseData.catalogMismatch == true) {
+        if (responseData.firstUseby_Mismatch == true) {
             document.getElementById("during-scan-use-date").style.display = "none";
             document.getElementById("after-scan-fail-use-date").style.display = "block";
         }
@@ -1650,27 +1662,25 @@
             document.getElementById("during-scan-use-date").style.display = "none";
             document.getElementById("after-scan-pass-use-date").style.display = "block";
         }
+        if (responseData.catalogMismatch == true) {
+            document.getElementById("during-scan-cat-no").style.display = "none";
+            document.getElementById("after-scan-fail-cat-no").style.display = "block";
+        }
+        else {
+            document.getElementById("during-scan-cat-no").style.display = "none";
+            document.getElementById("after-scan-pass-cat-no").style.display = "block";
+        }
+        showPopup();
 
     }
 
     function mismatchblink()
     {
         if (responseData.mismatches.gtinMismatch == true) {
-            document.getElementById("during-scan-lot-no").style.display = "none";
-            document.getElementById("after-scan-fail-lot-no").style.display = "block";
-        }
-
-        else {
-            document.getElementById("during-scan-lot-no").style.display = "none";
-            document.getElementById("after-scan-fail-lot-no").style.display = "none";
-            document.getElementById("after-scan-pass-lot-no").style.display = "block";
-
-        }
-
-        if (responseData.mismatches.lotNoMismatch == true) {
             document.getElementById("during-scan-gtin").style.display = "none";
             document.getElementById("after-scan-fail-gtin").style.display = "block";
         }
+
         else {
             document.getElementById("during-scan-gtin").style.display = "none";
             document.getElementById("after-scan-fail-gtin").style.display = "none";
@@ -1678,7 +1688,38 @@
 
         }
 
+        if (responseData.mismatches.lotNoMismatch == true) {
+            document.getElementById("during-scan-lot-no").style.display = "none";
+            document.getElementById("after-scan-fail-lot-no").style.display = "block";
+        }
+        else {
+            document.getElementById("during-scan-lot-no").style.display = "none";
+            document.getElementById("after-scan-fail-lot-no").style.display = "none";
+            document.getElementById("after-scan-pass-lot-no").style.display = "block";
+
+        }
+
         if (responseData.mismatches.labelSpecMismatch == true) {
+             document.getElementById("during-scan-label-spec").style.display = "none";
+            document.getElementById("after-scan-fail-label-spec").style.display = "block";
+        }
+        else {
+            document.getElementById("during-scan-label-spec").style.display = "none";
+            document.getElementById("after-scan-fail-label-spec").style.display = "none";
+            document.getElementById("after-scan-pass-label-sepc").style.display = "block";
+
+        }
+        if (responseData.mismatches.calculatedUseByMismatch == true) {
+           document.getElementById("during-scan-use-date").style.display = "none";
+            document.getElementById("after-scan-fail-use-date").style.display="block";
+
+        }
+        else {
+            document.getElementById("during-scan-use-date").style.display = "none";
+            document.getElementById("after-scan-fail-use-date").style.display="none";
+            document.getElementById("after-scan-pass-use-date").style.display = "block";
+        }
+        if (responseData.mismatches.catalogNumMismatch == true) {
             document.getElementById("during-scan-cat-no").style.display = "none";
             document.getElementById("after-scan-fail-cat-no").style.display = "block";
         }
@@ -1688,26 +1729,7 @@
             document.getElementById("after-scan-pass-cat-no").style.display = "block";
 
         }
-        if (responseData.mismatches.calculatedUseByMismatch == true) {
-            document.getElementById("during-scan-label-spec").style.display = "none";
-            document.getElementById("after-scan-fail-label-spec").style.display = "block";
-
-        }
-        else {
-            document.getElementById("during-scan-label-spec").style.display = "none";
-            document.getElementById("after-scan-fail-label-spec").style.display = "none";
-            document.getElementById("after-scan-pass-label-spec").style.display = "block";
-        }
-        if (responseData.mismatches.catalogNumMismatch == true) {
-            document.getElementById("during-scan-use-date").style.display = "none";
-            document.getElementById("after-scan-fail-use-date").style.display = "block";
-        }
-        else {
-           document.getElementById("during-scan-use-date").style.display = "none";
-            document.getElementById("after-scan-fail-use-date").style.display = "none";
-            document.getElementById("after-scan-pass-use-date").style.display = "block";
-
-        }
+        showPopup();
     }
 
     function GtinMismatch(response) {
@@ -1764,11 +1786,9 @@
 
 
     function ScanFailToSupervisor() {
-        document.getElementById("after-scan-fail-image").style.display ="none";
-        document.getElementById("after-scan-fail-text").style.display = "none";
+       
         document.getElementById("popupContainer").style.display = "none";
-        document.getElementById("supervisor-intervention").style.display = "flex";
-        document.getElementById("error").style.display = "flex";
+        
     }
 
     function resetPassScenario() {
@@ -1796,8 +1816,6 @@
     }
 
     function showPopup() {
-        document.getElementById("scanning-icon-div").style.backgroundColor = "#FFB5B5";
-        document.getElementById("after-scan-fail-text").style.display = "flex";
         document.getElementById("popupContainer").style.display = "block";
          superVisorInput = true;
     }
@@ -1819,11 +1837,9 @@
     $(document).on("click", "#submitBtn", function () {
         // Disable the input fields and button
         $("#productLabelInput, #productLabelSpec, #submitBtn").prop("disabled", true);
-        document.getElementById("after-scan-fail-gtin").style.display = "none";
-        document.getElementById("after-scan-fail-text").style.display = "none";
         var productLabel = document.getElementById("productLabelInput").value;
         var productLabelSpec = document.getElementById("productLabelSpec").value;
-        var apiUrl = "/SaveProductLabel";
+        var apiUrl = "/SaveProductLabel"; 
         beforeToDuringScan();
 
         $.ajax({
@@ -1863,7 +1879,7 @@
     $(document).on("click", "#rescanBtn", function () {
         var productLabel = document.getElementById("productLabelInput").value;
         var productLabelSpec = document.getElementById("productLabelSpec").value;
-
+        let rescanbutton = true;
         var apiUrl = "/SaveProductLabel";
         beforeToDuringScan();
         $.ajax({
@@ -1906,23 +1922,18 @@
         document.getElementById("fail-gtin-error").innerHTML = responseData.rhsData.productLabelGTIN;
         document.getElementById("fail-lotno-error").innerHTML = responseData.lhsData.workOrderLotNo;
         document.getElementById("fail-label-spec-error").innerHTML = responseData.rhsData.productLabelSpec;
-        document.getElementById("fail-calc-use-by-error").innerHTML = responseData.rhsData.productUseBy;
+        document.getElementById("fail-calc-use-by-error").innerHTML = responseData.lhsData.calculatedUseBy;
         document.getElementById("fail-db-catalog-num-error").innerHTML = responseData.rhsData.workOrderCatalogNo;
 
         document.getElementById("fail-product-gtin-error").innerHTML = responseData.lhsData.dbGTIN;
         document.getElementById("fail-product-lot-no-error").innerHTML = responseData.rhsData.productLotNo;
         document.getElementById("fail-product-label-spec-error").innerHTML = responseData.lhsData.dbLabelSpec;
-        document.getElementById("fail-product-use-by-error").innerHTML = responseData.lhsData.calculatedUseBy;
+        document.getElementById("fail-product-use-by-error").innerHTML = responseData.rhsData.productUseBy; 
         document.getElementById("fail-wo-catalog-no-error").innerHTML = responseData.lhsData.dbCatalogNo;
 
     }
 
     function setScannedFailData(response, mismatches) {
-        document.getElementById("next-scan-button").style.backgroundColor = "#003C71";
-        document.getElementById("next-scan-button1").style.display = "none";
-        document.getElementById("next-scan-button2").style.display = "block";
-        document.getElementById("next-scan-button").classList.remove("disabled");
-        document.getElementById("next-scan-button2").classList.remove("disabled");
         if(response.gtinMismatch){
             document.getElementById("total-val").innerHTML = parseInt(document.getElementById("total-val").innerHTML) + 1;
             document.getElementById("total-failed-val").innerHTML = parseInt(document.getElementById("total-failed-val").innerHTML) + 1;
@@ -1930,85 +1941,85 @@
         }
       else{
         console.log("set data for fail called");
-        document.getElementById("after-scan-fail-image").style.display = "none";
-        document.getElementById("after-scan-fail-text").style.display = "none";
-        document.getElementById("error").style.display = "flex";
-        document.getElementById("supervisor-intervention").style.display = "flex";
         document.getElementById("fail-gtin-error").innerHTML = responseData.rhsData.productLabelGTIN;
         document.getElementById("fail-lotno-error").innerHTML = responseData.lhsData.workOrderLotNo;
         document.getElementById("fail-label-spec-error").innerHTML = responseData.rhsData.productLabelSpec;
-        document.getElementById("fail-calc-use-by-error").innerHTML = responseData.rhsData.productUseBy;
+        document.getElementById("fail-calc-use-by-error").innerHTML = responseData.lhsData.calculatedUseBy;
         document.getElementById("fail-db-catalog-num-error").innerHTML = responseData.rhsData.workOrderCatalogNo;
         if (mismatches.gtinMismatch) {
             document.getElementById("pa-gtin").style.color = "red";
             document.getElementById("fail-product-gtin-error").innerHTML = responseData.lhsData.dbGTIN;
             document.getElementById("fail-product-gtin-error").style.color = "red";
-            document.getElementById("during-scan-lot-no").style.display = "none";
-            document.getElementById("after-scan-fail-lot-no").style.display = "block";
+            document.getElementById("during-scan-gtin").style.display = "none";
+            document.getElementById("after-scan-fail-gtin").style.display = "block";
+           
         } else {
             document.getElementById("pa-gtin").style.color = "black";
             document.getElementById("fail-product-gtin-error").innerHTML = responseData.lhsData.dbGTIN;
             document.getElementById("fail-product-gtin-error").style.color = "black";
-            document.getElementById("during-scan-lot-no").style.display = "none";
-            document.getElementById("after-scan-fail-lot-no").style.display = "none";
-            document.getElementById("after-scan-pass-lot-no").style.display = "block";
+            document.getElementById("during-scan-gtin").style.display = "none";
+            document.getElementById("after-scan-fail-gtin").style.display = "none";
+            document.getElementById("after-scan-pass-gtin").style.display = "block";
         }
         if (mismatches.lotNoMismatch) {
             document.getElementById("p-lotnum-error").style.color = "red";
             document.getElementById("fail-product-lot-no-error").innerHTML = responseData.rhsData.productLotNo;
             document.getElementById("fail-product-lot-no-error").style.color = "red";
-            document.getElementById("during-scan-gtin").style.display = "none";
-            document.getElementById("after-scan-fail-gtin").style.display = "block";
+            document.getElementById("during-scan-lot-no").style.display = "none";
+            document.getElementById("after-scan-fail-lot-no").style.display = "block";
+            
         } else {
             document.getElementById("p-lotnum-error").style.color = "black";
             document.getElementById("fail-product-lot-no-error").innerHTML = responseData.rhsData.productLotNo;
             document.getElementById("fail-product-lot-no-error").style.color = "black";
-            document.getElementById("during-scan-gtin").style.display = "none";
-            document.getElementById("after-scan-fail-gtin").style.display = "none";
-            document.getElementById("after-scan-pass-gtin").style.display = "block";
+            document.getElementById("during-scan-lot-no").style.display = "none";
+            document.getElementById("after-scan-fail-lot-no").style.display = "none";
+            document.getElementById("after-scan-pass-lot-no").style.display="block";
         }
 
         if (mismatches.labelSpecMismatch) {
             document.getElementById("p-labelspec-error").style.color = "red";
             document.getElementById("fail-product-label-spec-error").innerHTML = responseData.lhsData.dbLabelSpec;
             document.getElementById("fail-product-label-spec-error").style.color = "red";
-            document.getElementById("during-scan-cat-no").style.display = "none";
-            document.getElementById("after-scan-fail-cat-no").style.display = "block";
+            document.getElementById("during-scan-label-spec").style.display = "none";
+            document.getElementById("after-scan-fail-label-spec").style.display = "block";
         } else {
             document.getElementById("p-labelspec-error").style.color = "black";
             document.getElementById("fail-product-label-spec-error").innerHTML = responseData.lhsData.dbLabelSpec;
             document.getElementById("fail-product-label-spec-error").style.color = "black";
-            document.getElementById("during-scan-cat-no").style.display = "none";
-           document.getElementById("after-scan-fail-cat-no").style.display = "none";
-           document.getElementById("after-scan-pass-cat-no").style.display = "block";
+           document.getElementById("during-scan-label-spec").style.display = "none";
+            document.getElementById("after-scan-fail-label-spec").style.display = "none";
+           document.getElementById("after-scan-pass-label-spec").style.display = "block";
         }
         if (mismatches.calculatedUseByMismatch) {
-            document.getElementById("p-useby-error").style.color = "red";
-            document.getElementById("fail-product-use-by-error").innerHTML = responseData.lhsData.calculatedUseBy;
-            document.getElementById("fail-product-use-by-error").style.color = "red";
-            document.getElementById("during-scan-label-spec").style.display = "none";
-            document.getElementById("after-scan-fail-label-spec").style.display = "block";
+             document.getElementById("p-useby-error").style.color = "red";
+             document.getElementById("fail-product-use-by-error").innerHTML = responseData.rhsData.productUseBy;
+             document.getElementById("fail-product-use-by-error").style.color = "red";
+             document.getElementById("during-scan-use-date").style.display = "none";
+             document.getElementById("after-scan-fail-use-date").style.display = "block";
         } else {
-            document.getElementById("p-useby-error").style.color = "black";
-            document.getElementById("fail-product-use-by-error").innerHTML = responseData.lhsData.calculatedUseBy;
-            document.getElementById("fail-product-use-by-error").style.color = "black";
-            document.getElementById("during-scan-label-spec").style.display = "none";
-            document.getElementById("after-scan-fail-label-spec").style.display = "none";
-            document.getElementById("after-scan-pass-label-spec").style.display = "block";
+           document.getElementById("p-useby-error").style.color = "black";
+           document.getElementById("fail-product-use-by-error").innerHTML = responseData.rhsData.productUseBy;
+           document.getElementById("fail-product-use-by-error").style.color = "black";
+           document.getElementById("during-scan-use-date").style.display = "none";
+            document.getElementById("after-scan-fail-use-date").style.display = "none";
+            document.getElementById("after-scan-pass-use-date").style.display= "block";
         }
         if (mismatches.catalogNumMismatch) {
             document.getElementById("w-catlognum-error").style.color = "red";
             document.getElementById("fail-wo-catalog-no-error").innerHTML = responseData.lhsData.dbCatalogNo;
             document.getElementById("fail-wo-catalog-no-error").style.color = "red";
-            document.getElementById("during-scan-use-date").style.display = "none";
-            document.getElementById("after-scan-fail-use-date").style.display = "block";
+            document.getElementById("during-scan-cat-no").style.display = "none";
+            document.getElementById("after-scan-fail-cat-no").style.display = "block";
+            
         } else {
             document.getElementById("w-catlognum-error").style.color = "black";
             document.getElementById("fail-wo-catalog-no-error").innerHTML = responseData.lhsData.dbCatalogNo;
             document.getElementById("fail-wo-catalog-no-error").style.color = "black";
-            document.getElementById("during-scan-use-date").style.display = "none";
-            document.getElementById("after-scan-fail-use-date").style.display = "none";
-            document.getElementById("after-scan-pass-use-date").style.display = "block";
+             document.getElementById("during-scan-cat-no").style.display = "none";
+            document.getElementById("after-scan-fail-cat-no").style.display = "none";
+            document.getElementById("after-scan-pass-cat-no").style.display ="block";
+           
 
         }
       }
@@ -2017,18 +2028,14 @@
     }
     function setScannedFailData1() {
         console.log("set data for fail called");
-        document.getElementById("after-scan-fail-image").style.display = "none";
-        document.getElementById("after-scan-fail-text").style.display = "none";
-        document.getElementById("supervisor-intervention").style.display = "flex";
-        document.getElementById("error").style.display = "flex";
         if (responseData.gtinMismatch == true) {
             document.getElementById("pa-gtin").style.color = "red";
             document.getElementById("fail-product-gtin-error").innerHTML = responseData.db_Gtin;
             document.getElementById("fail-product-gtin-error").style.color = "red";
             document.getElementById("fail-gtin-error").innerHTML = responseData.product_Gtin;
             document.getElementById("fail-gtin-error").style.color= "black";
-            document.getElementById("during-scan-lot-no").style.display = "none";
-            document.getElementById("after-scan-fail-lot-no").style.display = "block";
+            document.getElementById("during-scan-gtin").style.display = "none";
+            document.getElementById("after-scan-fail-gtin").style.display = "block";
         }
         if (responseData.lotnoMismatch == true){
             document.getElementById("fail-lotno-error").innerHTML = responseData.wO_Lot_No;
@@ -2036,16 +2043,16 @@
             document.getElementById("p-lotnum-error").style.color = "red";
             document.getElementById("fail-product-lot-no-error").innerHTML = responseData.product_Lot_No;
             document.getElementById("fail-product-lot-no-error").style.color = "red";
-            document.getElementById("during-scan-gtin").style.display = "none";
-            document.getElementById("after-scan-fail-gtin").style.display = "block";
+            document.getElementById("during-scan-lot-no").style.display = "none";
+            document.getElementById("after-scan-fail-lot-no").style.display = "block";
         }
         else{
             document.getElementById("fail-lotno-error").innerHTML = responseData.wo_Lot_No;
             document.getElementById("fail-lotno-error").style.color = "black";
             document.getElementById("fail-product-lot-no-error").innerHTML = responseData.product_Lot_No;
             document.getElementById("fail-product-lot-no-error").style.color = "black";
-            document.getElementById("during-scan-gtin").style.display = "none";
-            document.getElementById("after-scan-pass-gtin").style.display = "block";
+            document.getElementById("during-scan-lot-no").style.display = "none";
+            document.getElementById("after-scan-pass-lot-no").style.display="block";
         }
         if (responseData.labelMismatch == true) {
             document.getElementById("fail-label-spec-error").style.color = "black";
@@ -2053,8 +2060,8 @@
             document.getElementById("p-labelspec-error").style.color = "red";
             document.getElementById("fail-product-label-spec-error").innerHTML = responseData.db_Spec;
             document.getElementById("fail-product-label-spec-error").style.color = "red";
-            document.getElementById("during-scan-cat-no").style.display = "none";
-            document.getElementById("after-scan-fail-cat-no").style.display = "block";
+            document.getElementById("during-scan-label-spec").style.display = "none";
+            document.getElementById("after-scan-fail-label-spec").style.display = "block";
         }
         else {
             document.getElementById("fail-label-spec-error").style.color = "black";
@@ -2064,27 +2071,30 @@
             document.getElementById("fail-product-label-spec-error").style.color = "black";
             document.getElementById("during-scan-cat-no").style.display = "none";
             document.getElementById("after-scan-pass-cat-no").style.display = "block";
+            document.getElementById("during-scan-label-spec").style.display = "none";
+            document.getElementById("after-scan-pass-label-spec").style.display = "block";
         }
         if(responseData.firstUseby_Mismatch == true)
         {
             document.getElementById("fail-calc-use-by-error").style.color = "black";
-            document.getElementById("fail-calc-use-by-error").innerHTML = responseData.pro_Use_By;
+            document.getElementById("fail-calc-use-by-error").innerHTML = responseData.calculate_Use_By;
             document.getElementById("p-useby-error").style.color = "red";
-            document.getElementById("fail-product-use-by-error").innerHTML = responseData.calculate_Use_By;
+            document.getElementById("fail-product-use-by-error").innerHTML = responseData.pro_Use_By;
             document.getElementById("fail-product-use-by-error").style.color = "red";
-            document.getElementById("during-scan-label-spec").style.display = "none";
-            document.getElementById("after-scan-fail-label-spec").style.display = "block";
+            document.getElementById("during-scan-use-date").style.display = "none";
+            document.getElementById("after-scan-fail-use-date").style.display = "block";
+            
            
         }
         else{
             document.getElementById("fail-calc-use-by-error").style.color = "black";
-            document.getElementById("fail-calc-use-by-error").innerHTML = responseData.pro_Use_By;
+            document.getElementById("fail-calc-use-by-error").innerHTML = responseData.calculate_Use_By;
             document.getElementById("p-useby-error").style.color = "black";
-            document.getElementById("fail-product-use-by-error").innerHTML = responseData.calculate_Use_By;
+            document.getElementById("fail-product-use-by-error").innerHTML = responseData.pro_Use_By;
             document.getElementById("fail-product-use-by-error").style.color = "black";
-            document.getElementById("during-scan-label-spec").style.display = "none";
-            document.getElementById("after-scan-pass-label-spec").style.display = "block";
-            
+            document.getElementById("during-scan-use-date").style.display = "none";
+            document.getElementById("after-scan-pass-use-date").style.display = "block";
+               
         }
         if(responseData.catalogMismatch == true) 
         {
@@ -2093,8 +2103,9 @@
             document.getElementById("w-catlognum-error").style.color = "red";
             document.getElementById("fail-wo-catalog-no-error").innerHTML = responseData.db_Catalog_No;
             document.getElementById("fail-wo-catalog-no-error").style.color = "red";
-            document.getElementById("during-scan-use-date").style.display = "none";
-            document.getElementById("after-scan-fail-use-date").style.display = "block";
+           document.getElementById("during-scan-cat-no").style.display = "none";
+            document.getElementById("after-scan-fail-cat-no").style.display = "block";
+           
         }
         else
         {
@@ -2103,8 +2114,9 @@
             document.getElementById("w-catlognum-error").style.color = "black";
             document.getElementById("fail-wo-catalog-no-error").innerHTML = responseData.db_Catalog_No;
             document.getElementById("fail-wo-catalog-no-error").style.color = "black";
-            document.getElementById("during-scan-use-date").style.display = "none";
-            document.getElementById("after-scan-pass-use-date").style.display = "block";
+            document.getElementById("after-scan-fail-cat-no").style.display = "none";
+            document.getElementById("after-scan-pass-cat-no").style.display ="block";       
+            
         }
         
 
@@ -2120,41 +2132,9 @@
               document.getElementById("total-failed-val").innerHTML = response.workOrderInfo.failedCount != null ? response.workOrderInfo.failedCount: 0;
               document.getElementById("total-rescanned-val").innerHTML = response.workOrderInfo.scannedCount != null ? response.workOrderInfo.scannedCount: 0;
         console.log(response.workOrderInfo.scannedCount);
-        document.getElementById("work-order-lot-no").innerHTML = response.lhsData.workOrderLotNo;
     }
 
-    function redbutton(inputFieldId) {
-        showLoader();
-        var supervisorId = $('#' + inputFieldId).val();
-
-        $.ajax({
-            type: 'POST',
-            url: '/Home/CheckSupervisorId',
-            data: { supervisorEmpId: supervisorId },
-            success: function (data) {
-                if (data === true) {
-                    hideLoader();
-                    closePopup();
-                    ScanFailToSupervisor1();
-                    setScannedFailData1(responseData);
-                    $('#' + inputFieldId).val('');
-                } else {
-                    hideLoader();
-                    // Supervisor ID is invalid, show an error message
-                    var errorMessage = 'Supervisor ID is invalid. Please enter a valid ID.';
-                    $('#popupContent1').find('.error-message').text(errorMessage);
-                    $('#' + inputFieldId).val('');
-                }
-            },
-            error: function (xhr, status, error) {
-                console.log("An error occurred while making the AJAX call:", error);
-            }
-        });
-    }
-
-
-
-
+    
 
     function configureContinueButton(inputFieldId) {
         showLoader();

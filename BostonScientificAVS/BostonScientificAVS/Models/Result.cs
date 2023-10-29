@@ -51,6 +51,8 @@ namespace BostonScientificAVS.Models
 
         public string workOrderLotNo { get; set; }
         public string workOrderCatalogNo { get; set; }
+        public DateTime? workOrderMfgDate { get; set; }
+        public int? shelflife { get;set;}
 
     }
 

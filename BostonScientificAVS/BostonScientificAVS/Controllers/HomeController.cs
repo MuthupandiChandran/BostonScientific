@@ -49,6 +49,7 @@ namespace BostonScientificAVS.Controllers
 
             WorkOrderInfo woi = new WorkOrderInfo();
             var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
+            var itemmaster = _dataContext.ItemMaster.OrderByDescending(x => x.GTIN).FirstOrDefault();
             var workOrder = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Result != null).Distinct();
             woi.totalCount = workOrder.Count();
             woi.passedCount = workOrder.Where(x => x.Result == "Pass").Count();
@@ -56,6 +57,9 @@ namespace BostonScientificAVS.Controllers
             woi.scannedCount = workOrder.Where(x => x.Rescan_Initated == true).Count();
             woi.workOrderLotNo = transaction.WO_Lot_Num;
             woi.workOrderCatalogNo = transaction.WO_Catalog_Num;
+            woi.workOrderMfgDate = transaction.WO_Mfg_Date;
+            woi.shelflife = itemmaster.Shelf_Life;
+
             return View(woi);
         }
 
