@@ -61,6 +61,11 @@
         public int? scannedCount { get; set; }
 
         public string workOrderLotNo { get; set; }
+        public string workOrderCatalogNo { get; set; }
+        public DateTime? workOrderMfgDate { get; set; }
+        public int? shelflife { get; set; }
+        public DateTime? Carton_Use_By { get; set; }
+        public bool TotalMismatch { get; set; }
 
     }
 }

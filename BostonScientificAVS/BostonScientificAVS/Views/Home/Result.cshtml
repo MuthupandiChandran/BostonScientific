@@ -83,7 +83,7 @@
                                             </div>
                                             <div>
 
-                                                <h6 id="fail-wo-catalog-no-error" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                                <h6 id="fail-wo-catalog-no-error" class="comparison-lable-text">@Model.DbCatalogNo</h6>
                                             </div>
                                         </td>
                                         <td>
@@ -349,7 +349,7 @@
   /* Additional styles (hover, focus, etc.) can be added for better user interaction */
 }
 
-.work-btn:hover {
+.work-btn-1:hover {
         background-color: #FFB246; /* Change color on hover as desired */
 }
 
@@ -441,7 +441,7 @@
     .div-container {
         margin-top: 20px;
         height: calc(100vh - 55px);
-        overflow-y: auto;
+        overflow-y: hidden;
         overflow-x: hidden;
         background-color: #f9fafb;
     }
@@ -493,7 +493,7 @@
     }
 
     .styled-scrollbar {
-        overflow: auto;
+        overflow: hidden;
     }
 
         .styled-scrollbar::-webkit-scrollbar {
@@ -626,7 +626,8 @@
     }
 
     .scan-img {
-        width: 100%;
+        width: 75%;
+        height:75%;
     }
 
     .pack{
