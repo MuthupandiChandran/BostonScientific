@@ -65,7 +65,14 @@
         public DateTime? workOrderMfgDate { get; set; }
         public int? shelflife { get; set; }
         public DateTime? Carton_Use_By { get; set; }
-        public bool TotalMismatch { get; set; }
+        public string CartonLotNo { get; set; }
+        public string ifu { get; set; }
+        public string Cartongtin { get; set; }
+        public string Dbgtin { get; set; }
+        public string CartonLabelspec { get; set; }
+        public string Dbspec { get; set; }
+        public string DbCatalogNo { get; set; }
+        public DateTime? Calculateuseby { get; set; }
 
     }
 }

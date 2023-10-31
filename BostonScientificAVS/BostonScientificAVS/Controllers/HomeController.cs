@@ -506,7 +506,7 @@ namespace BostonScientificAVS.Controllers
             var itemmaster = _dataContext.ItemMaster.OrderByDescending(x => x.GTIN).FirstOrDefault();
             var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
             var workOrder = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Result != null).Distinct();
-            var resultData = TempData["ResultData"] as FinalResult;
+
             woi.totalCount = workOrder.Count();
             woi.passedCount = workOrder.Where(x => x.Result == "Pass").Count();
             woi.failedCount = woi.totalCount - woi.passedCount;
@@ -516,7 +516,41 @@ namespace BostonScientificAVS.Controllers
             woi.workOrderCatalogNo = transaction.WO_Catalog_Num;
             woi.shelflife = itemmaster.Shelf_Life;
             woi.Carton_Use_By = transaction.Carton_Use_By;
-            woi.TotalMismatch = resultData.allMatch;
+            woi.Calculateuseby = transaction.Calculated_Use_By;
+            woi.CartonLotNo = transaction.Carton_Lot_Num;
+            woi.ifu = itemmaster.IFU;
+            woi.Cartongtin = transaction.Carton_Label_GTIN;
+            woi.Dbgtin = itemmaster.GTIN;
+            woi.CartonLabelspec = transaction.Carton_Label_Spec;
+            woi.Dbspec = itemmaster.Label_Spec;
+            woi.DbCatalogNo = itemmaster.Catalog_Num;
+
+            var resultData = new FinalResult
+            {
+                allMatch = true,
+                mismatches = new mismatchess(),
+                lhsData = new LHS
+                {
+                    cartonGTIN = woi.Cartongtin,
+                    woLotNo = woi.workOrderLotNo,
+                    cartonLabelSpec = woi.CartonLabelspec,
+                    cartonUseBy = woi.Carton_Use_By.ToString(),
+                    woCatalogNumber = woi.workOrderCatalogNo,
+                    cartonLotNo = woi.CartonLotNo
+                },
+                rhsData = new RHS
+                {
+                    dbGTIN = woi.Dbgtin,
+                    dbLabelSpec = woi.Dbspec,
+                    calculateUseBy = woi.Calculateuseby.ToString(),
+                    dbCatalogNo = woi.DbCatalogNo,
+                    dbIFU = woi.ifu
+                },
+                workOrderInfo = woi,
+                cartonscan = false // or true, based on your conditions
+            };
+
+            TempData["ResultData"] = resultData;
             return View(woi);
         }
 
@@ -758,77 +792,7 @@ namespace BostonScientificAVS.Controllers
                     await SendMessageToUDPclient("E");
                     TempData["ErrorMessage"] = "Carton Label Input is Invalid Format";
                     return View("CartonLabelScan");
-                }
-                FinalResult result = new FinalResult();
-                mismatchess mismatches = new mismatchess();
-                LHS lhsdata = new LHS();
-                RHS rhsdata = new RHS();
-
-                lhsdata.cartonGTIN = transaction.Carton_Label_GTIN;
-                rhsdata.dbGTIN = transaction.DB_GTIN;
-                lhsdata.woLotNo = transaction.WO_Lot_Num;
-                lhsdata.cartonLotNo = transaction.Carton_Lot_Num;
-                lhsdata.cartonLabelSpec = transaction.Carton_Label_Spec;
-                rhsdata.dbLabelSpec = transaction.DB_Label_Spec;
-                lhsdata.cartonUseBy = transaction.Carton_Use_By.ToString();
-                rhsdata.calculateUseBy = transaction.Calculated_Use_By.ToString();
-                lhsdata.woCatalogNumber = transaction.WO_Catalog_Num;
-                rhsdata.dbCatalogNo = transaction.DB_Catalog_Num;
-
-                result.rhsData = rhsdata;
-                result.lhsData = lhsdata;
-                result.allMatch = true;
-
-                if (transaction.Carton_Label_GTIN != transaction.DB_GTIN || transaction.WO_Lot_Num != transaction.Carton_Lot_Num || transaction.Carton_Label_Spec != transaction.DB_Label_Spec || transaction.Carton_Use_By != transaction.Calculated_Use_By || transaction.WO_Catalog_Num != transaction.DB_Catalog_Num)
-                {
-                    result.allMatch = false;
-                }
-
-                if (!result.allMatch)
-                {
-
-                    if (transaction.DB_GTIN != transaction.Carton_Label_GTIN)
-                    {
-                        mismatches.gtinmismatch = true;
-                    }
-                    if (transaction.WO_Lot_Num != transaction.Product_Lot_Num)
-                    {
-                        mismatches.lotNoMismatch = true;
-                        mismatches.rescan_lotno = true;
-                    }
-                    if (transaction.Carton_Label_Spec != transaction.DB_Label_Spec)
-                    {
-                        mismatches.labelSpecMismatch = true;
-                    }
-                    if (transaction.Carton_Use_By != transaction.Calculated_Use_By)
-                    {
-                        mismatches.calculatedUseByMismatches = true;
-                    }
-                    if (transaction.WO_Catalog_Num != transaction.DB_Catalog_Num)
-                    {
-                        mismatches.catalogNumMismatch = true;
-                        mismatches.rescan_catalog = true;
-                    }
-
-
-                }
-
-                if (result.allMatch)
-                {
-                    transaction.Result = "Pass";
-                    await SendMessageToUDPclient("P");
-
-                }
-                else
-                {
-                    transaction.Result = "Fail";
-                    await SendMessageToUDPclient("F");
-                }
-
-                await _dataContext.SaveChangesAsync();
-
-                var objdata = result;
-                TempData["ResultData"] = objdata;
+                }    
                 return RedirectToAction("ProductLabelBarcodeScan", "Home");
                
             }

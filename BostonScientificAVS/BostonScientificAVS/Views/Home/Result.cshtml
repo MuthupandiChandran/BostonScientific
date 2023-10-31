@@ -8,7 +8,7 @@
 </head>
 
 <body>
-    <div class="container div-container styled-scrollbar p-0" id="container">
+    <div class="container-fluid div-container p-0" id="container">
         <nav class="navbar">
             <div class="dropdown">
                 <button class="custom-config-button" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -62,7 +62,7 @@
         </div>
             <div class="row p-4 w-100">
                 <div class="col-md-8">
-                   <div class="card">
+                   <div class="card styled-scrollbar" id="left-part">
                         <div class="card-header bg-card-header">Scanner Details</div>
                         <div class="card-body">
                             <table class="table-borderless  TFtable">
@@ -182,7 +182,7 @@
                                         <div><h6 id="fail-lotno-error" class="comparison-lable-text">@Model.workOrderLotNo</h6></div>
                                         </td>
                                         <td>
-                                            <div><h6 class="comparison-lable-text bld" id="p-lotnum-error">Product Label Lot Number</h6></div>
+                                            <div><h6 class="comparison-lable-text bld" id="p-lotnum-error">Carton Lot Number</h6></div>
                                             <div><h6 id="fail-product-lot-no-error" class="comparison-lable-text">xxxxxxxxxxx</h6></div>
                                         </td>
                                         <td>
@@ -255,7 +255,7 @@
                    
 
 
-                    <div class="row">
+                    <div class="row" id="bottom">
                         <div class="col sm-card total">
                             <div>Total</div>
                             <div id="total-val" class="data-val-text">@Model.totalCount</div>
@@ -497,7 +497,7 @@
     }
 
     .styled-scrollbar {
-        overflow: hidden;
+        overflow: auto;
     }
 
         .styled-scrollbar::-webkit-scrollbar {
@@ -512,7 +512,6 @@
             background-color: darkgrey;
             outline: 1px solid slategrey;
         }
-
     
 
     .bg-green {
@@ -538,7 +537,7 @@
     }
 
     .status-wrapper {
-        height: 82%;
+        height: 73%;
     }
 
     .status-container {
@@ -631,7 +630,7 @@
 
     .scan-img {
         width: 75%;
-        height:75%;
+        height: 50%;
     }
 
     .pack{
@@ -639,6 +638,14 @@
     top: 32px;
     left: 52px;
     }
+    #left-part{
+        height:60%;
+        overflow-y:auto;
+    }
+    #bottom{
+        margin:10px 0;
+    }
+
 
     #toast {
         max-width: 300px;
