@@ -367,7 +367,6 @@
 
 
     $("#btnSave").click(function () {
-       debugger;
         var empid = $("#empid").val();
             var username = $("#userfullname").val();
             var hasErrors = false;
@@ -402,7 +401,6 @@
     let isEditing = false;
 
         function editUser(button) {
-            debugger;
             var row = button.parentNode.parentNode;
             var empID = row.cells[0].innerText;
             var userFullName = row.cells[1].innerText;
@@ -457,7 +455,6 @@
 
 
         function saveUser() {
-            debugger;
             showLoader();
 
         var empId = document.getElementById("empid").value;
@@ -526,7 +523,6 @@
 
 
         function submitform(user) {
-        debugger;
         $.ajax({
                 url: '/Admin/SaveUser',
                 type: 'POST',

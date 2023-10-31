@@ -506,7 +506,6 @@ namespace BostonScientificAVS.Controllers
             var itemmaster = _dataContext.ItemMaster.OrderByDescending(x => x.GTIN).FirstOrDefault();
             var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
             var workOrder = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Result != null).Distinct();
-
             woi.totalCount = workOrder.Count();
             woi.passedCount = workOrder.Where(x => x.Result == "Pass").Count();
             woi.failedCount = woi.totalCount - woi.passedCount;
