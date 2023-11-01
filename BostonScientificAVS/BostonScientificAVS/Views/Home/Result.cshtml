@@ -7,11 +7,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
 </head>
 
-<body>
-    <div class="container-fluid div-container p-0" id="container">
+<body id="body">
+    <div class="container div-container p-0" id="container">
         <nav class="navbar">
             <div class="dropdown">
-                <button class="custom-config-button" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button class="dropdown-button" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <img class="avatar-image-size" src="~/assets/images/user_avatar.png" />
                     <span class="user-name-text">Hello, @User.Identity.Name | @User.Claims.FirstOrDefault(c => c.Type == "EmpID")?.Value</span>
                     <span class="pack">Packaging</span>
@@ -68,24 +68,25 @@
                             <table class="table-borderless  TFtable">
                                 <tbody>
                                     <tr class="bg-row-color">
-                                        <td>
+                                          <td>
                                             <div>
-                                                <h6 class="comparison-lable-text bld">Work Order Catalog Number</h6>
-                                            </div>
-                                            <div>
-
-                                            <h6 id="fail-db-catalog-num-error" class="comparison-lable-text">@Model.workOrderCatalogNo</h6>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div>
-                                                <h6 class="comparison-lable-text bld" id="w-catlognum-error">Database Catalog Number</h6>
+                                                <h6 class="comparison-lable-text bld">Database Catalog Number</h6>
                                             </div>
                                             <div>
 
                                                 <h6 id="fail-wo-catalog-no-error" class="comparison-lable-text">@Model.DbCatalogNo</h6>
                                             </div>
                                         </td>
+                                        <td>
+                                            <div>
+                                                <h6 class="comparison-lable-text bld" id="w-catlognum-error">Work Order Catalog Number</h6>
+                                            </div>
+                                            <div>
+
+                                            <h6 id="fail-db-catalog-num-error" class="comparison-lable-text">@Model.workOrderCatalogNo</h6>
+                                            </div>
+                                        </td>
+                                 
                                         <td>
                                             <div id="before-scan-cat-no">
                                                 <img src="/assets/images/before-scanning.png" class="scanning-stage-img-size" />
@@ -177,14 +178,14 @@
                                         </td>
                                     </tr>
                                 <tr class="bg-row-color">
-                                        <td>
+                                    <td>
                                             <div><h6 class="comparison-lable-text bld">Work Order Lot Number</h6></div>
                                         <div><h6 id="fail-lotno-error" class="comparison-lable-text">@Model.workOrderLotNo</h6></div>
                                         </td>
-                                        <td>
-                                            <div><h6 class="comparison-lable-text bld" id="p-lotnum-error">Carton Lot Number</h6></div>
+                                         <td>
+                                            <div><h6 class="comparison-lable-text bld" id="p-lotnum-error">Product Lot Number</h6></div>
                                             <div><h6 id="fail-product-lot-no-error" class="comparison-lable-text">xxxxxxxxxxx</h6></div>
-                                        </td>
+                                        </td>   
                                         <td>
                                         <div id="before-scan-lot-no">
                                                 <img src="/assets/images/before-scanning.png" class="scanning-stage-img-size" />
@@ -202,12 +203,12 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            <div><h6 class="comparison-lable-text bld">Product Label GTIN</h6></div>
-                                            <div><h6 id="fail-gtin-error" class="comparison-lable-text">xxxxxxxxxxx</h6></div>
+                                            <div><h6 class="comparison-lable-text bld">Database GTIN</h6></div>
+                                            <div><h6 id="fail-product-gtin-error" class="comparison-lable-text">@Model.DbGtin</h6></div>
                                         </td>
                                         <td>
-                                            <div><h6 class="comparison-lable-text bld" id="pa-gtin">Database GTIN</h6></div>
-                                            <div><h6 id="fail-product-gtin-error" class="comparison-lable-text">xxxxxxxxxxx</h6></div>
+                                            <div><h6 class="comparison-lable-text bld" id="pa-gtin">Product Label GTIN</h6></div>
+                                            <div><h6 id="fail-gtin-error" class="comparison-lable-text">xxxxxxxxxxx</h6></div>
                                         </td>
                                         <td>
                                         <div id="before-scan-gtin">
@@ -225,14 +226,14 @@
                                         </td>
                                     </tr>
                                     <tr class="bg-row-color">
+                                         <td>
+                                            <div><h6 class="comparison-lable-text bld">Database Label Specification</h6></div>
+                                            <div> <h6 id="fail-product-label-spec-error" class="comparison-lable-text">@Model.Dbspec</h6></div>
+                                        </td>
                                         <td>
-                                            <div> <h6 class="comparison-lable-text bld">Product Label Specification</h6></div>
+                                            <div> <h6 class="comparison-lable-text bld" id="p-labelspec-error">Product Label Specification</h6></div>
                                             <div><h6 id="fail-label-spec-error" class="comparison-lable-text">xxxxxxxxxxx</h6></div>
-                                        </td>
-                                        <td>
-                                            <div><h6 class="comparison-lable-text bld" id="p-labelspec-error">Database Label Specification</h6></div>
-                                            <div> <h6 id="fail-product-label-spec-error" class="comparison-lable-text">xxxxxxxxxxx</h6></div>
-                                        </td>
+                                        </td>          
                                         <td>
                                         <div id="before-scan-label-spec">
                                                 <img src="/assets/images/before-scanning.png" class="scanning-stage-img-size" />
@@ -294,7 +295,9 @@
                         <div class="scan-container">
                             Scan Product Label
                         </div>
-                    <div class="work-btn" id="after-fail-workorder">New Work Order</div>
+                    <div id="fail-workorder">
+                    <a asp-area="" asp-controller="Home" asp-action="WorkOrderScan" id="after-pass-workorder" class="work-btn">New Work Order</a>
+                </div>
                     <div class="work-btn-1" id="rescanBtn">Rescan</div>
                     </div>
                    
@@ -333,7 +336,13 @@
 
 
 <style>
-
+    .dropdown-button {
+    width: 211px;
+    height: 54px;
+    border: none;
+    background-color: white;
+    white-space: nowrap; /* Added to remove white space */
+}
     .p-4 {
         padding: 0.5rem !important;
     }
@@ -560,9 +569,11 @@
         color: #00AD30;
     }
 
-    .failed-status {
+   .failed-status {
         background: #FFCACA;
         color: #FF0000;
+        height: 23%;
+        margin-top: 10px;
     }
 
     .scan-container {
@@ -1297,16 +1308,16 @@
 
     /* Styles for the popup content */
     #popupContent {
-        width: 477px;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: #fff;
-        padding: 20px;
-        border-radius: 16px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    }
+    width: 477px;
+    position: fixed; /* Set the position to fixed */
+    top: 50%; /* Set the top to 50% */
+    right: 0; /* Set the right position to 0 */
+    transform: translateY(-50%); /* Align vertically using transform */
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
 
     #popupContent1 {
         width: 477px;
@@ -1451,7 +1462,7 @@
     document.getElementById("after-fail-side-scan").style.display = "none";
     document.getElementById("after-success-side-scan").style.display = "none";
     document.getElementById("after-pass-workorder").style.display = "none";
-    document.getElementById("after-fail-workorder").style.display = "none";
+    document.getElementById("fail-workorder").style.display ="none";
   
     
     //document.getElementsByClassName('temp-button')[0]
@@ -1565,6 +1576,8 @@
         document.getElementById("after-scan-pass-shelflife").style.display="block";
 
         document.getElementById("container").style.backgroundColor="#BAFFCD";
+        document.getElementById("body").style.backgroundColor="#BAFFCD";
+        document.getElementsByClassName('dropdown-button')[0].style.backgroundColor="#BAFFCD";
         document.getElementById("before-side-scan").style.display="none";
         document.getElementById("after-success-side-scan").style.display="block";
         document.getElementById("after-pass-workorder").style.display="block";
@@ -1631,8 +1644,10 @@
         document.getElementById("container").style.backgroundColor = "#FFCACA";
         document.getElementById("before-side-scan").style.display="none";
         document.getElementById("after-fail-side-scan").style.display="block";
-        document.getElementById("after-fail-workorder").style.display="block";
+        document.getElementById("fail-workorder").style.display ="block";
         document.getElementById("rescanBtn").style.display = "block";
+        document.getElementById("body").style.backgroundColor="#FFCACA";
+        document.getElementsByClassName('dropdown-button')[0].style.backgroundColor="#FFCACA";
         if(responseData.gtinMismatch==true)
         {
          gtinmismatchblink();
@@ -1719,7 +1734,7 @@
         else {
             document.getElementById("during-scan-label-spec").style.display = "none";
             document.getElementById("after-scan-fail-label-spec").style.display = "none";
-            document.getElementById("after-scan-pass-label-sepc").style.display = "block";
+            document.getElementById("after-scan-pass-label-spec").style.display = "block";
 
         }
         if (responseData.mismatches.calculatedUseByMismatch == true) {
@@ -1932,17 +1947,17 @@
 
     function setScannedData(response) {
         console.log("set data called");
-        document.getElementById("fail-gtin-error").innerHTML = responseData.rhsData.productLabelGTIN;
-        document.getElementById("fail-lotno-error").innerHTML = responseData.lhsData.workOrderLotNo;
-        document.getElementById("fail-label-spec-error").innerHTML = responseData.rhsData.productLabelSpec;
-        document.getElementById("fail-calc-use-by-error").innerHTML = responseData.lhsData.calculatedUseBy;
-        document.getElementById("fail-db-catalog-num-error").innerHTML = responseData.rhsData.workOrderCatalogNo;
-
         document.getElementById("fail-product-gtin-error").innerHTML = responseData.lhsData.dbGTIN;
-        document.getElementById("fail-product-lot-no-error").innerHTML = responseData.rhsData.productLotNo;
+        document.getElementById("fail-lotno-error").innerHTML = responseData.lhsData.workOrderLotNo;
         document.getElementById("fail-product-label-spec-error").innerHTML = responseData.lhsData.dbLabelSpec;
-        document.getElementById("fail-product-use-by-error").innerHTML = responseData.rhsData.productUseBy; 
+        document.getElementById("fail-calc-use-by-error").innerHTML = responseData.lhsData.calculatedUseBy;
         document.getElementById("fail-wo-catalog-no-error").innerHTML = responseData.lhsData.dbCatalogNo;
+        
+        document.getElementById("fail-gtin-error").innerHTML = responseData.rhsData.productLabelGTIN;
+        document.getElementById("fail-product-lot-no-error").innerHTML = responseData.rhsData.productLotNo;
+        document.getElementById("fail-label-spec-error").innerHTML = responseData.rhsData.productLabelSpec;
+        document.getElementById("fail-product-use-by-error").innerHTML = responseData.rhsData.productUseBy; 
+        document.getElementById("fail-db-catalog-num-error").innerHTML = responseData.rhsData.workOrderCatalogNo;
 
     }
 
@@ -1953,23 +1968,24 @@
             setScannedFailData1();
         }
       else{
-        console.log("set data for fail called");
-        document.getElementById("fail-gtin-error").innerHTML = responseData.rhsData.productLabelGTIN;
+        console.log("set data for scanfail called");
+        document.getElementById("fail-product-gtin-error").innerHTML = responseData.lhsData.dbGTIN;
         document.getElementById("fail-lotno-error").innerHTML = responseData.lhsData.workOrderLotNo;
-        document.getElementById("fail-label-spec-error").innerHTML = responseData.rhsData.productLabelSpec;
+        document.getElementById("fail-product-label-spec-error").innerHTML = responseData.lhsData.dbLabelSpec;
         document.getElementById("fail-calc-use-by-error").innerHTML = responseData.lhsData.calculatedUseBy;
-        document.getElementById("fail-db-catalog-num-error").innerHTML = responseData.rhsData.workOrderCatalogNo;
+        document.getElementById("fail-wo-catalog-no-error").innerHTML = responseData.lhsData.dbCatalogNo;
+ 
         if (mismatches.gtinMismatch) {
             document.getElementById("pa-gtin").style.color = "red";
-            document.getElementById("fail-product-gtin-error").innerHTML = responseData.lhsData.dbGTIN;
-            document.getElementById("fail-product-gtin-error").style.color = "red";
+            document.getElementById("fail-gtin-error").innerHTML = responseData.rhsData.productLabelGTIN;
+            document.getElementById("fail-gtin-error").style.color = "red";
             document.getElementById("during-scan-gtin").style.display = "none";
             document.getElementById("after-scan-fail-gtin").style.display = "block";
            
         } else {
             document.getElementById("pa-gtin").style.color = "black";
-            document.getElementById("fail-product-gtin-error").innerHTML = responseData.lhsData.dbGTIN;
-            document.getElementById("fail-product-gtin-error").style.color = "black";
+            document.getElementById("fail-gtin-error").innerHTML = responseData.rhsData.productLabelGTIN;
+            document.getElementById("fail-gtin-error").style.color = "black";
             document.getElementById("during-scan-gtin").style.display = "none";
             document.getElementById("after-scan-fail-gtin").style.display = "none";
             document.getElementById("after-scan-pass-gtin").style.display = "block";
@@ -1992,17 +2008,17 @@
 
         if (mismatches.labelSpecMismatch) {
             document.getElementById("p-labelspec-error").style.color = "red";
-            document.getElementById("fail-product-label-spec-error").innerHTML = responseData.lhsData.dbLabelSpec;
-            document.getElementById("fail-product-label-spec-error").style.color = "red";
+            document.getElementById("fail-label-spec-error").innerHTML = responseData.rhsData.productLabelSpec;
+            document.getElementById("fail-label-spec-error").style.color = "red";
             document.getElementById("during-scan-label-spec").style.display = "none";
             document.getElementById("after-scan-fail-label-spec").style.display = "block";
         } else {
             document.getElementById("p-labelspec-error").style.color = "black";
-            document.getElementById("fail-product-label-spec-error").innerHTML = responseData.lhsData.dbLabelSpec;
-            document.getElementById("fail-product-label-spec-error").style.color = "black";
-           document.getElementById("during-scan-label-spec").style.display = "none";
+            document.getElementById("fail-label-spec-error").innerHTML = responseData.rhsData.productLabelSpec;
+            document.getElementById("fail-label-spec-error").style.color = "black";
+            document.getElementById("during-scan-label-spec").style.display = "none";
             document.getElementById("after-scan-fail-label-spec").style.display = "none";
-           document.getElementById("after-scan-pass-label-spec").style.display = "block";
+            document.getElementById("after-scan-pass-label-spec").style.display = "block";
         }
         if (mismatches.calculatedUseByMismatch) {
              document.getElementById("p-useby-error").style.color = "red";
@@ -2020,16 +2036,16 @@
         }
         if (mismatches.catalogNumMismatch) {
             document.getElementById("w-catlognum-error").style.color = "red";
-            document.getElementById("fail-wo-catalog-no-error").innerHTML = responseData.lhsData.dbCatalogNo;
-            document.getElementById("fail-wo-catalog-no-error").style.color = "red";
+            document.getElementById("fail-db-catalog-num-error").innerHTML = responseData.rhsData.workOrderCatalogNo;
+            document.getElementById("fail-db-catalog-num-error").style.color = "red";
             document.getElementById("during-scan-cat-no").style.display = "none";
             document.getElementById("after-scan-fail-cat-no").style.display = "block";
             
         } else {
             document.getElementById("w-catlognum-error").style.color = "black";
-            document.getElementById("fail-wo-catalog-no-error").innerHTML = responseData.lhsData.dbCatalogNo;
-            document.getElementById("fail-wo-catalog-no-error").style.color = "black";
-             document.getElementById("during-scan-cat-no").style.display = "none";
+            document.getElementById("fail-db-catalog-num-error").innerHTML = responseData.rhsData.workOrderCatalogNo;
+            document.getElementById("fail-db-catalog-num-error").style.color = "black";
+            document.getElementById("during-scan-cat-no").style.display = "none";
             document.getElementById("after-scan-fail-cat-no").style.display = "none";
             document.getElementById("after-scan-pass-cat-no").style.display ="block";
            
@@ -2040,21 +2056,31 @@
 
     }
     function setScannedFailData1() {
-        console.log("set data for fail called");
+        console.log("set data for scanfail-1 called");
+         document.getElementById('after-scan-pass-wo-mfg-date').style.display = 'none';
+         document.getElementById('after-scan-fail-wo-mfg-date').style.display = 'block';
+         document.getElementById('after-scan-pass-shelflife').style.display = 'none';
+         document.getElementById('after-scan-fail-shelflife').style.display = 'block';
+         document.getElementById('fail-shelf-life-by-error').innerHTML = 'Shelf Life is not found';
+         document.getElementById('fail-shelf-life-by-error').style.color ="red";
+         document.getElementById('wo-mfg-date').innerHTML = 'Work order MFG date is not found';
+         document.getElementById('wo-mfg-date').style.color ="red";
+         document.getElementById('workorder-mfg-date').style.color = "red";
+         document.getElementById('shelf-life').style.color = "red";
+
+
         if (responseData.gtinMismatch == true) {
             document.getElementById("pa-gtin").style.color = "red";
             document.getElementById("fail-product-gtin-error").innerHTML = responseData.db_Gtin;
-            document.getElementById("fail-product-gtin-error").style.color = "red";
-            document.getElementById("fail-gtin-error").innerHTML = responseData.product_Gtin;
-            document.getElementById("fail-gtin-error").style.color= "black";
+            document.getElementById("fail-gtin-error").innerHTML = "GTIN is not found";
+            document.getElementById("fail-gtin-error").style.color= "red";
             document.getElementById("during-scan-gtin").style.display = "none";
             document.getElementById("after-scan-fail-gtin").style.display = "block";
         }
         if (responseData.lotnoMismatch == true){
-            document.getElementById("fail-lotno-error").innerHTML = responseData.wO_Lot_No;
-            document.getElementById("fail-lotno-error").style.color = "black";
+            document.getElementById("fail-lotno-error").innerHTML = responseData.wo_Lot_No;
             document.getElementById("p-lotnum-error").style.color = "red";
-            document.getElementById("fail-product-lot-no-error").innerHTML = responseData.product_Lot_No;
+            document.getElementById("fail-product-lot-no-error").innerHTML ="Product LotNumber is not found";
             document.getElementById("fail-product-lot-no-error").style.color = "red";
             document.getElementById("during-scan-lot-no").style.display = "none";
             document.getElementById("after-scan-fail-lot-no").style.display = "block";
@@ -2062,37 +2088,32 @@
         else{
             document.getElementById("fail-lotno-error").innerHTML = responseData.wo_Lot_No;
             document.getElementById("fail-lotno-error").style.color = "black";
-            document.getElementById("fail-product-lot-no-error").innerHTML = responseData.product_Lot_No;
+            document.getElementById("fail-product-lot-no-error").innerHTML = "Product LotNumber is not found";
             document.getElementById("fail-product-lot-no-error").style.color = "black";
             document.getElementById("during-scan-lot-no").style.display = "none";
             document.getElementById("after-scan-pass-lot-no").style.display="block";
         }
         if (responseData.labelMismatch == true) {
-            document.getElementById("fail-label-spec-error").style.color = "black";
-            document.getElementById("fail-label-spec-error").innerHTML = responseData.product_Spec;
-            document.getElementById("p-labelspec-error").style.color = "red";
             document.getElementById("fail-product-label-spec-error").innerHTML = responseData.db_Spec;
-            document.getElementById("fail-product-label-spec-error").style.color = "red";
+            document.getElementById("fail-label-spec-error").style.color = "red";
+            document.getElementById("fail-label-spec-error").innerHTML = "Label spec is not found";
+            document.getElementById("p-labelspec-error").style.color = "red";
             document.getElementById("during-scan-label-spec").style.display = "none";
             document.getElementById("after-scan-fail-label-spec").style.display = "block";
         }
         else {
-            document.getElementById("fail-label-spec-error").style.color = "black";
-            document.getElementById("fail-label-spec-error").innerHTML = responseData.product_Spec;
-            document.getElementById("p-labelspec-error").style.color = "black";
             document.getElementById("fail-product-label-spec-error").innerHTML = responseData.db_Spec;
-            document.getElementById("fail-product-label-spec-error").style.color = "black";
-            document.getElementById("during-scan-cat-no").style.display = "none";
-            document.getElementById("after-scan-pass-cat-no").style.display = "block";
+            document.getElementById("fail-label-spec-error").style.color = "black";
+            document.getElementById("fail-label-spec-error").innerHTML =  "Label spec is not found";
+            document.getElementById("p-labelspec-error").style.color = "black";
             document.getElementById("during-scan-label-spec").style.display = "none";
             document.getElementById("after-scan-pass-label-spec").style.display = "block";
         }
         if(responseData.firstUseby_Mismatch == true)
         {
-            document.getElementById("fail-calc-use-by-error").style.color = "black";
             document.getElementById("fail-calc-use-by-error").innerHTML = responseData.calculate_Use_By;
             document.getElementById("p-useby-error").style.color = "red";
-            document.getElementById("fail-product-use-by-error").innerHTML = responseData.pro_Use_By;
+            document.getElementById("fail-product-use-by-error").innerHTML ="Product use by is not found";
             document.getElementById("fail-product-use-by-error").style.color = "red";
             document.getElementById("during-scan-use-date").style.display = "none";
             document.getElementById("after-scan-fail-use-date").style.display = "block";
@@ -2100,10 +2121,9 @@
            
         }
         else{
-            document.getElementById("fail-calc-use-by-error").style.color = "black";
             document.getElementById("fail-calc-use-by-error").innerHTML = responseData.calculate_Use_By;
             document.getElementById("p-useby-error").style.color = "black";
-            document.getElementById("fail-product-use-by-error").innerHTML = responseData.pro_Use_By;
+            document.getElementById("fail-product-use-by-error").innerHTML = "Product use by is not found";
             document.getElementById("fail-product-use-by-error").style.color = "black";
             document.getElementById("during-scan-use-date").style.display = "none";
             document.getElementById("after-scan-pass-use-date").style.display = "block";
@@ -2111,22 +2131,20 @@
         }
         if(responseData.catalogMismatch == true) 
         {
-            document.getElementById("fail-db-catalog-num-error").style.color = "black";
-            document.getElementById("fail-db-catalog-num-error").innerHTML = responseData.wo_Catalog_Num;
-            document.getElementById("w-catlognum-error").style.color = "red";
             document.getElementById("fail-wo-catalog-no-error").innerHTML = responseData.db_Catalog_No;
-            document.getElementById("fail-wo-catalog-no-error").style.color = "red";
+            document.getElementById("fail-db-catalog-num-error").style.color = "red";
+            document.getElementById("fail-db-catalog-num-error").innerHTML = "Catalognumber is not found";
+            document.getElementById("w-catlognum-error").style.color = "red";
            document.getElementById("during-scan-cat-no").style.display = "none";
             document.getElementById("after-scan-fail-cat-no").style.display = "block";
            
         }
         else
         {
-           document.getElementById("fail-db-catalog-num-error").style.color = "black";
-            document.getElementById("fail-db-catalog-num-error").innerHTML = responseData.wo_Catalog_Num;
+             document.getElementById("fail-wo-catalog-no-error").innerHTML = responseData.db_Catalog_No;
+            document.getElementById("fail-db-catalog-num-error").style.color = "black";
+            document.getElementById("fail-db-catalog-num-error").innerHTML = "Catalognumber is not found";
             document.getElementById("w-catlognum-error").style.color = "black";
-            document.getElementById("fail-wo-catalog-no-error").innerHTML = responseData.db_Catalog_No;
-            document.getElementById("fail-wo-catalog-no-error").style.color = "black";
             document.getElementById("after-scan-fail-cat-no").style.display = "none";
             document.getElementById("after-scan-pass-cat-no").style.display ="block";       
             

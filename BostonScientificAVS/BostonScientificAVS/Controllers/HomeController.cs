@@ -60,7 +60,8 @@ namespace BostonScientificAVS.Controllers
             woi.workOrderMfgDate = transaction.WO_Mfg_Date;
             woi.shelflife = itemmaster.Shelf_Life;
             woi.DbCatalogNo = itemmaster.Catalog_Num;
-
+            woi.Dbspec = itemmaster.Label_Spec;
+            woi.DbGtin = itemmaster.GTIN;
             return View(woi);
         }
 
