@@ -428,7 +428,7 @@
                     <div class="scan-container">
                         Scan Product Label
                     </div>
-                    <div><a asp-area="" asp-controller="Home" asp-action="WorkOrderScan" id="after-pass-workorder" class="work-btn">New Work Order</a></div>
+                    <div><a asp-area="" asp-controller="Home" asp-action="WorkOrderBarcodeScan" id="after-pass-workorder" class="work-btn">New Work Order</a></div>
                     <div class="work-btn-1" id="rescanBtn">Rescan</div>
                 </div>
 
@@ -440,7 +440,7 @@
                     <div class="scan-container">
                         Scan Product Label
                     </div>
-                    <a asp-area="" asp-controller="Home" asp-action="WorkOrderScan" id="after-pass-workorder" class="work-btn">New Work Order</a>
+                    <a asp-area="" asp-controller="Home" asp-action="WorkOrderBarcodeScan" id="after-pass-workorder" class="work-btn">New Work Order</a>
                 </div>
             </div>
 
@@ -1623,21 +1623,21 @@ width: 76%;
 
     document.addEventListener('DOMContentLoaded', function () {
         // Access the TempData value and store it in a JavaScript variable
-        var resultData = @Html.Raw(Json.Serialize(TempData["ResultData"]));
+        var resultData = @Html.Raw(Json.Serialize(TempData["woi"]));
         console.log(resultData);
-
+     
         // Compare the values and update the HTML elements based on the comparison
         if (resultData) {
-            var cartonGtin = resultData.lhsData.cartonGTIN;
-            var dbGtin = resultData.rhsData.dbGTIN;
-            var wolotNo = resultData.lhsData.woLotNo;
-            var cartonlotNo = resultData.lhsData.cartonLotNo;
-            var cartonlabelspec = resultData.lhsData.cartonLabelSpec;
-            var dblabelspec = resultData.rhsData.dbLabelSpec;
-            var cartonuseby = resultData.lhsData.cartonUseBy;
-            var calculateuseby = resultData.rhsData.calculateUseBy;
-            var wocatalognum = resultData.lhsData.woCatalogNumber;
-            var dbcatalognum = resultData.rhsData.dbCatalogNo;
+            var cartonGtin = resultData.cartongtin;
+            var dbGtin = resultData.dbgtin;
+            var wolotNo = resultData.workOrderLotNo;
+            var cartonlotNo = resultData.cartonLotNo;
+            var cartonlabelspec = resultData.cartonLabelspec;
+            var dblabelspec = resultData.dbspec;
+            var cartonuseby = resultData.carton_Use_By;
+            var calculateuseby = resultData.calculateuseby;
+            var wocatalognum = resultData.workOrderCatalogNo;
+            var dbcatalognum = resultData.dbCatalogNo;
 
 
             // Update the content of the comparison labels
@@ -1706,10 +1706,25 @@ width: 76%;
                 document.getElementById('before-scan-catalog').style.display = 'none';
                 document.getElementById('after-scan-fail-catalog').style.display = 'block';
             }
+
+            if (cartonGtin !== dbGtin || wolotNo !== cartonlotNo || cartonlabelspec !== dblabelspec || cartonuseby !== calculateuseby || wocatalognum !== dbcatalognum) {
+            console.log("Error Div Condition checking");
+            document.getElementById("container").style.backgroundColor = "#FFCACA";
+            document.getElementById("body").style.backgroundColor = "#FFCACA";
+            document.getElementsByClassName('dropdown-button')[0].style.backgroundColor="#FFCACA";
+            document.getElementById("before-side-scan").style.display="none";
+            document.getElementById("before-workorder").style.display="none";
+            document.getElementById("after-fail-side-scan").style.display = "block";
+            document.getElementById("after-pass-workorder").style.display = "block";
+            document.getElementById("rescanBtn").style.display = "block";
+            showPopup();
+          }
+
             document.getElementById('before-scan-wo-mfg-date').style.display = 'none';
             document.getElementById('after-scan-pass-wo-mfg-date').style.display = 'block';
             document.getElementById('before-shelflife').style.display = 'none';
             document.getElementById('after-scan-pass-shelflife').style.display = 'block';
+
 
 
         } else {
@@ -1989,12 +2004,12 @@ width: 76%;
         document.getElementById("popupContainer1").style.display = "none";
         document.getElementById("scanning-icon-div").style.display = "none";
         document.getElementById("supervisor-intervention").style.display = "flex";
-
     }
-    function ScanFailToSupervisor1() {
+      function ScanFailToSupervisor1() {
         document.getElementById("popupContainer1").style.display = "none";
 
     }
+    
 
     function resetPassScenario() {
         document.getElementById("popupContainer1").style.display = "none";
@@ -2023,7 +2038,7 @@ width: 76%;
         document.getElementById("popupContainer1").style.display = "block";
         superVisorInput = true;
     }
-   
+    
     function closePopup() {
         document.getElementById("popupContainer1").style.display = "none";
         superVisorInput = false;
@@ -2262,46 +2277,32 @@ width: 76%;
     }
 
     function setScannedData(response) {
-        console.log("set data called");
-         document.getElementById('fail-wo-catalog-no-error').innerHTML = dbcatalognum;
-         document.getElementById('fail-product-use-by').innerHTML = calculateuseby;
-         document.getElementById('fail-wo-lot-no').innerHTML = wolotNo;
-         document.getElementById('fail-carton-lot-no').innerHTML = cartonlotNo;
-         document.getElementById('fail-db-gtin').innerHTML = dbGtin;
-         document.getElementById('fail-product-label-spec').innerHTML = dblabelspec;   
+         console.log("set data called");
+         console.log(response);
+         document.getElementById('fail-wo-catalog-no-error').innerHTML = response.rhsData.dbCatalogNo;
+         document.getElementById('fail-product-use-by').innerHTML = response. rhsData.calculateUseBy;
+         document.getElementById('fail-wo-lot-no').innerHTML = response.lhsData.woLotNo;
+         document.getElementById('fail-carton-lot-no').innerHTML = response.lhsData.cartonLotNo;
+         document.getElementById('fail-db-gtin').innerHTML = response.rhsData.dbGTIN;
+         document.getElementById('fail-product-label-spec').innerHTML = response.rhsData.dbLabelSpec;   
          document.getElementById('fail-calc-use-by-1').innerHTML = response.lhsData.cartonUseBy;
          document.getElementById('fail-product-db-ifu').innerHTML = response.rhsData.dbIFU;
          
             
          
-         document.getElementById('fail-db-catalog-num').innerHTML = wocatalognum;
-         document.getElementById('fail-calc-use-by').innerHTML = cartonuseby;
+         document.getElementById('fail-db-catalog-num').innerHTML = response.lhsData.woCatalogNumber;
+         document.getElementById('fail-calc-use-by').innerHTML = response.lhsData.cartonUseBy;
          document.getElementById('fail-carton-lot-no-1').innerHTML =response.lhsData.cartonLotNo;
          document.getElementById('fail-product-lot-no1').innerHTML = response.rhsData.productLotNo;
-         document.getElementById('fail-label-gtin1').innerHTML = cartonGtin;
-         document.getElementById('fail-db-label-spec').innerHTML = cartonlabelspec;
+         document.getElementById('fail-label-gtin1').innerHTML = response.lhsData.cartonGTIN;
+         document.getElementById('fail-db-label-spec').innerHTML = response.lhsData.cartonLabelSpec;
          document.getElementById('fail-product-useby').innerHTML = response.rhsData.productUseBy;
          document.getElementById('fail-ifu').innerHTML = response.lhsData.scannedIFU;
     }
     function setScannedFailData1(response) {
         console.log("set data for fail called");
-         document.getElementById('after-scan-pass-wo-mfg-date').style.display = 'none';
-         document.getElementById('after-scan-fail-wo-mfg-date').style.display = 'block';
-         document.getElementById('after-scan-pass-shelflife').style.display = 'none';
-         document.getElementById('after-scan-fail-shelflife').style.display = 'block';
-         document.getElementById('fail-shelf-life-by-error').innerHTML = 'Shelf Life is not found';
-         document.getElementById('fail-shelf-life-by-error').style.color ="red";
-         document.getElementById('wo-mfg-date').innerHTML = 'Work order MFG date is not found';
-         document.getElementById('wo-mfg-date').style.color ="red";
-         document.getElementById('workorder-mfg-date').style.color = "red";
-         document.getElementById('shelf-life').style.color = "red";
-         document.getElementById('fail-wo-catalog-no-error').innerHTML = "Database Catalog Number is not found";
-         document.getElementById('fail-wo-catalog-no-error').style.color="red";
-         document.getElementById('fail-product-label-spec').innerHTML ="Database Label Specification is not found";
-         document.getElementById('fail-product-label-spec').style.color="red";
       if (responseData.lotNoMismatches == true) {
             document.getElementById("fail-carton-lot-no").innerHTML = responseData.carton_Lot_No;
-            document.getElementById("fail-carton-lot-no").style.color = "black";
             document.getElementById("fail-product-lot-no1").style.color = "red";
             document.getElementById("fail-product-lot-no1").innerHTML = responseData.product_Lot_No;
             document.getElementById("p-lotnum").style.color = "red";
@@ -2310,7 +2311,6 @@ width: 76%;
         }
         else {
             document.getElementById("fail-carton-lot-no").innerHTML = responseData.carton_Lot_No;
-            document.getElementById("fail-carton-lot-no").style.color = "black";
             document.getElementById("fail-product-lot-no1").style.color = "black";
             document.getElementById("fail-product-lot-no1").innerHTML = responseData.product_Lot_No;
             document.getElementById("during-scan-lot-no1").style.display = "none";
@@ -2318,7 +2318,6 @@ width: 76%;
         }
 
         if (responseData.secondUseby_Mismatch == true) {
-            document.getElementById("fail-calc-use-by-1").style.color = "black";
             document.getElementById("fail-calc-use-by-1").innerHTML = responseData.carton_Use_By;
             document.getElementById("fail-product-useby").innerHTML = responseData.pro_Use_By;
             document.getElementById("fail-product-useby").style.color = "red";
@@ -2327,7 +2326,6 @@ width: 76%;
             document.getElementById("after-scan-fail-product-useby").style.display = "block";
         }
         else {
-            document.getElementById("fail-calc-use-by-1").style.color = "black";
             document.getElementById("fail-calc-use-by-1").innerHTML = responseData.carton_Use_By;
             document.getElementById("fail-product-useby").style.color = "black";
             document.getElementById("fail-product-useby").innerHTML = responseData.pro_Use_By;
@@ -2336,9 +2334,7 @@ width: 76%;
         }
        
         if (responseData.ifuMismatch == true) {
-            document.getElementById("fail-product-db-ifu").innerHTML = "Ifu is not found";
-            document.getElementById("fail-product-db-ifu").style.color="red";
-            document.getElementById("fail-db-ifu").style.color="red";
+            document.getElementById("fail-product-db-ifu").innerHTML =responseData.db_Ifu;
             document.getElementById("fail-ifu").innerHTML =responseData.scanned_Ifu;
             document.getElementById("fail-ifu").style.color = "red";
             document.getElementById("during-scan-ifu").style.display = "none";
@@ -2370,9 +2366,7 @@ width: 76%;
          document.getElementById('fail-carton-lot-no').innerHTML = response.lhsData.cartonLotNo;
          document.getElementById('fail-calc-use-by-1').innerHTML = response.lhsData.cartonUseBy;
          document.getElementById('fail-product-db-ifu').innerHTML = response.rhsData.dbIFU;
-        
-            
-        
+       
          if (mismatches.lotNumberMisMatch) {
             document.getElementById("fail-product-lot-no1").innerHTML = response.rhsData.productLotNo;
             document.getElementById("fail-product-lot-no1").style.color = "red";
@@ -2426,7 +2420,6 @@ width: 76%;
         document.getElementById("total-rescanned-val").innerHTML = response.workOrderInfo.scannedCount != null ? response.workOrderInfo.scannedCount : 0;
         console.log(response.workOrderInfo.scannedCount);
     }
-
     function redbutton(inputFieldId) {
         showLoader();
         var supervisorId = $('#' + inputFieldId).val();

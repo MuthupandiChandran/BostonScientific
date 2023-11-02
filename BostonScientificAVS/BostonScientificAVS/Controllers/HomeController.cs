@@ -525,32 +525,79 @@ namespace BostonScientificAVS.Controllers
             woi.Dbspec = itemmaster.Label_Spec;
             woi.DbCatalogNo = itemmaster.Catalog_Num;
 
-            var resultData = new FinalResult
-            {
-                allMatch = true,
-                mismatches = new mismatchess(),
-                lhsData = new LHS
-                {
-                    cartonGTIN = woi.Cartongtin,
-                    woLotNo = woi.workOrderLotNo,
-                    cartonLabelSpec = woi.CartonLabelspec,
-                    cartonUseBy = woi.Carton_Use_By.ToString(),
-                    woCatalogNumber = woi.workOrderCatalogNo,
-                    cartonLotNo = woi.CartonLotNo
-                },
-                rhsData = new RHS
-                {
-                    dbGTIN = woi.Dbgtin,
-                    dbLabelSpec = woi.Dbspec,
-                    calculateUseBy = woi.Calculateuseby.ToString(),
-                    dbCatalogNo = woi.DbCatalogNo,
-                    dbIFU = woi.ifu
-                },
-                workOrderInfo = woi,
-                cartonscan = false // or true, based on your conditions
-            };
+            FinalResult result = new FinalResult();
+            mismatchess mismatches = new mismatchess();
+            LHS lhsdata = new LHS();
+            RHS rhsdata = new RHS();
 
-            TempData["ResultData"] = resultData;
+            rhsdata.dbCatalogNo = woi.DbCatalogNo;
+            lhsdata.woCatalogNumber = woi.workOrderCatalogNo;
+            rhsdata.calculateUseBy = woi.Calculateuseby.ToString();
+            lhsdata.cartonUseBy = transaction.Carton_Use_By.ToString();
+            lhsdata.woLotNo = transaction.WO_Lot_Num;
+            lhsdata.cartonLotNo = woi.CartonLotNo;
+            rhsdata.dbLabelSpec = woi.Dbspec;
+            lhsdata.cartonLabelSpec = woi.CartonLabelspec;
+
+            result.rhsData = rhsdata;
+            result.lhsData = lhsdata;
+            result.allMatch = true;
+
+            if (transaction.DB_Catalog_Num != transaction.WO_Catalog_Num || transaction.Calculated_Use_By != transaction.Carton_Use_By || transaction.WO_Lot_Num != transaction.Carton_Lot_Num || transaction.DB_Label_Spec != transaction.Carton_Label_Spec)
+            {
+
+                result.allMatch = false;
+
+            }
+
+            if (!result.allMatch)
+            {
+                if (transaction.DB_Catalog_Num != transaction.WO_Catalog_Num)
+                {
+                    mismatches.catalogNumMismatch = true;
+                    mismatches.rescan_catalog = true;
+                }
+                if (transaction.Calculated_Use_By != transaction.Carton_Use_By)
+                {
+                    mismatches.calculatedUseByMismatches = true;
+                }
+                if (transaction.WO_Lot_Num != transaction.Carton_Lot_Num)
+                {
+                    mismatches.lotNoMismatch = true;
+                    mismatches.rescan_lotno = true;
+                }
+                if (transaction.DB_Label_Spec != transaction.Carton_Label_Spec)
+                {
+                    mismatches.labelSpecMismatch = true;
+
+                }
+
+            }
+
+
+            if (result.allMatch)
+            {
+                transaction.Result = "Pass";
+                 SendMessageToUDPclient("P");
+
+            }
+            else
+            {
+                transaction.Result = "Fail";
+                SendMessageToUDPclient("F");
+            }
+            var empId = User.Claims.FirstOrDefault(c => c.Type == "EmpID")?.Value;
+            var user = _dataContext.Users.Where(x => x.EmpID == empId).FirstOrDefault();
+
+            if (user != null)
+            {
+                transaction.User = user.Id + "";
+            }
+            DateTime currentDateTime = DateTime.Now;
+            transaction.Date_Time = currentDateTime.ToString();
+            _dataContext.SaveChangesAsync();
+            TempData["woi"] = woi;
+            
             return View(woi);
         }
 
@@ -588,20 +635,12 @@ namespace BostonScientificAVS.Controllers
                 result.rhsData = rhsdata;
                 result.lhsData = lhsdata;
                 result.allMatch = true;
-                if (transaction.Carton_Label_GTIN != transaction.DB_GTIN || transaction.Carton_Label_GTIN != transaction.Product_Label_GTIN || transaction.WO_Lot_Num != transaction.Product_Lot_Num || transaction.Carton_Label_Spec != transaction.DB_Label_Spec || transaction.Carton_Use_By != transaction.Calculated_Use_By || transaction.WO_Catalog_Num != transaction.DB_Catalog_Num || transaction.Carton_Lot_Num != transaction.Product_Lot_Num || transaction.Scanned_IFU != transaction.DB_IFU || transaction.Carton_Use_By != transaction.Product_Use_By)
+                if (transaction.WO_Lot_Num != transaction.Product_Lot_Num || transaction.Carton_Label_Spec != transaction.DB_Label_Spec || transaction.Carton_Use_By != transaction.Calculated_Use_By || transaction.WO_Catalog_Num != transaction.DB_Catalog_Num || transaction.Carton_Lot_Num != transaction.Product_Lot_Num || transaction.Scanned_IFU != transaction.DB_IFU || transaction.Carton_Use_By != transaction.Product_Use_By)
                 {
                     result.allMatch = false;
                 }
                 if (!result.allMatch)
                 {
-                    if (transaction.DB_GTIN != transaction.Carton_Label_GTIN)
-                    {
-                        mismatches.gtinmismatch = true;
-                    }
-                    if (transaction.Carton_Label_GTIN != transaction.Product_Label_GTIN)
-                    {
-                        mismatches.gtinmismatches = true;
-                    }
                     if (transaction.WO_Lot_Num != transaction.Product_Lot_Num)
                     {
                         mismatches.lotNoMismatch = true;
@@ -827,9 +866,8 @@ namespace BostonScientificAVS.Controllers
                         latestTransaction.Product_Use_By = dateTime;
                         latestTransaction.Product_Lot_Num = match.Groups[4].Value;
 
-                        ItemMaster item = await _dataContext.ItemMaster.FirstOrDefaultAsync(i => i.GTIN == latestTransaction.Product_Label_GTIN);
-                        if (item != null)
-                        {
+                        ItemMaster item = _dataContext.ItemMaster.OrderBy(i => i.GTIN).FirstOrDefault();
+                       
                             // Assign values from ItemMaster
                             latestTransaction.DB_GTIN = item.GTIN;
                             latestTransaction.DB_Catalog_Num = item.Catalog_Num;
@@ -837,19 +875,8 @@ namespace BostonScientificAVS.Controllers
                             latestTransaction.Calculated_Use_By = workOrderDT.AddDays((double)item.Shelf_Life);
                             latestTransaction.DB_Label_Spec = item.Label_Spec;
                             latestTransaction.DB_IFU = item.IFU;
-                        }
-                        else
-                        {
-                            gtinmismatch = true;
                             latestTransaction.Product_Label_Spec = input2;
                             latestTransaction.Scanned_IFU = input3;
-                            await _dataContext.SaveChangesAsync();
-                            TempData["Input3"] = input3;
-                            return RedirectToAction("GTINmismatch", new { gtinMismatch = true });
-                        }
-
-                        latestTransaction.Product_Label_Spec = input2;
-                        latestTransaction.Scanned_IFU = input3;
                     }
                     else
                     {

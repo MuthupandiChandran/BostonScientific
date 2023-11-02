@@ -12,8 +12,6 @@
 
     public class mismatchess
     {
-        public bool gtinmismatch { get; set; }
-        public bool gtinmismatches { get; set; }
         public bool lotNoMismatch { get; set; }
         public bool labelSpecMismatch { get; set; }
         public bool CalculatedUseByMismatch { get; set; }
