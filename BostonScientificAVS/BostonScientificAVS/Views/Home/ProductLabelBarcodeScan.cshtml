@@ -7,11 +7,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
 </head>
 
-<body>
+<body id="body">
     <div class="container-fluid div-container p-0" id="container">
         <nav class="navbar">
             <div class="dropdown">
-                <button class="custom-config-button" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button class="dropdown-button" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <img class="avatar-image-size" src="~/assets/images/user_avatar.png" />
                     <span class="user-name-text">Hello, @User.Identity.Name | @User.Claims.FirstOrDefault(c => c.Type == "EmpID")?.Value</span>
                     <span class="pack">Cartoning</span>
@@ -77,20 +77,20 @@
                                 <tr class="bg-row-color">
                                     <td>
                                         <div>
-                                            <h6 class="comparison-lable-text bld">WorkOrder Catalog Number</h6>
-                                        </div>
-                                        <div>
-                                            <h6 id="fail-db-catalog-num" class="comparison-lable-text">@Model.workOrderCatalogNo</h6>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div>
-                                            <h6 class="comparison-lable-text bld" id="w-catlognum">Database Catalog Number</h6>
+                                            <h6 class="comparison-lable-text bld">Database Catalog Number</h6>
                                         </div>
                                         <div>
                                             <h6 id="fail-wo-catalog-no-error" class="comparison-lable-text">@Model.DbCatalogNo</h6>
                                         </div>
                                     </td>
+                                    <td>
+                                        <div>
+                                            <h6 class="comparison-lable-text bld" id="w-catlognum">WorkOrder Catalog Number</h6>
+                                        </div>
+                                        <div>
+                                            <h6 id="fail-db-catalog-num" class="comparison-lable-text">@Model.workOrderCatalogNo</h6>
+                                        </div>
+                                    </td>                
                                     <td>
                                         <div id="before-scan-catalog">
                                             <img src="/assets/images/before-scanning.png" class="scanning-stage-img-size" />
@@ -254,22 +254,22 @@
                                     </td>
 
                                 <tr class="bg-row-color">
-                                    <td>
+                                     <td>
                                         <div>
-                                            <h6 class="comparison-lable-text bld">Carton Label GTIN</h6>
-                                        </div>
-                                        <div>
-                                            <h6 id="fail-label-gtin1" class="comparison-lable-text">@Model.Cartongtin</h6>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div>
-                                            <h6 class="comparison-lable-text bld" id="p-gtin">Database GTIN</h6>
+                                            <h6 class="comparison-lable-text bld">Database GTIN</h6>
                                         </div>
                                         <div>
                                             <h6 id="fail-db-gtin" class="comparison-lable-text">@Model.Dbgtin</h6>
                                         </div>
                                     </td>
+                                    <td>
+                                        <div>
+                                            <h6 class="comparison-lable-text bld" id="p-gtin">Carton Label GTIN</h6>
+                                        </div>
+                                        <div>
+                                            <h6 id="fail-label-gtin1" class="comparison-lable-text">@Model.Cartongtin</h6>
+                                        </div>
+                                    </td>             
                                     <td>
                                         <div id="before-scan-gtin">
                                             <img src="/assets/images/before-scanning.png" class="scanning-stage-img-size" />
@@ -288,20 +288,20 @@
                                 <tr>
                                     <td>
                                         <div>
-                                            <h6 class="comparison-lable-text bld">Carton Label Specification</h6>
-                                        </div>
-                                        <div>
-                                            <h6 id="fail-db-label-spec" class="comparison-lable-text">@Model.CartonLabelspec</h6>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div>
-                                            <h6 class="comparison-lable-text bld" id="p-labelspec">Database Label Specification</h6>
+                                            <h6 class="comparison-lable-text bld">Database Label Specification</h6>
                                         </div>
                                         <div>
                                             <h6 id="fail-product-label-spec" class="comparison-lable-text">@Model.Dbspec</h6>
                                         </div>
                                     </td>
+                                    <td>
+                                        <div>
+                                            <h6 class="comparison-lable-text bld" id="p-labelspec">Carton Label Specification</h6>
+                                        </div>
+                                        <div>
+                                            <h6 id="fail-db-label-spec" class="comparison-lable-text">@Model.CartonLabelspec</h6>
+                                        </div>
+                                    </td>                        
                                     <td>
                                         <div id="before-scan-label-spec">
                                             <img src="/assets/images/before-scanning.png" class="scanning-stage-img-size" />
@@ -352,20 +352,20 @@
                                 <tr>
                                     <td>
                                         <div>
-                                            <h6 class="comparison-lable-text bld">Carton IFU</h6>
-                                        </div>
-                                        <div>
-                                            <h6 id="fail-ifu" class="comparison-lable-text">xxxxxxxxxxx</h6>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div>
-                                            <h6 class="comparison-lable-text bld" id="p-ifu">Database IFU</h6>
+                                            <h6 class="comparison-lable-text bld" id="fail-db-ifu">Database IFU</h6>
                                         </div>
                                         <div>
                                             <h6 id="fail-product-db-ifu" class="comparison-lable-text">@Model.ifu</h6>
                                         </div>
                                     </td>
+                                    <td>
+                                        <div>
+                                            <h6 class="comparison-lable-text bld" id="p-ifu">Carton IFU</h6>
+                                        </div>
+                                        <div>
+                                            <h6 id="fail-ifu" class="comparison-lable-text">xxxxxxxxxxx</h6>
+                                        </div>
+                                    </td>                                
                                     <td>
                                         <div id="before-scan-ifu">
                                             <img src="/assets/images/before-scanning.png" class="scanning-stage-img-size" />
@@ -428,7 +428,7 @@
                     <div class="scan-container">
                         Scan Product Label
                     </div>
-                    <div class="work-btn" id="after-fail-workorder">New Work Order</div>
+                    <div><a asp-area="" asp-controller="Home" asp-action="WorkOrderScan" id="after-pass-workorder" class="work-btn">New Work Order</a></div>
                     <div class="work-btn-1" id="rescanBtn">Rescan</div>
                 </div>
 
@@ -468,9 +468,12 @@
     padding: 0.5rem!important;
 }
 
-a .work-btn{
+  .work-btn{
     text-decoration:none;
-}
+  }
+  #rescanBtn {
+      text-decoration:none;
+  }
 
   .work-btn-1 {
   display: inline-block;
@@ -1446,30 +1449,19 @@ width: 76%;
         z-index: 999;
     }
 
-    /* Styles for the popup content */
-    #popupContent {
-        width: 477px;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: #fff;
-        padding: 20px;
-        border-radius: 16px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    }
+  
 
     #popupContent1 {
-        width: 477px;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: #fff;
-        padding: 20px;
-        border-radius: 16px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    }
+    width: 477px;
+    position: fixed; /* Set the position to fixed */
+    top: 50%; /* Set the top to 50% */
+    right: 0; /* Set the right position to 0 */
+    transform: translateY(-50%); /* Align vertically using transform */
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
 
     /* Style for the green button inside the popup */
     #greenButton {
@@ -1580,6 +1572,14 @@ width: 76%;
     table {
         width:100%;
     }
+     .dropdown-button {
+    width: 211px;
+    height: 54px;
+    border: none;
+    background-color: white;
+    white-space: nowrap; /* Added to remove white space */
+}
+
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
@@ -1600,7 +1600,6 @@ width: 76%;
     document.getElementById("after-fail-side-scan").style.display = "none";
     document.getElementById("after-success-side-scan").style.display = "none";
     document.getElementById("after-pass-workorder").style.display = "none";
-    document.getElementById("after-fail-workorder").style.display = "none";
     document.getElementById("ifu-scan").style.display = "none";
     document.getElementById("popupContainer1").style.display = "none";
 
@@ -1661,7 +1660,7 @@ width: 76%;
 
             } else {
                 document.getElementById('p-gtin').style.color="red";
-                document.getElementById('fail-db-gtin').style.color = "red";
+                document.getElementById('fail-label-gtin1').style.color = "red";
                 document.getElementById('before-scan-gtin').style.display ='none';
                 document.getElementById('after-scan-fail-gtin').style.display = 'block';
             }
@@ -1682,7 +1681,7 @@ width: 76%;
             }
             else {
                 document.getElementById('p-labelspec').style.color ="red";
-                document.getElementById('fail-product-label-spec').style.color="red";
+                document.getElementById('fail-db-label-spec').style.color="red";
                 document.getElementById('before-scan-label-spec').style.display = 'none';
                 document.getElementById('after-scan-fail-label-spec').style.display = 'block';
             }
@@ -1703,7 +1702,7 @@ width: 76%;
             }
             else {
                 document.getElementById('w-catlognum').style.color = "red";
-                document.getElementById('fail-wo-catalog-no-error').style.color="red";
+                document.getElementById('fail-db-catalog-num').style.color="red";
                 document.getElementById('before-scan-catalog').style.display = 'none';
                 document.getElementById('after-scan-fail-catalog').style.display = 'block';
             }
@@ -1742,6 +1741,8 @@ width: 76%;
         document.getElementById("after-scan-pass-ifu").style.display ="block";
         document.getElementById("popupContainer1").style.display = "none";
         document.getElementById("container").style.backgroundColor="#BAFFCD";
+        document.getElementById("body").style.backgroundColor="#BAFFCD";
+        document.getElementsByClassName('dropdown-button')[0].style.backgroundColor ="#BAFFCD";
         document.getElementById("ifu-scan").style.display = "none";
         document.getElementById("ifu-workorder").style.display = "none";
         document.getElementById("after-success-side-scan").style.display="block";
@@ -1822,10 +1823,12 @@ width: 76%;
 
     function scanfail(response) {
         document.getElementById("container").style.backgroundColor = "#FFCACA";
+        document.getElementById("body").style.backgroundColor = "#FFCACA";
+        document.getElementsByClassName('dropdown-button')[0].style.backgroundColor="#FFCACA";
         document.getElementById("ifu-scan").style.display="none";
         document.getElementById("ifu-workorder").style.display="none";
         document.getElementById("after-fail-side-scan").style.display="block";
-        document.getElementById("after-fail-workorder").style.display="block";
+        document.getElementById("after-pass-workorder").style.display="block";
         document.getElementById("rescanBtn").style.display = "block";
        
         if(responseData.gtinMismatch == true){
@@ -2164,6 +2167,8 @@ width: 76%;
         beforeToDuringScan();
         let isresult = "";
         let finalresult = "";
+        console.log("responseData");
+        console.log("response");
         if (responseData.gtinMismatch == true) {
             if (responseData.labelMismatch == true || responseData.firstUseby_Mismatch == true || responseData.gtinMismatch == true || responseData.secondUseby_Mismatch ||responseData.lotNoMismatches) {
                 isresult = false;
@@ -2258,28 +2263,42 @@ width: 76%;
 
     function setScannedData(response) {
         console.log("set data called");
-         document.getElementById('fail-db-catalog-num').innerHTML = wocatalognum;
+         document.getElementById('fail-wo-catalog-no-error').innerHTML = dbcatalognum;
          document.getElementById('fail-product-use-by').innerHTML = calculateuseby;
          document.getElementById('fail-wo-lot-no').innerHTML = wolotNo;
          document.getElementById('fail-carton-lot-no').innerHTML = cartonlotNo;
-         document.getElementById('fail-label-gtin1').innerHTML = cartonGtin; 
-         document.getElementById('fail-db-label-spec').innerHTML = cartonlabelspec;
+         document.getElementById('fail-db-gtin').innerHTML = dbGtin;
+         document.getElementById('fail-product-label-spec').innerHTML = dblabelspec;   
          document.getElementById('fail-calc-use-by-1').innerHTML = response.lhsData.cartonUseBy;
-         document.getElementById('fail-ifu').innerHTML = response.lhsData.scannedIFU;
+         document.getElementById('fail-product-db-ifu').innerHTML = response.rhsData.dbIFU;
+         
             
          
-         document.getElementById('fail-wo-catalog-no-error').innerHTML = dbcatalognum;
+         document.getElementById('fail-db-catalog-num').innerHTML = wocatalognum;
          document.getElementById('fail-calc-use-by').innerHTML = cartonuseby;
          document.getElementById('fail-carton-lot-no-1').innerHTML =response.lhsData.cartonLotNo;
          document.getElementById('fail-product-lot-no1').innerHTML = response.rhsData.productLotNo;
-         document.getElementById('fail-db-gtin').innerHTML = dbGtin;
-         document.getElementById('fail-product-label-spec').innerHTML = dblabelspec;
+         document.getElementById('fail-label-gtin1').innerHTML = cartonGtin;
+         document.getElementById('fail-db-label-spec').innerHTML = cartonlabelspec;
          document.getElementById('fail-product-useby').innerHTML = response.rhsData.productUseBy;
-         document.getElementById('fail-product-db-ifu').innerHTML = response.rhsData.dbIFU;
+         document.getElementById('fail-ifu').innerHTML = response.lhsData.scannedIFU;
     }
     function setScannedFailData1(response) {
         console.log("set data for fail called");
-         
+         document.getElementById('after-scan-pass-wo-mfg-date').style.display = 'none';
+         document.getElementById('after-scan-fail-wo-mfg-date').style.display = 'block';
+         document.getElementById('after-scan-pass-shelflife').style.display = 'none';
+         document.getElementById('after-scan-fail-shelflife').style.display = 'block';
+         document.getElementById('fail-shelf-life-by-error').innerHTML = 'Shelf Life is not found';
+         document.getElementById('fail-shelf-life-by-error').style.color ="red";
+         document.getElementById('wo-mfg-date').innerHTML = 'Work order MFG date is not found';
+         document.getElementById('wo-mfg-date').style.color ="red";
+         document.getElementById('workorder-mfg-date').style.color = "red";
+         document.getElementById('shelf-life').style.color = "red";
+         document.getElementById('fail-wo-catalog-no-error').innerHTML = "Database Catalog Number is not found";
+         document.getElementById('fail-wo-catalog-no-error').style.color="red";
+         document.getElementById('fail-product-label-spec').innerHTML ="Database Label Specification is not found";
+         document.getElementById('fail-product-label-spec').style.color="red";
       if (responseData.lotNoMismatches == true) {
             document.getElementById("fail-carton-lot-no").innerHTML = responseData.carton_Lot_No;
             document.getElementById("fail-carton-lot-no").style.color = "black";
@@ -2317,22 +2336,23 @@ width: 76%;
         }
        
         if (responseData.ifuMismatch == true) {
-            document.getElementById("fail-product-db-ifu").innerHTML = responseData.db_Ifu;
-            document.getElementById("fail-product-db-ifu").style.color = "red";
-            document.getElementById("p-ifu").style.color = "red";
-            document.getElementById("fail-ifu").innerHTML = responseData.scanned_Ifu;
-            document.getElementById("fail-ifu").style.color = "black";
+            document.getElementById("fail-product-db-ifu").innerHTML = "Ifu is not found";
+            document.getElementById("fail-product-db-ifu").style.color="red";
+            document.getElementById("fail-db-ifu").style.color="red";
+            document.getElementById("fail-ifu").innerHTML =responseData.scanned_Ifu;
+            document.getElementById("fail-ifu").style.color = "red";
             document.getElementById("during-scan-ifu").style.display = "none";
             document.getElementById("after-scan-fail-ifu").style.display = "block";
         }
         else {
             document.getElementById("fail-product-db-ifu").innerHTML = responseData.db_Ifu;
-            document.getElementById("fail-product-db-ifu").style.color = "black";
             document.getElementById("fail-ifu").innerHTML = responseData.scanned_Ifu;
             document.getElementById("fail-ifu").style.color = "black";
             document.getElementById("during-scan-ifu").style.display ="none";
             document.getElementById("after-scan-pass-ifu").style.display ="block";
         }
+
+
     }
 
 
@@ -2347,9 +2367,10 @@ width: 76%;
             setScannedFailData1();
         }
         else{
-         document.getElementById('fail-carton-lot-no').innerHTML = cartonlotNo;
+         document.getElementById('fail-carton-lot-no').innerHTML = response.lhsData.cartonLotNo;
          document.getElementById('fail-calc-use-by-1').innerHTML = response.lhsData.cartonUseBy;
-         document.getElementById('fail-ifu').innerHTML = response.lhsData.scannedIFU;
+         document.getElementById('fail-product-db-ifu').innerHTML = response.rhsData.dbIFU;
+        
             
         
          if (mismatches.lotNumberMisMatch) {
@@ -2382,15 +2403,15 @@ width: 76%;
        
        
         if (mismatches.ifumismatches) {
-            document.getElementById("fail-product-db-ifu").innerHTML = response.rhsData.dbIFU;
-            document.getElementById("fail-product-db-ifu").style.color = "red";
+            document.getElementById('fail-ifu').innerHTML = response.lhsData.scannedIFU;
+            document.getElementById("fail-ifu").style.color = "red";
             document.getElementById("p-ifu").style.color = "red";
             document.getElementById("during-scan-ifu").style.display = "none";
             document.getElementById("after-scan-fail-ifu").style.display = "block";
         }
         else {
-            document.getElementById("fail-product-db-ifu").innerHTML = response.rhsData.dbIFU;
-            document.getElementById("fail-product-db-ifu").style.color = "black";
+            document.getElementById('fail-ifu').innerHTML = response.lhsData.scannedIFU;
+            document.getElementById("fail-ifu").style.color = "black";
             document.getElementById("during-scan-ifu").style.display ="none";
             document.getElementById("after-scan-pass-ifu").style.display ="block";
 
@@ -2404,7 +2425,6 @@ width: 76%;
         document.getElementById("total-failed-val").innerHTML = response.workOrderInfo.failedCount != null ? response.workOrderInfo.failedCount : 0;
         document.getElementById("total-rescanned-val").innerHTML = response.workOrderInfo.scannedCount != null ? response.workOrderInfo.scannedCount : 0;
         console.log(response.workOrderInfo.scannedCount);
-        document.getElementById("work-order-lot-no").innerHTML = response.lhsData.woLotNo;
     }
 
     function redbutton(inputFieldId) {

@@ -295,7 +295,7 @@
                         <div class="scan-container">
                             Scan Product Label
                         </div>
-                    <div id="fail-workorder">
+                    <div>
                     <a asp-area="" asp-controller="Home" asp-action="WorkOrderScan" id="after-pass-workorder" class="work-btn">New Work Order</a>
                 </div>
                     <div class="work-btn-1" id="rescanBtn">Rescan</div>
@@ -1462,7 +1462,7 @@
     document.getElementById("after-fail-side-scan").style.display = "none";
     document.getElementById("after-success-side-scan").style.display = "none";
     document.getElementById("after-pass-workorder").style.display = "none";
-    document.getElementById("fail-workorder").style.display ="none";
+    
   
     
     //document.getElementsByClassName('temp-button')[0]
@@ -1644,7 +1644,7 @@
         document.getElementById("container").style.backgroundColor = "#FFCACA";
         document.getElementById("before-side-scan").style.display="none";
         document.getElementById("after-fail-side-scan").style.display="block";
-        document.getElementById("fail-workorder").style.display ="block";
+        document.getElementById("after-pass-workorder").style.display ="block";
         document.getElementById("rescanBtn").style.display = "block";
         document.getElementById("body").style.backgroundColor="#FFCACA";
         document.getElementsByClassName('dropdown-button')[0].style.backgroundColor="#FFCACA";
