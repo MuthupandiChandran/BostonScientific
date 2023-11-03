@@ -440,27 +440,48 @@ namespace BostonScientificAVS.Controllers
                 return Json(new { success = false, errorMessage = TempData["ErrorMessage"] });
             }
         }
-        public IActionResult HomeScreen()
+        public IActionResult HomeScreen(bool admin)
         {
-            bool myBooleanValue = false; // Default value in case TempData["MyBoolean"] is not set
+            bool myBooleanValue = false; // Default value in case TempData["AfterLogin"] is not set
             if (TempData.ContainsKey("AfterLogin") && TempData["AfterLogin"] is bool myBoolean)
             {
                 myBooleanValue = myBoolean;
             }
+            
+            float hoursInput = 0; // Default value in case "Key" not found
+
             if (myBooleanValue)
             {
-                int hoursInput = DotNetEnv.Env.GetInt("EXPIRE_TIME");
+                // Check if "Key" exists in the database
+                var setting = _dataContext.Settings.FirstOrDefault(s => s.Key == "8"); // The key to retrieve
+                if (setting != null)
+                {
+                    if (float.TryParse(setting.Key, out float value))
+                    {
+                        hoursInput = value;
+                    }
+                }
+            }
+
+            if (TempData.ContainsKey("Admin") && admin)
+            {
+                TempData.Keep("Admin"); // Preserve the TempData value
+                var setting = _dataContext.Settings.FirstOrDefault(s => s.Key == "8");
+                if (float.TryParse(setting.Value, out float value))
+                {
+                    hoursInput = value;
+                }
                 ViewBag.HoursInput = hoursInput;
+                return View("Settings");
+
             }
             else
             {
-                ViewBag.HoursInput = 0;
+                ViewBag.HoursInput = hoursInput;
+                return View("HomeScreen");
             }
-
-            return View();
+            
         }
-
-
 
 
         [HttpPost]

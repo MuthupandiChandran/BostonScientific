@@ -46,14 +46,19 @@ namespace BostonScientificAVS.Controllers
         [HttpPost]
         public IActionResult UpdateExpiration(float expirationTime)
         {
-           
-            var result = new
+            var setting = _context.Settings.FirstOrDefault(s => s.Key == "8"); // The key to update
+            if (setting != null)
             {
-                NewExpirationTime = expirationTime, // Pass the newExpirationTime
-                Admin = true // Set this based on your condition           
-           };
-            return Json(result);
+                setting.Value = expirationTime.ToString();
+                _context.SaveChanges();
+            }
+
+            TempData["Admin"] = true; // Set TempData to true
+
+            return RedirectToAction("HomeScreen", "Home",new {admin=true});
         }
+
+
 
         [HttpPost("/UpdateItem")]
         public ActionResult UpdateItem(SingleItemEdit itemToEdit)

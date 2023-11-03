@@ -234,38 +234,23 @@
 
 
     // Set the initial expiration time in JavaScript (2 hours in this example)
-    var hoursInput = myElement.dataset.hoursInput;; // Replace this with the desired hours from your input*/
+    var hoursInput = parseFloat(myElement.dataset.hoursInput); // Parse as a float
     var expirationTime;
     if (hoursInput == 0) {
-    expirationTime = localStorage.getItem("expiration_time");
+        expirationTime = localStorage.getItem("expiration_time");
     } else {
-     expirationTime = Math.floor(Date.now() / 1000) + hoursInput * 3600;
-    // Store the expiration time in localStorage
-    localStorage.setItem("expiration_time", expirationTime);
+        // Convert hours to seconds
+        var seconds = hoursInput * 3600;
+
+        expirationTime = Math.floor(Date.now() / 1000) + seconds;
+
+        // Store the expiration time in localStorage
+        localStorage.setItem("expiration_time", expirationTime);
     }
 
-    var timerValueSet = localStorage.getItem("timerValueSet");
-    if (timerValueSet == "true"){
-        // Retrieve the timerValue
-        var timerValue = localStorage.getItem("timerValue");
-        // Use the timerValue as needed
-        document.getElementById("timer").textContent = timerValue;
-        const timeString = timerValue;
-        const totalSeconds = timeToSeconds(timeString);
-        function timeToSeconds(timeString) {
-            const [hours, minutes] = timeString.split(":").map(Number);
-            return hours * 3600 + minutes * 60;
-        }
-        var currentTime = Math.floor(Date.now() / 1000);
-        var remainingTime = totalSeconds - currentTime;
-        // Remove the flag since the timerValue is retrieved
-        startTimer(remainingTime);
-        localStorage.removeItem("timerValueSet");
-    }
-    else{
     // Get the expiration time from localStorage
     var currentTime = Math.floor(Date.now() / 1000);
     var remainingTime = expirationTime - currentTime;
     startTimer(remainingTime);
-    }
+
 </script>
