@@ -253,6 +253,7 @@ $(() => {
             });
 
         function SubmitForm() {
+            debugger;
             showLoader();
             var row = $('[data-row-id="1"]');
 
@@ -286,7 +287,7 @@ $(() => {
                 method: "POST",
                 data: item,
                 success: function (response) {
-                    if (response.success == true) 
+                    if (response.success) 
                     {
                         hideLoader();
                         console.log("Item saved successfully");

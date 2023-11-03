@@ -74,7 +74,7 @@ namespace BostonScientificAVS.Controllers
             }
         }
 
-        
+
         [HttpPost("/SaveNewItem")]
         public ActionResult SaveNewItem(ItemMaster item)
         {
@@ -91,18 +91,21 @@ namespace BostonScientificAVS.Controllers
                         if (!string.IsNullOrEmpty(item.GTIN))
                         {
                             // Check if a record with the same GTIN already exists
-                            var existingItem = _context.ItemMaster.FirstOrDefaultAsync(u => u.GTIN == item.GTIN);
+                            var existingItem = _context.ItemMaster.FirstOrDefault(u => u.GTIN == item.GTIN);
                             if (existingItem != null)
                             {
-                                return Json( new { success = false, message ="GTIN is already in use." });
+                                return Json(new { success = false, message = "GTIN is already in use." });
                             }
+                            else
+                            {
+                                // Assign the current date and time to the "Created" property for new items
+                                item.Created = DateTime.Now;
+                                item.Created_by = currentUserName;
 
-                            // Assign the current date and time to the "Created" property for new items
-                            item.Created = DateTime.Now;
-                            item.Created_by = currentUserName;
-
-                            _itemService.saveNewItem(item);
-                            return Ok("success");
+                                // Call the service to save the new item
+                                _itemService.saveNewItem(item);
+                                return Json(new { success = true });
+                            }
                         }
                     }
                     else
@@ -118,6 +121,7 @@ namespace BostonScientificAVS.Controllers
                 return Ok("error while adding item");
             }
         }
+
 
 
         [HttpPost("/DeleteItem")]
