@@ -381,6 +381,38 @@
                                         </div>
                                     </td>
                                 </tr>
+                                <tr class="bg-row-color">
+                                     <td>
+                                        <div>
+                                            <h6 class="comparison-lable-text bld">Carton Label GTIN</h6>
+                                        </div>
+                                        <div>
+                                            <h6 id="fail-db-gtin-2" class="comparison-lable-text">@Model.Cartongtin</h6>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <h6 class="comparison-lable-text bld" id="p-gtin-1">Product Label GTIN</h6>
+                                        </div>
+                                        <div>
+                                            <h6 id="fail-label-gtin2" class="comparison-lable-text">xxxxxxxx</h6>
+                                        </div>
+                                    </td>             
+                                    <td>
+                                        <div id="before-scan-gtin-1">
+                                            <img src="/assets/images/before-scanning.png" class="scanning-stage-img-size" />
+                                        </div>
+                                        <div class="temp-display" id="during-scan-gtin-1">
+                                            <img src="/assets/images/scanning-stage-icon.png" class="scanning-stage-img-size" />
+                                        </div>
+                                        <div class="temp-display" id="after-scan-pass-gtin-1">
+                                            <img src="/assets/images/after-scanned-pass-icon.png" class="scanning-stage-img-size" />
+                                        </div>
+                                        <div class="temp-display" id="after-scan-fail-gtin-1">
+                                            <img src="/assets/images/after-scanned-fail-icon.png" class="scanning-stage-img-size" />
+                                        </div>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -453,6 +485,19 @@
                     <input id="supervisorInput1" placeholder="Super Visor Id" name="supervisorInput1" autocomplete="off" />
                     <br />
                     <button id="redButton" class="redButton" onclick="redbutton('supervisorInput1')">Continue</button>
+                    <br />
+                    <span class="error-message text-danger"></span>
+                </div>
+            </div>
+            <div id="popupContainer">
+                <div id="popupContent">
+                    <a class="close" href="javascript:void(0);" onclick="closePopup()">X</a>
+                    <img src="~/assets/images/Barcode image 2.png" alt="Barcode Icon" id="scan-image">
+                    <h5 class="supr-txt">Place Your Supervisor Badge</h5>
+                    <h5 id="under">under the scanner</h5>
+                    <input id="supervisorInput" placeholder="Super Visor Id" name="supervisorInput" autocomplete="off" />
+                    <br />
+                    <button id="greenButton" class="greenButton" onclick="greenButton('supervisorInput')">Continue</button>
                     <br />
                     <span class="error-message text-danger"></span>
                 </div>
@@ -1463,6 +1508,18 @@ width: 76%;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
+ #popupContent {
+    width: 477px;
+    position: fixed; /* Set the position to fixed */
+    top: 50%; /* Set the top to 50% */
+    right: 0; /* Set the right position to 0 */
+    transform: translateY(-50%); /* Align vertically using transform */
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
     /* Style for the green button inside the popup */
     #greenButton {
         background-color: green;
@@ -1602,6 +1659,7 @@ width: 76%;
     document.getElementById("after-pass-workorder").style.display = "none";
     document.getElementById("ifu-scan").style.display = "none";
     document.getElementById("popupContainer1").style.display = "none";
+    document.getElementById("popupContainer").style.display ="none";
 
     //document.getElementsByClassName('temp-supervisor-call-button')[0]
     //    .addEventListener('click', function (event) {
@@ -1671,7 +1729,7 @@ width: 76%;
 
             else {
                 document.getElementById('p-carton').style.color="red";
-                 document.getElementById('fail-wo-lot-no').style.color="red";
+                 document.getElementById('fail-carton-lot-no').style.color="red";
                  document.getElementById('before-scan-lot-no').style.display = 'none';
                 document.getElementById('after-scan-fail-lot-no').style.display = 'block';
             }
@@ -1717,7 +1775,7 @@ width: 76%;
             document.getElementById("after-fail-side-scan").style.display = "block";
             document.getElementById("after-pass-workorder").style.display = "block";
             document.getElementById("rescanBtn").style.display = "block";
-            showPopup();
+            showPopup1();
           }
 
             document.getElementById('before-scan-wo-mfg-date').style.display = 'none';
@@ -1743,6 +1801,8 @@ width: 76%;
         document.getElementById("during-scan-product-useby").style.display = "block";
         document.getElementById("before-scan-ifu").style.display = "none";
         document.getElementById("during-scan-ifu").style.display = "block";
+        document.getElementById("before-scan-gtin-1").style.display = "none";
+        document.getElementById("during-scan-gtin-1").style.display = "block";
         document.getElementById("popupContainer1").style.display = "none";
     }
 
@@ -1855,6 +1915,8 @@ width: 76%;
        
     }
     function gtinmismatchblink(){
+       document.getElementById("during-scan-gtin-1").style.display = "none";
+       document.getElementById("after-scan-fail-gtin-1").style.display = "block";
          if (responseData.lotNoMismatches == true) {
             document.getElementById("during-scan-lot-no1").style.display ="none";
            document.getElementById("after-scan-fail-lot-no1").style.display ="block";
@@ -1918,6 +1980,14 @@ width: 76%;
         else {
             document.getElementById("during-scan-ifu").style.display = "none";
             document.getElementById("after-scan-pass-ifu").style.display = "block";
+        }
+        if(responseData.mismatches.gtinMismatch == true){
+            document.getElementById("during-scan-gtin-1").style.display = "none";
+            document.getElementById("after-scan-fail-gtin-1").style.display = "block";
+        }
+        else{
+            document.getElementById("during-scan-gtin-1").style.display="none";
+            document.getElementById("after-scan-pass-gtin-1").style.display = "block";
         }
          showPopup();
     }
@@ -2001,9 +2071,7 @@ width: 76%;
 
 
     function ScanFailToSupervisor() {
-        document.getElementById("popupContainer1").style.display = "none";
-        document.getElementById("scanning-icon-div").style.display = "none";
-        document.getElementById("supervisor-intervention").style.display = "flex";
+        document.getElementById("popupContainer").style.display = "none";
     }
       function ScanFailToSupervisor1() {
         document.getElementById("popupContainer1").style.display = "none";
@@ -2038,9 +2106,17 @@ width: 76%;
         document.getElementById("popupContainer1").style.display = "block";
         superVisorInput = true;
     }
+    function showPopup1() {
+        document.getElementById("popupContainer").style.display = "block";
+        superVisorInput = true;
+    }
     
     function closePopup() {
         document.getElementById("popupContainer1").style.display = "none";
+        superVisorInput = false;
+    }
+    function closePopup1() {
+        document.getElementById("popupContainer").style.display = "none";
         superVisorInput = false;
     }
 
@@ -2287,6 +2363,7 @@ width: 76%;
          document.getElementById('fail-product-label-spec').innerHTML = response.rhsData.dbLabelSpec;   
          document.getElementById('fail-calc-use-by-1').innerHTML = response.lhsData.cartonUseBy;
          document.getElementById('fail-product-db-ifu').innerHTML = response.rhsData.dbIFU;
+         document.getElementById('fail-db-gtin-2').innerHTML = response.lhsData.cartonGTIN;
          
             
          
@@ -2298,6 +2375,7 @@ width: 76%;
          document.getElementById('fail-db-label-spec').innerHTML = response.lhsData.cartonLabelSpec;
          document.getElementById('fail-product-useby').innerHTML = response.rhsData.productUseBy;
          document.getElementById('fail-ifu').innerHTML = response.lhsData.scannedIFU;
+         document.getElementById('fail-label-gtin2').innerHTML = response.rhsData.productLabelGTIN;
     }
     function setScannedFailData1(response) {
         console.log("set data for fail called");
@@ -2347,8 +2425,20 @@ width: 76%;
             document.getElementById("during-scan-ifu").style.display ="none";
             document.getElementById("after-scan-pass-ifu").style.display ="block";
         }
-
-
+        if(responseData.gtinMismatch == true){
+            document.getElementById('fail-db-gtin-2').innerHTML = responseData.carton_gtin;
+            document.getElementById('fail-label-gtin2').innerHTML = responseData.product_Gtin;
+            document.getElementById('fail-label-gtin2').style.color = "red";
+            document.getElementById('p-gtin-1').style.color = "red";
+            document.getElementById('during-scan-gtin-1"').style.display = "none";
+            document.getElementById('after-scan-fail-gtin-1').style.display="block";
+        }
+        else{
+             document.getElementById('fail-db-gtin-2').innerHTML = responseData.carton_gtin;
+             document.getElementById('fail-label-gtin2').innerHTML = responseData.product_Gtin;
+             document.getElementById('during-scan-gtin-1"').style.display = "none";
+             document.getElementById('after-scan-pass-gtin-1').style.display = "block";
+        }
     }
 
 
@@ -2410,8 +2500,24 @@ width: 76%;
             document.getElementById("after-scan-pass-ifu").style.display ="block";
 
             }
-       }
+            if(mismatches.gtinMismatch){
+            document.getElementById('fail-db-gtin-2').innerHTML = response.lhsData.cartonGTIN;
+            document.getElementById('fail-label-gtin2').innerHTML = response.rhsData.productLabelGTIN;
+            document.getElementById('fail-label-gtin2').style.color = "red";
+            document.getElementById('p-gtin-1').style.color = "red";
+            document.getElementById('during-scan-gtin-1').style.display = "none";
+            document.getElementById('after-scan-fail-gtin-1').style.display="block";
+
+            }
+            else
+            {
+             document.getElementById('fail-db-gtin-2').innerHTML = response.lhsData.cartonGTIN;
+             document.getElementById('fail-label-gtin2').innerHTML = response.rhsData.productLabelGTIN;
+             document.getElementById('during-scan-gtin-1').style.display = "none";
+             document.getElementById('after-scan-pass-gtin-1').style.display = "block";
+            }
     }
+  }
 
     function setWorkOrderInfo(response) {
         document.getElementById("total-val").innerHTML = response.workOrderInfo.totalCount != null ? response.workOrderInfo.totalCount : 0;
@@ -2448,6 +2554,37 @@ width: 76%;
             }
         });
     }
+    function greenButton(inputFieldId) {
+        showLoader();
+        var supervisorId = $('#' + inputFieldId).val();
+
+        $.ajax({
+            type: 'POST',
+            url: '/Home/CheckSupervisorId',
+            data: { supervisorEmpId: supervisorId },
+            success: function (data) {
+                if (data === true) {
+                    hideLoader();
+                    closePopup1();
+                    ScanFailToSupervisor();        
+                    $('#' + inputFieldId).val('');
+                } else {
+                    hideLoader();
+                    // Supervisor ID is invalid, show an error message
+                    var errorMessage = 'Supervisor ID is invalid. Please enter a valid ID.';
+                    $('#popupContent1').find('.error-message').text(errorMessage);
+                    $('#' + inputFieldId).val('');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log("An error occurred while making the AJAX call:", error);
+            }
+        });
+    }
+
+
+
+
 
     var udpMessageValue = false;
  $('#nxt-scn-btn').on('click', function (e) {
@@ -2525,7 +2662,7 @@ var workOrderValue = localStorage.getItem("workOrderValue");
             }
             if(data.pageData != null && superVisorInput == true){
                 document.getElementById("supervisorInput").value = data.pageData.Barcode;
-                configureContinueButton('supervisorInput');
+                greenbutton('supervisorInput');
             }
             
             
@@ -2537,7 +2674,7 @@ var workOrderValue = localStorage.getItem("workOrderValue");
 
             document.getElementById("greenButton").addEventListener("click", function () {
                 document.getElementById("greenButton").value = data.pageError.errorMsg;
-                configureContinueButton('supervisorInput');
+                greenbutton('supervisorInput');
             });
 
             document.getElementById("redButton").addEventListener("click", function () {

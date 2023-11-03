@@ -635,12 +635,17 @@ namespace BostonScientificAVS.Controllers
                 result.rhsData = rhsdata;
                 result.lhsData = lhsdata;
                 result.allMatch = true;
-                if (transaction.WO_Lot_Num != transaction.Product_Lot_Num || transaction.Carton_Label_Spec != transaction.DB_Label_Spec || transaction.Carton_Use_By != transaction.Calculated_Use_By || transaction.WO_Catalog_Num != transaction.DB_Catalog_Num || transaction.Carton_Lot_Num != transaction.Product_Lot_Num || transaction.Scanned_IFU != transaction.DB_IFU || transaction.Carton_Use_By != transaction.Product_Use_By)
+                if (transaction.WO_Lot_Num != transaction.Product_Lot_Num || transaction.Carton_Label_Spec != transaction.DB_Label_Spec || transaction.Carton_Use_By != transaction.Calculated_Use_By || transaction.WO_Catalog_Num != transaction.DB_Catalog_Num || transaction.Carton_Lot_Num != transaction.Product_Lot_Num || transaction.Scanned_IFU != transaction.DB_IFU || transaction.Carton_Use_By != transaction.Product_Use_By||transaction.Carton_Label_GTIN != transaction.Product_Label_GTIN)
                 {
                     result.allMatch = false;
                 }
                 if (!result.allMatch)
                 {
+                   if(transaction.Carton_Label_GTIN != transaction.Product_Label_GTIN)
+                    {
+                        mismatches.gtinMismatch = true;
+                    }
+                    
                     if (transaction.WO_Lot_Num != transaction.Product_Lot_Num)
                     {
                         mismatches.lotNoMismatch = true;

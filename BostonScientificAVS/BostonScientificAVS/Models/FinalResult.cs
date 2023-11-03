@@ -15,7 +15,7 @@
         public bool lotNoMismatch { get; set; }
         public bool labelSpecMismatch { get; set; }
         public bool CalculatedUseByMismatch { get; set; }
-        
+        public bool gtinMismatch { get; set; }
         public bool catalogNumMismatch { get; set; }
         public bool LotNumberMisMatch { get; set; }
         public bool ifumismatches { get; set; }
