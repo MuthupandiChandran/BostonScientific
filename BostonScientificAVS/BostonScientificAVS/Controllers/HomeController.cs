@@ -859,11 +859,7 @@ namespace BostonScientificAVS.Controllers
                 if (match.Success)
                 {
                     latestTransaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
-                    if (latestTransaction.Result != null)
-                    {
-                        latestTransaction.Rescan_Initated = true;
-                        await SendMessageToUDPclient("R");
-                    }
+                    
                     if (input1.Length == 34 && match.Groups[1].Length == 14 && match.Groups[2].Length == 6 && match.Groups[4].Length == 8)
                     {
                         latestTransaction.Product_Label_GTIN = match.Groups[1].Value;
@@ -913,6 +909,59 @@ namespace BostonScientificAVS.Controllers
                 return RedirectToAction("WorkOrderError", "Home");
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> Rescan(bool rescanmsg)
+        {
+            var transaction = await _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefaultAsync();
+            if (rescanmsg)
+            {
+                transaction.Rescan_Initated = true;
+                await _dataContext.SaveChangesAsync();
+                await SendMessageToUDPclient("R");
+            }
+
+            // Requirement 2: Create a duplicate record with Result "Pass"
+            var duplicateTransaction = new Transaction
+            {
+                WO_Catalog_Num = transaction.WO_Catalog_Num,
+                DB_Catalog_Num = transaction.DB_Catalog_Num,
+                WO_Mfg_Date = transaction.WO_Mfg_Date,
+                Shelf_Life = transaction.Shelf_Life,
+                Calculated_Use_By = transaction.Calculated_Use_By,
+                Carton_Use_By = transaction.Carton_Use_By,
+                Product_Use_By = transaction.Product_Use_By,
+                WO_Lot_Num = transaction.WO_Lot_Num,
+                Carton_Lot_Num = transaction.Carton_Lot_Num,
+                Product_Lot_Num = transaction.Product_Lot_Num,
+                DB_GTIN = transaction.DB_GTIN,
+                Carton_Label_GTIN = transaction.Carton_Label_GTIN,
+                Product_Label_GTIN = transaction.Product_Label_GTIN,
+                DB_Label_Spec = transaction.DB_Label_Spec,
+                Product_Label_Spec = transaction.Product_Label_Spec,
+                Carton_Label_Spec = transaction.Carton_Label_Spec,
+                DB_IFU = transaction.DB_IFU,
+                Scanned_IFU = transaction.Scanned_IFU,
+                User = transaction.User,
+                Result = "Pass", // Set the Result column to "Pass"
+                Rescan_Initated = false, // Reset the Rescan_Initated column
+                Date_Time = DateTime.Now.ToString()
+            };
+
+            _dataContext.Transaction.Add(duplicateTransaction);
+            await _dataContext.SaveChangesAsync();
+
+            // Calculate woi and return it to the view
+            var woi = new workOrderInfo();
+            var workOrder = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Result != null).Distinct();
+            woi.totalCount = workOrder.Count();
+            woi.passedCount = workOrder.Where(x => x.Result == "Pass").Count();
+            woi.failedCount = woi.totalCount - woi.passedCount;
+            woi.scannedCount = workOrder.Where(x => x.Rescan_Initated == true).Count();
+
+            return Json(woi);
+        }
+
+
         public IActionResult WorkOrderError()
         {
             return View();

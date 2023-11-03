@@ -1904,29 +1904,30 @@
         });
     });
 
+
+    let rescanmessage = false;
     $(document).on("click", "#rescanBtn", function () {
-        var productLabel = document.getElementById("productLabelInput").value;
-        var productLabelSpec = document.getElementById("productLabelSpec").value;
-        let rescanbutton = true;
-        var apiUrl = "/SaveProductLabel";
-        beforeToDuringScan();
+        rescanmessage = true;
+        var apiUrl = "/Home/Rescan";
         $.ajax({
             url: apiUrl,
             method: "POST",
-            data: { productLabel: productLabel, productLabelSpec: productLabelSpec, udpMessage: udpMessageValue, rescanMessage: rescanbutton },
+            data: { rescanmsg: rescanmessage },
             success: function (response) {
                 console.log(response);
-                location.reload();
-                responseData = response;
-                processResponse(response);
+
+                if (response.cartonMismatch) {
+                    window.location.href = "/Home/CartonLabelScan";
+                } else {
+                    location.reload();
+                }
             },
             error: function (xhr, status, error) {
                 console.log("An error occurred while making the AJAX call:", error);
             }
-
-
         });
     });
+
      
 
     function processResponse(response) {

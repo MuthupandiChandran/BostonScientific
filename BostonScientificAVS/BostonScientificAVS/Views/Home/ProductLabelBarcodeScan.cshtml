@@ -2249,93 +2249,28 @@ width: 76%;
     }
 
 
-    let cartonscan = false;
-    $(document).on("click", "#rescanBtn", function () {
-        var productLabel = document.getElementById("productLabelInput").value;
-        var productLabelSpec = document.getElementById("productLabelSpec").value;
-        var ifu = document.getElementById("ifu").value;
-        var apiUrl = "/SaveProductLabelBarcode";
-        beforeToDuringScan();
-        let isresult = "";
-        let finalresult = "";
-        console.log("responseData");
-        console.log("response");
-        if (responseData.gtinMismatch == true) {
-            if (responseData.labelMismatch == true || responseData.firstUseby_Mismatch == true || responseData.gtinMismatch == true || responseData.secondUseby_Mismatch ||responseData.lotNoMismatches) {
-                isresult = false;
+  let rescanmessage = false;
+  $(document).on("click", "#rescanBtn", function () {
+    rescanmessage = true;
+    var apiUrl = "/Home/Rescan";
+    $.ajax({
+        url: apiUrl,
+        method: "POST",
+        data: { rescanmsg: rescanmessage },
+        success: function (response) {
+            console.log(response);
+            
+            if (response.cartonMismatch) {
+                window.location.href = "/Home/CartonLabelScan";
+            } else {
+               location.reload();
             }
-            else {
-                isresult = true;
-            }
-        }
-
-        else {
-            if (responseData.mismatches.labelSpecMismatch == true || responseData.mismatches.calculatedUseByMismatches == true || responseData.mismatches.gtinmismatches || responseData.mismatches.secondUseby_Mismatch || responseData.mismatches.lotNoMismatches) {
-                finalresult = false;
-            }
-            else {
-                finalresult = true;
-            }
-        }
-
-        if (isresult == true) {
-            // Execute this block when all conditions are met
-            $.ajax({
-                url: apiUrl,
-                method: "POST",
-                data: { input1: productLabel, input2: productLabelSpec, input3: ifu },
-                success: function (response) {
-                    console.log(response);
-                    location.reload();
-                    responseData = response;
-                    processResponse(response);
-                },
-                error: function (xhr, status, error) {
-                    console.log("An error occurred while making the AJAX call:", error);
-                }
-            });
-        }
-
-        else if (finalresult == true) {
-            // Execute this block when the elseif conditions are met
-            $.ajax({
-                url: apiUrl,
-                method: "POST",
-                data: { input1: productLabel, input2: productLabelSpec, input3: ifu },
-                success: function (response) {
-                    console.log(response);
-                    location.reload();
-                    responseData = response;
-                    processResponse(response);
-                },
-                error: function (xhr, status, error) {
-                    console.log("An error occurred while making the AJAX call:", error);
-                }
-            });
-        }
-
-        else {
-            // Execute this block when none of the above conditions are met
-            let cartonscan = true;
-            $.ajax({
-                url: apiUrl,
-                method: "POST",
-                data: { input1: productLabel, input2: productLabelSpec, input3: ifu, rescanmsg: cartonscan },
-                success: function (response) {
-                    console.log(response);
-                    responseData = response;
-                    if (response.cartonscan) {
-                        document.getElementById("total-rescanned-val").innerHTML = parseInt(document.getElementById("total-rescanned-val").innerHTML) + 1;
-                    }
-                    window.location.href = "/Home/CartonLabelScan";
-                },
-                error: function (xhr, status, error) {
-                    console.log("An error occurred while making the AJAX call:", error);
-                }
-            });
+        },
+        error: function (xhr, status, error) {
+            console.log("An error occurred while making the AJAX call:", error);
         }
     });
-
+ });
 
 
     function processResponse(response) {
@@ -2520,6 +2455,7 @@ width: 76%;
   }
 
     function setWorkOrderInfo(response) {
+        console.log(response);
         document.getElementById("total-val").innerHTML = response.workOrderInfo.totalCount != null ? response.workOrderInfo.totalCount : 0;
         document.getElementById("total-passed-val").innerHTML = response.workOrderInfo.passedCount != null ? response.workOrderInfo.passedCount : 0;
         document.getElementById("total-failed-val").innerHTML = response.workOrderInfo.failedCount != null ? response.workOrderInfo.failedCount : 0;

@@ -71,6 +71,7 @@
         public string Dbspec { get; set; }
         public string DbCatalogNo { get; set; }
         public DateTime? Calculateuseby { get; set; }
+        public bool cartonMismatch { get; set; }
 
     }
 }
