@@ -322,6 +322,19 @@ namespace BostonScientificAVS.Controllers
             memoryStream.Seek(0, SeekOrigin.Begin);
             return File(memoryStream, "text/csv", "users.csv");
         }
+        public IActionResult Transaction()
+        {
+            var records = _context.Transaction.ToList();
+            DateTime today = DateTime.Today;
+            records = records.Where(t =>
+                t.Date_Time != null &&
+                DateTime.ParseExact(t.Date_Time, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture).Date == today).ToList();
+
+
+            return View("Transaction", records);
+        }
+
+
         [HttpGet]
         public IActionResult TransactionTable(string startDate, string endDate)
         {        
