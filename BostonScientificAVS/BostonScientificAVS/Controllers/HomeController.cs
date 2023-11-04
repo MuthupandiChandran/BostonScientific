@@ -440,49 +440,25 @@ namespace BostonScientificAVS.Controllers
                 return Json(new { success = false, errorMessage = TempData["ErrorMessage"] });
             }
         }
-        public IActionResult HomeScreen(bool admin)
+        public IActionResult HomeScreen()
         {
-            bool myBooleanValue = false; // Default value in case TempData["AfterLogin"] is not set
+            bool myBooleanValue = false; // Default value in case TempData["MyBoolean"] is not set
             if (TempData.ContainsKey("AfterLogin") && TempData["AfterLogin"] is bool myBoolean)
             {
                 myBooleanValue = myBoolean;
             }
-            
-            float hoursInput = 0; // Default value in case "Key" not found
-
             if (myBooleanValue)
             {
-                // Check if "Key" exists in the database
-                var setting = _dataContext.Settings.FirstOrDefault(s => s.Key == "8"); // The key to retrieve
-                if (setting != null)
-                {
-                    if (float.TryParse(setting.Key, out float value))
-                    {
-                        hoursInput = value;
-                    }
-                }
-            }
-
-            if (TempData.ContainsKey("Admin") && admin)
-            {
-                TempData.Keep("Admin"); // Preserve the TempData value
-                var setting = _dataContext.Settings.FirstOrDefault(s => s.Key == "8");
-                if (float.TryParse(setting.Value, out float value))
-                {
-                    hoursInput = value;
-                }
+                int hoursInput = DotNetEnv.Env.GetInt("EXPIRE_TIME");
                 ViewBag.HoursInput = hoursInput;
-                return View("Settings");
-
             }
             else
             {
-                ViewBag.HoursInput = hoursInput;
-                return View("HomeScreen");
+                ViewBag.HoursInput = 0;
             }
-            
-        }
 
+            return View();
+        }
 
         [HttpPost]
         public ActionResult CheckSupervisorId(string supervisorEmpId)

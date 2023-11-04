@@ -10,8 +10,7 @@ namespace BostonScientificAVS.Entity
         public int Id { get; set; }
 
         [Required]
-        [MaxLength(8)]
-        public string Key { get; set; } 
-        public string? Value { get; set; }
+        public string ConfigKey { get; set; } 
+        public string? ConfigValue { get; set; }
     }
 }
