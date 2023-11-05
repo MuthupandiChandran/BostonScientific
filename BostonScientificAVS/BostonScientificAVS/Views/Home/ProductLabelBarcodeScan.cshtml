@@ -1647,6 +1647,7 @@ width: 76%;
     let responseData = null;
     let IFUScanActive = false;
     let superVisorInput = false;
+    let superVisorInput1 = false;
     var toastVisible = true; // Initially set to true so the message is not displayed
     var timerHasStarted = false;
     var intervalId;
@@ -2104,7 +2105,7 @@ width: 76%;
 
     function showPopup() {
         document.getElementById("popupContainer1").style.display = "block";
-        superVisorInput = true;
+        superVisorInput1 = true;
     }
     function showPopup1() {
         document.getElementById("popupContainer").style.display = "block";
@@ -2113,7 +2114,7 @@ width: 76%;
     
     function closePopup() {
         document.getElementById("popupContainer1").style.display = "none";
-        superVisorInput = false;
+        superVisorInput1 = false;
     }
     function closePopup1() {
         document.getElementById("popupContainer").style.display = "none";
@@ -2164,6 +2165,7 @@ width: 76%;
             var productLabel = submitBtn.dataset.productLabel;
             var spec = submitBtn.dataset.productLabelSpec;
             var scannedIfu = ifu.value;
+            isIfuEditable = false;
             if(ifu.value ==='' && ifu.hasAttribute('required')){
                 var errorDivId = document.getElementById("ifu"); // Generate the error div id based on the input field id
                 var errorDiv = document.getElementById("productLabelInputError2");
@@ -2576,7 +2578,7 @@ width: 76%;
             const jsonData = event.data;
             const data = JSON.parse(jsonData);
             console.log(data.pageData);
-            if (superVisorInput == false && data.pageData != null && (document.getElementById("productLabelInput").value == '' || document.getElementById("productLabelSpec").value == '')) {
+            if (superVisorInput == false && superVisorInput1 == false && data.pageData != null && (document.getElementById("productLabelInput").value == '' || document.getElementById("productLabelSpec").value == '')) {
                 //console.log(data.pageData.Barcode);
                 if (data.pageData.Barcode.length < 25) {
                     document.getElementById("productLabelSpec").value = data.pageData.Barcode;
@@ -2591,7 +2593,7 @@ width: 76%;
                 }
             }
             console.log(isIfuEditable);
-            if (data.pageData != null && isIfuEditable == true && superVisorInput == false) {
+            if (data.pageData != null && isIfuEditable == true && superVisorInput == false && superVisorInput1 == false) {
                 console.log("Filling UP IFU");
                     //console.log(data.pageData.Barcode);
                     document.getElementById("ifu").value = data.pageData.Barcode;
@@ -2600,7 +2602,12 @@ width: 76%;
             }
             if(data.pageData != null && superVisorInput == true){
                 document.getElementById("supervisorInput").value = data.pageData.Barcode;
+                document.getElementById("supervisorInput1").value = data.pageData.Barcode;
                 greenButton('supervisorInput');
+            }
+            if (data.pageData != null && superVisorInput1 == true) {
+                document.getElementById("supervisorInput1").value = data.pageData.Barcode;
+                redbutton('supervisorInput1');
             }
             
             

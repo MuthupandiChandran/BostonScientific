@@ -447,9 +447,17 @@ namespace BostonScientificAVS.Controllers
             {
                 myBooleanValue = myBoolean;
             }
+
+            float hoursInput = 0;
+
             if (myBooleanValue)
             {
-                int hoursInput = DotNetEnv.Env.GetInt("EXPIRE_TIME");
+                var sessionExpirySetting = _dataContext.Settings.FirstOrDefault(s => s.ConfigKey == "SESSION_EXPIRY_TIME");
+
+                if (sessionExpirySetting != null && float.TryParse(sessionExpirySetting.ConfigValue, out float value))
+                {
+                    hoursInput = value;
+                }
                 ViewBag.HoursInput = hoursInput;
             }
             else

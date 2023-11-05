@@ -43,20 +43,20 @@ namespace BostonScientificAVS.Controllers
             return PartialView("_ItemsTable", items);
         }
 
-        //[HttpPost]
-        //public IActionResult UpdateExpiration(float expirationTime)
-        //{
-        //    var setting = _context.Settings.FirstOrDefault(s => s.Key == "8"); // The key to update
-        //    if (setting != null)
-        //    {
-        //        setting.Value = expirationTime.ToString();
-        //        _context.SaveChanges();
-        //    }
+        [HttpPost]
+        public IActionResult UpdateExpiration(float expirationTime)
+        {
+            var setting = _context.Settings.FirstOrDefault(s => s.ConfigKey == "SESSION_EXPIRY_TIME"); // The key to update
+            if (setting != null)
+            {
+                setting.ConfigValue = expirationTime.ToString();
+                _context.SaveChanges();
+            }
 
-        //    TempData["Admin"] = true; // Set TempData to true
+            TempData["Admin"] = true; // Set TempData to true
 
-        //    return RedirectToAction("HomeScreen", "Home",new {admin=true});
-        //}
+            return RedirectToAction("HomeScreen", "Home",new {admin=true});
+        }
 
 
 
