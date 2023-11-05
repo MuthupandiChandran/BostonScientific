@@ -54,8 +54,7 @@ namespace BostonScientificAVS.Controllers
             }
 
             TempData["Admin"] = true; // Set TempData to true
-
-            return RedirectToAction("HomeScreen", "Home",new {admin=true});
+            return Json(setting);
         }
 
 

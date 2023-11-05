@@ -37,10 +37,10 @@
     </div>
 </div>
 
-    <form id="submit" action="/Admin/UpdateExpiration" method="post">
+    <form id="submit">
         <label for="expirationTime">Session Expiration Time (in hours):</label>
         <input type="text" id="expirationTime" name="expirationTime" required pattern="^\d+(\.\d+)?$" title="Enter a valid floating-point number (e.g., 1.5)" autocomplete="off"/>
-        <button type="submit">Update</button>
+        <button id="updateButton" type="button">Update</button>
     </form>
     <div id="toast" style="visibility: hidden;">
         User time limit reached, it will automatically logout.
@@ -142,58 +142,33 @@
                 }, pauseDuration * 1000); // Display the toast message for 1 minute
             }
         }
+        $('#updateButton').click(function () {
+            // Get the expirationTime from the input field
+            var expirationTime = $('#expirationTime').val();
 
+            // Make an AJAX POST request to the controller
+            $.ajax({
+                url: '/Admin/UpdateExpiration',
+                method: 'POST',
+                data: { expirationTime: expirationTime },
+                success: function (response) {
+                    // Handle the response as needed
+                    console.log(response);
+                    alert("Session Timeout Updated Please log out and log back in to view the changes");
+                },
+                error: function (xhr, status, error) {
+                    console.log("An error occurred while making the AJAX call:", error);
+                }
+            });
+        });
+
+
+        
         // Local Storage is already set in homescreen so just obtain it here
         var expirationTime = localStorage.getItem("expiration_time");
         var currentTime = Math.floor(Date.now() / 1000);
         var remainingTime = expirationTime - currentTime;
         startTimer(remainingTime);
-
-
-        $('#submit').on('submit', function (e) {
-            e.preventDefault(); // Prevent the default form submission
-
-            var expirationTime = parseFloat($('#expirationTime').val());
-
-            // Fetch newExpirationTime and admin from the controller using AJAX
-            $.post("/Admin/UpdateExpiration", { expirationTime: expirationTime }, function (data) {
-                var newExpirationTime = data.newExpirationTime;
-                var admin = data.admin;
-                 alert("Session Timeout Updated: Please log out and log back in to view the changes.");
-                if (admin) {
-                    // Admin-specific logic
-                    if (intervalId) {
-                        clearInterval(intervalId);
-                    }
-
-                    var newDuration = newExpirationTime * 3600;
-                    var hours = Math.floor(newDuration / 3600);
-                    var minutes = Math.floor((newDuration % 3600) / 60);
-                    var seconds = newDuration % 60;
-
-                    var timeString = hours.toString().padStart(2, "0") + ":" +
-                        minutes.toString().padStart(2, "0") + ":" +
-                        seconds.toString().padStart(2, "0");
-
-                    // Display the formatted time in your HTML element
-                    document.getElementById("timer").textContent = timeString;
-
-                    // Start the new timer
-                    startTimer(newDuration);
-
-                    // Store the timer value in localStorage
-                    localStorage.setItem("timerValue", timeString);
-                    localStorage.setItem("timerValueSet", "true"); // Set a flag to indicate that timerValue is set
-                } else {
-                    // Non-admin specific logic
-                    var expirationTime = localStorage.getItem("expiration_time");
-                    var currentTime = Math.floor(Date.now() / 1000);
-                    var remainingTime = expirationTime - currentTime;
-                    startTimer(remainingTime);
-                }
-            });
-        });
-
     });
 </script>
 
