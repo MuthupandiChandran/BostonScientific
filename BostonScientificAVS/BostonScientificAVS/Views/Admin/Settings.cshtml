@@ -159,7 +159,7 @@
             $.post("/Admin/UpdateExpiration", { expirationTime: expirationTime }, function (data) {
                 var newExpirationTime = data.newExpirationTime;
                 var admin = data.admin;
-
+                 alert("Session Timeout Updated: Please log out and log back in to view the changes.");
                 if (admin) {
                     // Admin-specific logic
                     if (intervalId) {

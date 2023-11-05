@@ -1940,8 +1940,8 @@
                 method: "POST",
                 data: { input: workOrderValue },
                 success: function (response) {
-                    console.log(response);
-                    location.reload();
+                    console.log("Data passed");
+                    $("#productLabelInput, #productLabelSpec, #submitBtn").prop("disabled",false);               
                      return;
                 },
                 error: function (xhr, status, error) {
@@ -2308,12 +2308,6 @@
             document.getElementById("greenButton").addEventListener("click", function () {
                 document.getElementById("greenButton").value = data.pageError.errorMsg;
                 configureContinueButton('supervisorInput');
-            });
-
-            document.getElementById("redButton").addEventListener("click", function () {
-                document.getElementById("redButton").value = data.pageError.errorMsg;
-                redbutton('supervisorInput1');
-
             });
 
         };
