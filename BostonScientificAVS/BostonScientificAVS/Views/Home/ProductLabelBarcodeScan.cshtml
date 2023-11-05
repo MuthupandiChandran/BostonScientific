@@ -2250,20 +2250,22 @@ width: 76%;
 
 
   let rescanmessage = false;
+  let boxingrescan = false;
   $(document).on("click", "#rescanBtn", function () {
     rescanmessage = true;
+    boxingrescan = true;
     var apiUrl = "/Home/Rescan";
     $.ajax({
         url: apiUrl,
         method: "POST",
-        data: { rescanmsg: rescanmessage },
+            data: { rescanmsg: rescanmessage, value: boxingrescan },
         success: function (response) {
             console.log(response);
-            
-            if (response.cartonMismatch) {
+            if (response.cartonMismatch == true) {
                 window.location.href = "/Home/CartonLabelScan";
             } else {
                location.reload();
+               return;
             }
         },
         error: function (xhr, status, error) {
@@ -2523,11 +2525,11 @@ width: 76%;
 
 
     var udpMessageValue = false;
- $('#nxt-scn-btn').on('click', function (e) {
-  e.preventDefault();
- udpMessageValue = true;
-var workOrderValue = localStorage.getItem("workOrderValue");
- $.ajax({
+   $('#nxt-scn-btn').on('click', function (e) {
+    e.preventDefault();
+    udpMessageValue = true;
+   var workOrderValue = localStorage.getItem("workOrderValue");
+   $.ajax({
             url: '/Home/SaveWorkOrderBarcode', // Replace with the correct URL
             method: 'POST', // Use POST or GET as appropriate
             data: { input: workOrderValue, udpMsg: udpMessageValue },

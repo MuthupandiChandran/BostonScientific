@@ -1915,12 +1915,7 @@
             data: { rescanmsg: rescanmessage },
             success: function (response) {
                 console.log(response);
-
-                if (response.cartonMismatch) {
-                    window.location.href = "/Home/CartonLabelScan";
-                } else {
-                    location.reload();
-                }
+                 location.reload();
             },
             error: function (xhr, status, error) {
                 console.log("An error occurred while making the AJAX call:", error);
