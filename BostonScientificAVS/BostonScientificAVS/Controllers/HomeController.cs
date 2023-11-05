@@ -50,7 +50,7 @@ namespace BostonScientificAVS.Controllers
             WorkOrderInfo woi = new WorkOrderInfo();
             var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
             var itemmaster = _dataContext.ItemMaster.OrderByDescending(x => x.GTIN).FirstOrDefault();
-            var workOrder = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Result != null).Distinct();
+            var workOrder = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Type == "Packaging" && x.Result != null).Distinct();
             woi.totalCount = workOrder.Count();
             woi.passedCount = workOrder.Where(x => x.Result == "Pass").Count();
             woi.failedCount = woi.totalCount - woi.passedCount;
@@ -139,6 +139,7 @@ namespace BostonScientificAVS.Controllers
                         DateTime dateTime = DateTime.ParseExact(match.Groups[2].Value, "yyMMdd", null);
                         latestTransaction.Product_Use_By = dateTime;
                         latestTransaction.Product_Lot_Num = match.Groups[4].Value;
+                        latestTransaction.Type = "Packaging";
 
                         ItemMaster item = await _dataContext.ItemMaster.FirstOrDefaultAsync(i => i.GTIN == latestTransaction.Product_Label_GTIN);
                         if (item != null)
@@ -243,7 +244,7 @@ namespace BostonScientificAVS.Controllers
                             DateTime.TryParseExact(productuseby, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out productusebyDateTime))
                         {
                             var wo_catalog_no = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).Select(x => x.WO_Catalog_Num).FirstOrDefault();
-                            var count = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Result != null).Distinct();
+                            var count = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Type == "Packaging" && x.Result != null).Distinct();
                             var countData = new countinfo
                             {
                                 Product_Gtin = product_Gtin,
@@ -291,7 +292,7 @@ namespace BostonScientificAVS.Controllers
                     var product_use_by = date3.HasValue ? date3.Value.ToString("yyy-MM-dd") : null;
                     var wo_catalog_no = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).Select(x => x.WO_Catalog_Num).FirstOrDefault();
                     var carton_lot_no = _dataContext.Transaction.OrderByDescending(x=>x.Transaction_Id).Select(x=>x.Carton_Lot_Num).FirstOrDefault();
-                    var count = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Result != null).Distinct();
+                    var count = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Type == "Boxing" && x.Result != null).Distinct();
                     var countData = new countinfo
                     {
                         Product_Gtin = product_Gtin,
@@ -420,7 +421,7 @@ namespace BostonScientificAVS.Controllers
 
                
                     WorkOrderInfo woi = new WorkOrderInfo();
-                    var workOrder = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Result != null).Distinct();
+                    var workOrder = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Type=="Packaging" && x.Result != null).Distinct();
                     woi.totalCount = workOrder.Count();
                     woi.passedCount = workOrder.Where(x => x.Result == "Pass").Count();
                     woi.failedCount = woi.totalCount - woi.passedCount;
@@ -501,7 +502,7 @@ namespace BostonScientificAVS.Controllers
             workOrderInfo woi = new workOrderInfo();
             var itemmaster = _dataContext.ItemMaster.OrderByDescending(x => x.GTIN).FirstOrDefault();
             var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
-            var workOrder = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Result != null).Distinct();
+            var workOrder = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num &&x.Type=="Boxing"&& x.Result != null).Distinct();
             woi.totalCount = workOrder.Count();
             woi.passedCount = workOrder.Where(x => x.Result == "Pass").Count();
             woi.failedCount = woi.totalCount - woi.passedCount;
@@ -698,7 +699,7 @@ namespace BostonScientificAVS.Controllers
                 await _dataContext.SaveChangesAsync();
 
                 workOrderInfo woi = new workOrderInfo();
-                var workOrder = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num && x.Result != null).Distinct();
+                var workOrder = _dataContext.Transaction.Where(x => x.WO_Lot_Num == transaction.WO_Lot_Num &&x.Type=="Boxing"&& x.Result != null).Distinct();
                 woi.totalCount = workOrder.Count();
                 woi.passedCount = workOrder.Where(x => x.Result == "Pass").Count();
                 woi.failedCount = woi.totalCount - woi.passedCount;
@@ -788,6 +789,7 @@ namespace BostonScientificAVS.Controllers
                         DateTime dateTime = DateTime.ParseExact(match.Groups[2].Value, "yyMMdd", null);
                         transaction.Carton_Use_By = dateTime;
                         transaction.Carton_Lot_Num = match.Groups[4].Value;
+                        transaction.Type = "Boxing";
 
                         ItemMaster item = await _dataContext.ItemMaster.FirstOrDefaultAsync(i => i.GTIN == transaction.Carton_Label_GTIN);
                         if (item != null)
@@ -861,6 +863,7 @@ namespace BostonScientificAVS.Controllers
                         DateTime dateTime = DateTime.ParseExact(match.Groups[2].Value, "yyMMdd", null);
                         latestTransaction.Product_Use_By = dateTime;
                         latestTransaction.Product_Lot_Num = match.Groups[4].Value;
+                        latestTransaction.Type = "Boxing";
 
                         ItemMaster item = _dataContext.ItemMaster.OrderBy(i => i.GTIN).FirstOrDefault();
                        

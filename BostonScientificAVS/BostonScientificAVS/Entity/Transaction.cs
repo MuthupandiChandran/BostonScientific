@@ -48,6 +48,7 @@ namespace Entity
         [MaxLength(30)]
         public string? Failure_Reason { get; set; }
         public string? Supervisor_Name { get; set; }
+        public string? Type { get; set; }
 
     }
 }
