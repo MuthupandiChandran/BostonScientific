@@ -139,7 +139,7 @@ namespace BostonScientificAVS.Controllers
                 {
                     _context.ItemMaster.Remove(deleterecord);
                     await _context.SaveChangesAsync();
-                    return Json(new { success = true, message = "User deleted successfully" });
+                    return Json(new { success = true, message = "Record deleted successfully" });
                 }
 
                 else
