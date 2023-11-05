@@ -427,7 +427,7 @@
         $(".bi-trash").click(function () {
             var userId = $(this).data("user-id");
 
-            if (confirm("Are you sure you want to delete this user?")) {
+            if (confirm("Are you sure you want to delete this record?")) {
                 var $row = $(this).closest('tr'); // Store a reference to the row
 
                 // User confirmed, so send an AJAX request to delete the user
