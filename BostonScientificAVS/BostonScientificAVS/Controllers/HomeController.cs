@@ -93,15 +93,16 @@ namespace BostonScientificAVS.Controllers
                     TempData["ErrorMessage"] = "Work Order Seems To Be Invalid. Please retry again";
                     return View("WorkOrderScan");
                 }
-                if (udpMessage)
-                {
-                    return RedirectToAction("Result", "Home", new { udpMessage = udpMessage });
-                }
-                else
-                {
+            
+                    if (udpMessage)
+                    {
+                        return RedirectToAction("Result", "Home", new { udpMessage = udpMessage });
+                    }
+                    else
+                    {
 
-                    return RedirectToAction("Result", "Home");
-                }
+                        return RedirectToAction("Result", "Home");
+                    }
             }
             else
             {
@@ -499,7 +500,6 @@ namespace BostonScientificAVS.Controllers
         }
         public IActionResult ProductLabelBarcodeScan()
         {
-
                 workOrderInfo woi = new workOrderInfo();
                 var itemmaster = _dataContext.ItemMaster.OrderByDescending(x => x.GTIN).FirstOrDefault();
                 var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();

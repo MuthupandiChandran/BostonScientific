@@ -1932,13 +1932,31 @@
             //setTimeout(duringToScanPass, 3000);
             duringToScanPass();
             setScannedData(response);
+            setWorkOrderInfo(response);
+            var workOrderValue = localStorage.getItem("workOrderValue");
+            var apiurl ='/Home/SaveWorkOrder';
+            $.ajax({
+                url: apiurl,
+                method: "POST",
+                data: { input: workOrderValue },
+                success: function (response) {
+                    console.log(response);
+                    location.reload();
+                     return;
+                },
+                error: function (xhr, status, error) {
+                    console.log("An error occurred while making the AJAX call:", error);
+                }
+            });
+
+
+
         } else {
             //setTimeout(duringToScanFail, 3000);
             scanfail(response);
+            setWorkOrderInfo(response);
             //duringToScanFail(response);
-        }
-        setWorkOrderInfo(response);
-        
+        }  
     }
 
     function setScannedData(response) {
