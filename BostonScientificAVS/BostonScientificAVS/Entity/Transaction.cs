@@ -41,7 +41,7 @@ namespace Entity
         public string? Scanned_IFU { get; set; }
         [MaxLength(30)]
         public string? User { get; set; }
-        public string? Date_Time { get; set; }
+        public DateTime Date_Time { get; set; }
         public Boolean Rescan_Initated { get; set; }
         [MaxLength(10)]
         public string? Result { get; set; }

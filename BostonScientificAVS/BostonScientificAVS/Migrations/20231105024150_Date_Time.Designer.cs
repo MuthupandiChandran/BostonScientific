@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BostonScientificAVS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20231103114905_SettingsTable")]
-    partial class SettingsTable
+    [Migration("20231105024150_Date_Time")]
+    partial class Date_Time
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,13 +33,11 @@ namespace BostonScientificAVS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Key")
+                    b.Property<string>("ConfigKey")
                         .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("nvarchar(8)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Value")
-                        .IsRequired()
+                    b.Property<string>("ConfigValue")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -154,8 +152,8 @@ namespace BostonScientificAVS.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
-                    b.Property<string>("Date_Time")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("Date_Time")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Failure_Reason")
                         .HasMaxLength(30)

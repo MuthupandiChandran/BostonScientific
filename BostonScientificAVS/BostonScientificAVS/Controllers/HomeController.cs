@@ -202,7 +202,7 @@ namespace BostonScientificAVS.Controllers
                 var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
                 transaction.Result = "Fail";
                 DateTime currentDateTime = DateTime.Now;
-                transaction.Date_Time = currentDateTime.ToString();
+                transaction.Date_Time = currentDateTime;
                 var empId = User.Claims.FirstOrDefault(c => c.Type == "EmpID")?.Value;
                 var user = _dataContext.Users.Where(x => x.EmpID == empId).FirstOrDefault();
 
@@ -266,9 +266,7 @@ namespace BostonScientificAVS.Controllers
                                 failedCount = count.Count() - count.Where(x => x.Result == "Pass").Count(),
                                 scannedCount = count.Where(x => x.Rescan_Initated == true).Count()
                             };
-
                             await _dataContext.SaveChangesAsync();
-
                             // Return the countData as JSON response
                             return Json(countData);
                         }
@@ -417,7 +415,7 @@ namespace BostonScientificAVS.Controllers
                     transaction.User = user.Id + "";
                 }
                 DateTime currentDateTime = DateTime.Now;
-                transaction.Date_Time = currentDateTime.ToString();
+                transaction.Date_Time = currentDateTime;
                 await _dataContext.SaveChangesAsync();
 
                
@@ -591,7 +589,7 @@ namespace BostonScientificAVS.Controllers
                 transaction.User = user.Id + "";
             }
             DateTime currentDateTime = DateTime.Now;
-            transaction.Date_Time = currentDateTime.ToString();
+            transaction.Date_Time = currentDateTime;
             _dataContext.SaveChangesAsync();
             TempData["woi"] = woi;
             
@@ -696,7 +694,7 @@ namespace BostonScientificAVS.Controllers
                     transaction.User = user.Id + "";
                 }
                 DateTime currentDateTime = DateTime.Now;
-                transaction.Date_Time = currentDateTime.ToString();
+                transaction.Date_Time = currentDateTime;
                 await _dataContext.SaveChangesAsync();
 
                 workOrderInfo woi = new workOrderInfo();
@@ -941,7 +939,7 @@ namespace BostonScientificAVS.Controllers
                 User = transaction.User,
                 Result = "Pass", // Set the Result column to "Pass"
                 Rescan_Initated = false, // Reset the Rescan_Initated column
-                Date_Time = DateTime.Now.ToString()
+                Date_Time = DateTime.Now
             };
 
             _dataContext.Transaction.Add(duplicateTransaction);
