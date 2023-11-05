@@ -165,7 +165,7 @@ namespace BostonScientificAVS.Controllers
             try
             {
                 string currentUserName = @User.Identity.Name;
-                await _itemService.importCsv(file,currentUserName);
+                await _itemService.importCsv(file, currentUserName);
                 return "file upload Successfully";
             }
             catch (Exception e)
@@ -272,7 +272,7 @@ namespace BostonScientificAVS.Controllers
                     await _context.SaveChangesAsync();
                     return Json(new { success = true, message = "User deleted successfully" });
                 }
-                
+
                 else
                 {
                     return Json(new { success = false, message = "User not found" });
@@ -297,7 +297,7 @@ namespace BostonScientificAVS.Controllers
             {
                 Console.WriteLine(e);
             }
-         
+
         }
 
 
@@ -322,52 +322,32 @@ namespace BostonScientificAVS.Controllers
             memoryStream.Seek(0, SeekOrigin.Begin);
             return File(memoryStream, "text/csv", "users.csv");
         }
-        public IActionResult Transaction()
-        {
-            var records = _context.Transaction.ToList();
-            DateTime today = DateTime.Today;
-            records = records.Where(t =>
-                t.Date_Time != null &&
-                DateTime.ParseExact(t.Date_Time, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture).Date == today).ToList();
-
-
-            return View("Transaction", records);
-        }
-
-
+        
         [HttpGet]
         public IActionResult TransactionTable(string startDate, string endDate)
-        {        
+        {
             var records = _context.Transaction.ToList();
 
             if (!string.IsNullOrEmpty(startDate) && !string.IsNullOrEmpty(endDate))
             {
-                // Convert the submitted date strings to DateTime objects
                 if (DateTime.TryParse(startDate, out DateTime startSearchDate) && DateTime.TryParse(endDate, out DateTime endSearchDate))
                 {
-                    // Filter records within the specified date range
+                    // Filter records within the specified date range, considering only the date portion
                     var filteredRecords = records.Where(t =>
-                        t.Date_Time != null &&
-                        DateTime.ParseExact(t.Date_Time, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture) >= startSearchDate &&
-                        DateTime.ParseExact(t.Date_Time, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture) <= endSearchDate).ToList();
+                        t.Date_Time.Date >= startSearchDate.Date && t.Date_Time.Date <= endSearchDate.Date).ToList();
 
-                    // Display the filtered records in the view
                     return View("Transaction", filteredRecords);
                 }
             }
             else
             {
-                // Filter records for today by default
+                // Filter records for today by default, considering only the date portion
                 DateTime today = DateTime.Today;
-                records = records.Where(t =>
-                    t.Date_Time != null &&
-                    DateTime.ParseExact(t.Date_Time, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture).Date == today).ToList();
+                records = records.Where(t => t.Date_Time.Date == today).ToList();
             }
 
-
-            return View("Transaction", records); // Specify the view name and pass the records
+            return View("Transaction", records);
         }
-
 
 
         [HttpGet]
@@ -377,15 +357,13 @@ namespace BostonScientificAVS.Controllers
 
             if (!string.IsNullOrEmpty(hiddenStartDate) && !string.IsNullOrEmpty(hiddenEndDate))
             {
-                // Define the correct date format "dd-MM-yyyy HH:mm:ss" to parse the dates
-                string dateFormat = "dd-MM-yyyy HH:mm:ss";
-                var startSearchDate = DateTime.ParseExact(hiddenStartDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-                var endSearchDate = DateTime.ParseExact(hiddenEndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                string dateFormat = "yyyy-MM-dd";
+                var startSearchDate = DateTime.ParseExact(hiddenStartDate, dateFormat, CultureInfo.InvariantCulture);
+                var endSearchDate = DateTime.ParseExact(hiddenEndDate, dateFormat, CultureInfo.InvariantCulture);
 
                 records = records.Where(t =>
                     t.Date_Time != null &&
-                    DateTime.ParseExact(t.Date_Time, dateFormat, CultureInfo.InvariantCulture) >= startSearchDate &&
-                    DateTime.ParseExact(t.Date_Time, dateFormat, CultureInfo.InvariantCulture) <= endSearchDate).ToList();
+                    t.Date_Time.Date >= startSearchDate.Date && t.Date_Time.Date <= endSearchDate.Date).ToList();
             }
 
             // Create a CSV content string with headers and data
@@ -411,4 +389,4 @@ namespace BostonScientificAVS.Controllers
             return File(csvBytes, "text/csv");
         }
     }
-}
+  }

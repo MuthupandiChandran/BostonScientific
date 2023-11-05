@@ -30,12 +30,11 @@ namespace BostonScientificAVS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Key")
+                    b.Property<string>("ConfigKey")
                         .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("nvarchar(8)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Value")
+                    b.Property<string>("ConfigValue")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -150,8 +149,8 @@ namespace BostonScientificAVS.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
-                    b.Property<string>("Date_Time")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("Date_Time")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Failure_Reason")
                         .HasMaxLength(30)
