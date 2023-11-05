@@ -80,7 +80,7 @@ namespace BostonScientificAVS.Controllers
                     DateTime date = DateTime.ParseExact(barcodeParts[2], "MMddyyyy", null);
                     transaction.WO_Mfg_Date = date;
                     transaction.WO_Lot_Num = barcodeParts[3];
-
+                    transaction.Date_Time = DateTime.Now;
                     _dataContext.Transaction.Add(transaction);
                     _dataContext.SaveChanges();
 
@@ -736,7 +736,7 @@ namespace BostonScientificAVS.Controllers
                     DateTime date = DateTime.ParseExact(barcodeParts[2], "MMddyyyy", null);
                     transaction.WO_Mfg_Date = date;
                     transaction.WO_Lot_Num = barcodeParts[3];
-
+                    transaction.Date_Time = DateTime.Now;
                     _dataContext.Transaction.Add(transaction);
                     _dataContext.SaveChanges();
 
