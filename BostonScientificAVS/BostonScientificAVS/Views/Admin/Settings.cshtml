@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@model BostonScientificAVS.Models.settings
+<!DOCTYPE html>
 <html>
  <head>
 @{
@@ -39,7 +40,7 @@
 
     <form id="submit">
         <label for="expirationTime">Session Expiration Time (in hours):</label>
-        <input type="text" id="expirationTime" name="expirationTime" required pattern="^\d+(\.\d+)?$" title="Enter a valid floating-point number (e.g., 1.5)" autocomplete="off"/>
+        <input type="text" id="expirationTime" name="expirationTime" required pattern="^\d+(\.\d+)?$" title="Enter a valid floating-point number (e.g., 1.5)" autocomplete="off" value="@Model.sessiontime"/>
         <button id="updateButton" type="button">Update</button>
     </form>
     <div id="toast" style="visibility: hidden;">

@@ -27,6 +27,11 @@ namespace BostonScientificAVS.Models
         public string UserRole { get; set; }
     }
 
+    public class settings
+    {
+        public string? sessiontime { get; set; }
+    }
+
 
 
 }
