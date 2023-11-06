@@ -35,10 +35,9 @@
                     <h6 id="timer" class="session-expire-time text-color-blue"></h6>
                 </div>
                 <div>
-                    <a class="button" href="/Home/WorkOrderBarcodeScan"><img class="back-button-img" src="/assets/images/back-arrow.png" /><span class="back-text">Back</span></a>
+                    <a class="button" href="/Home/CartonLabelScan"><img class="back-button-img" src="/assets/images/back-arrow.png" /><span class="back-text">Back</span></a>
                 </div>
             </div>
-
         </nav>
         
         
@@ -472,6 +471,7 @@
                     <div class="scan-container">
                         Scan Product Label
                     </div>
+                    <div><a asp-area="" asp-controller="Home" asp-action="CartonLabelScan" id="carton-btn" class="work-btn">Carton Scan</a></div>
                     <a asp-area="" asp-controller="Home" asp-action="WorkOrderBarcodeScan" id="after-pass-workorder" class="work-btn">New Work Order</a>
                 </div>
             </div>
@@ -517,6 +517,9 @@
     text-decoration:none;
   }
   #rescanBtn {
+      text-decoration:none;
+  }
+  #carton-btn{
       text-decoration:none;
   }
 
@@ -1660,6 +1663,7 @@ width: 76%;
     document.getElementById("after-fail-side-scan").style.display = "none";
     document.getElementById("after-success-side-scan").style.display = "none";
     document.getElementById("after-pass-workorder").style.display = "none";
+    document.getElementById("carton-btn").style.display="none";
     document.getElementById("ifu-scan").style.display = "none";
     document.getElementById("popupContainer1").style.display = "none";
     document.getElementById("popupContainer").style.display ="none";
@@ -1825,6 +1829,7 @@ width: 76%;
         document.getElementById("ifu-workorder").style.display = "none";
         document.getElementById("after-success-side-scan").style.display="block";
         document.getElementById("after-pass-workorder").style.display="block";
+        document.getElementById("carton-btn").style.display="block";
        
     }
 
