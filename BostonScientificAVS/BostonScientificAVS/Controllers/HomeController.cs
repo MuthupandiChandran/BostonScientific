@@ -117,90 +117,92 @@ namespace BostonScientificAVS.Controllers
         [HttpPost("/SaveProductLabel")]
         public async Task<IActionResult> SaveProductLabel(string productLabel, string productLabelSpec, bool gtinmismatch)
         {
-            if (ModelState.IsValid)
-            {
+            
                 gtinmismatch = false; // Assuming this line is not needed in other scenarios
                 string pattern = @"^\d{2}(\d{14})\d{2}(\d{6})(\d{2})(\w+)";
                 Match match = Regex.Match(productLabel, pattern);
-
-                Transaction latestTransaction = null; // Declare before the if block
-
-                if (match.Success)
+                if (!match.Success)
                 {
-                    latestTransaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
-                    if (latestTransaction.Product_Label_GTIN != null)
-                    {
-                        var record = new Transaction
-                        {
-                            WO_Catalog_Num = latestTransaction.WO_Catalog_Num,
-                            WO_Mfg_Date = latestTransaction.WO_Mfg_Date,
-                            WO_Lot_Num = latestTransaction.WO_Lot_Num
-                        };
+                    await SendMessageToUDPclient("E");
+                    return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
+                }
+                else
+                {
 
-                        _dataContext.Transaction.Add(record);
-                        await _dataContext.SaveChangesAsync();
+                    Transaction latestTransaction = null; // Declare before the if block
+
+                    if (match.Success)
+                    {
                         latestTransaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
-                    }
-
-                    if (productLabel.Length == 34 && match.Groups[1].Length == 14 && match.Groups[2].Length == 6 && match.Groups[4].Length == 8)
-                    {
-                        latestTransaction.Product_Label_GTIN = match.Groups[1].Value;
-                        DateTime dateTime = DateTime.ParseExact(match.Groups[2].Value, "yyMMdd", null);
-                        latestTransaction.Product_Use_By = dateTime;
-                        latestTransaction.Product_Lot_Num = match.Groups[4].Value;
-                        latestTransaction.Type = "Packaging";
-
-                        ItemMaster item = await _dataContext.ItemMaster.FirstOrDefaultAsync(i => i.GTIN == latestTransaction.Product_Label_GTIN);
-                        if (item != null)
+                        if (latestTransaction.Product_Label_GTIN != null)
                         {
-                            int shelfLife = item.Shelf_Life ?? 0;
-                            // Assign values from ItemMaster
-                            latestTransaction.DB_GTIN = item.GTIN;
-                            latestTransaction.DB_Catalog_Num = item.Catalog_Num;
-                            DateTime workOrderDT = (DateTime)latestTransaction.WO_Mfg_Date;
-                            latestTransaction.Calculated_Use_By = workOrderDT.AddDays((double)shelfLife);
-                            latestTransaction.DB_Label_Spec = item.Label_Spec;
-                            latestTransaction.Shelf_Life = shelfLife;
+                            var record = new Transaction
+                            {
+                                WO_Catalog_Num = latestTransaction.WO_Catalog_Num,
+                                WO_Mfg_Date = latestTransaction.WO_Mfg_Date,
+                                WO_Lot_Num = latestTransaction.WO_Lot_Num
+                            };
+
+                            _dataContext.Transaction.Add(record);
+                            await _dataContext.SaveChangesAsync();
+                            latestTransaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
+                        }
+
+                        if (productLabel.Length == 34 && match.Groups[1].Length == 14 && match.Groups[2].Length == 6 && match.Groups[4].Length == 8)
+                        {
+                            latestTransaction.Product_Label_GTIN = match.Groups[1].Value;
+                            DateTime dateTime = DateTime.ParseExact(match.Groups[2].Value, "yyMMdd", null);
+                            latestTransaction.Product_Use_By = dateTime;
+                            latestTransaction.Product_Lot_Num = match.Groups[4].Value;
+                            latestTransaction.Type = "Packaging";
+
+                            ItemMaster item = await _dataContext.ItemMaster.FirstOrDefaultAsync(i => i.GTIN == latestTransaction.Product_Label_GTIN);
+                            if (item != null)
+                            {
+                                int shelfLife = item.Shelf_Life ?? 0;
+                                // Assign values from ItemMaster
+                                latestTransaction.DB_GTIN = item.GTIN;
+                                latestTransaction.DB_Catalog_Num = item.Catalog_Num;
+                                DateTime workOrderDT = (DateTime)latestTransaction.WO_Mfg_Date;
+                                latestTransaction.Calculated_Use_By = workOrderDT.AddDays((double)shelfLife);
+                                latestTransaction.DB_Label_Spec = item.Label_Spec;
+                                latestTransaction.Shelf_Life = shelfLife;
+                            }
+                            else
+                            {
+                                gtinmismatch = true;
+                                latestTransaction.Product_Label_Spec = productLabelSpec;
+                                await _dataContext.SaveChangesAsync();
+                                return RedirectToAction("GTINmismatch", new { gtinMismatch = true, ProductLabelSpec = productLabelSpec });
+                            }
+
+                            latestTransaction.Product_Label_Spec = productLabelSpec;
                         }
                         else
                         {
-                            gtinmismatch = true;
-                            latestTransaction.Product_Label_Spec = productLabelSpec;
-                            await _dataContext.SaveChangesAsync();
-                            return RedirectToAction("GTINmismatch", new { gtinMismatch = true, ProductLabelSpec = productLabelSpec });
+                            await SendMessageToUDPclient("E");
+                            return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
                         }
-
-                        latestTransaction.Product_Label_Spec = productLabelSpec;
                     }
                     else
                     {
                         await SendMessageToUDPclient("E");
                         return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
                     }
-                }
-                else
-                {
-                    await SendMessageToUDPclient("E");
-                    return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
-                }
 
-                if (latestTransaction != null)
-                {
-                    await _dataContext.SaveChangesAsync();
-                }
-                else
-                {
-                    await SendMessageToUDPclient("E");
-                    return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
-                }
+                    if (latestTransaction != null)
+                    {
+                        await _dataContext.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        await SendMessageToUDPclient("E");
+                        return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
+                    }
 
-                // Check udpMessage here, after all other operations
-                return RedirectToAction("ValidateTransaction");
-            }
-            else
-            {
-                return RedirectToAction("WorkOrderError", "Home");
-            }
+                    // Check udpMessage here, after all other operations
+                    return RedirectToAction("ValidateTransaction");
+                }
         }
 
         public async Task<IActionResult> GTINmismatch(bool gtinMismatch,string ProductLabelSpec)
@@ -350,7 +352,7 @@ namespace BostonScientificAVS.Controllers
 
 
 
-        public async Task<IActionResult> ValidateTransaction()
+    public async Task<IActionResult> ValidateTransaction()
     {
         // Fetch the latest record 
             var transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
@@ -876,7 +878,6 @@ namespace BostonScientificAVS.Controllers
                 if (match.Success)
                 {
                     latestTransaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
-                    
                     if (input1.Length == 34 && match.Groups[1].Length == 14 && match.Groups[2].Length == 6 && match.Groups[4].Length == 8)
                     {
                         latestTransaction.Product_Label_GTIN = match.Groups[1].Value;
