@@ -1457,6 +1457,7 @@
     var intervalId;
     var isPaused = false;
     var pauseDuration = 60;
+    var receivedInput = 0;
   
     document.getElementById("after-fail-side-scan").style.display = "none";
     document.getElementById("after-success-side-scan").style.display = "none";
@@ -2274,15 +2275,19 @@
                 //console.log(data.pageData.Barcode);
                 if (data.pageData.Barcode.length < 25 && superVisorInput == false) {
                     document.getElementById("productLabelSpec").value = data.pageData.Barcode;
+                    receivedInput++;
                 } else if (data.pageData.Barcode.length > 25 && superVisorInput == false) {
                     document.getElementById("productLabelInput").value = data.pageData.Barcode;
+                    receivedInput++;
                 }
-                if (document.getElementById("productLabelInput").value !== '' && document.getElementById("productLabelSpec").value !== '' && superVisorInput == false) {
+                if (document.getElementById("productLabelInput").value !== '' && document.getElementById("productLabelSpec").value !== '' && superVisorInput == false && receivedInput==2) {
                     document.getElementById("submitBtn").click();
+                    receivedInput = 0;
                 }
                 if(superVisorInput == true){
                     document.getElementById("supervisorInput").value = data.pageData.Barcode;
                     configureContinueButton('supervisorInput');
+                    receivedInput = 0;
                 }
                 console.log("Supervisor Input Enabled:", superVisorInput);
             }
