@@ -2277,13 +2277,14 @@
                 } else if (data.pageData.Barcode.length > 25 && superVisorInput == false) {
                     document.getElementById("productLabelInput").value = data.pageData.Barcode;
                 }
-                if (document.getElementById("productLabelInput").value !=='' && document.getElementById("productLabelSpec").value !==''){
+                if (document.getElementById("productLabelInput").value !== '' && document.getElementById("productLabelSpec").value !== '' && superVisorInput == false) {
                     document.getElementById("submitBtn").click();
                 }
                 if(superVisorInput == true){
                     document.getElementById("supervisorInput").value = data.pageData.Barcode;
                     configureContinueButton('supervisorInput');
                 }
+                console.log("Supervisor Input Enabled:", superVisorInput);
             }
 
             
