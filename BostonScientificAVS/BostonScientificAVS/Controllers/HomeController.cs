@@ -868,16 +868,39 @@ namespace BostonScientificAVS.Controllers
         [HttpPost("/SaveProductLabelBarcode")]
         public async Task<IActionResult> SaveProductLabelBarcode(string input1, string input2, string input3, bool gtinmismatch,bool rescanmsg)
         {
-            if (ModelState.IsValid)
-            {
+            
                 string pattern = @"^\d{2}(\d{14})\d{2}(\d{6})(\d{2})(\w+)";
                 Match match = Regex.Match(input1, pattern);
-
+            if (!match.Success)
+            {
+                await SendMessageToUDPclient("E");
+                return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
+            }
+            else
+            {
                 Transaction latestTransaction = null; // Declare before the if block
 
                 if (match.Success)
                 {
                     latestTransaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
+
+                    if (latestTransaction.Product_Label_GTIN != null)
+                    {
+                        var record = new Transaction
+                        {
+                            WO_Catalog_Num = latestTransaction.WO_Catalog_Num,
+                            WO_Mfg_Date = latestTransaction.WO_Mfg_Date,
+                            WO_Lot_Num = latestTransaction.WO_Lot_Num,
+                            Carton_Label_GTIN = latestTransaction.Carton_Label_GTIN,
+                            Carton_Lot_Num = latestTransaction.Carton_Lot_Num,
+                            Carton_Use_By = latestTransaction.Carton_Use_By
+                        };
+
+                        _dataContext.Transaction.Add(record);
+                        await _dataContext.SaveChangesAsync();
+                        latestTransaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
+                    }
+
                     if (input1.Length == 34 && match.Groups[1].Length == 14 && match.Groups[2].Length == 6 && match.Groups[4].Length == 8)
                     {
                         latestTransaction.Product_Label_GTIN = match.Groups[1].Value;
@@ -887,16 +910,16 @@ namespace BostonScientificAVS.Controllers
                         latestTransaction.Type = "Boxing";
 
                         ItemMaster item = _dataContext.ItemMaster.OrderBy(i => i.GTIN).FirstOrDefault();
-                       
-                            // Assign values from ItemMaster
-                            latestTransaction.DB_GTIN = item.GTIN;
-                            latestTransaction.DB_Catalog_Num = item.Catalog_Num;
-                            DateTime workOrderDT = (DateTime)latestTransaction.WO_Mfg_Date;
-                            latestTransaction.Calculated_Use_By = workOrderDT.AddDays((double)item.Shelf_Life);
-                            latestTransaction.DB_Label_Spec = item.Label_Spec;
-                            latestTransaction.DB_IFU = item.IFU;
-                            latestTransaction.Product_Label_Spec = input2;
-                            latestTransaction.Scanned_IFU = input3;
+
+                        // Assign values from ItemMaster
+                        latestTransaction.DB_GTIN = item.GTIN;
+                        latestTransaction.DB_Catalog_Num = item.Catalog_Num;
+                        DateTime workOrderDT = (DateTime)latestTransaction.WO_Mfg_Date;
+                        latestTransaction.Calculated_Use_By = workOrderDT.AddDays((double)item.Shelf_Life);
+                        latestTransaction.DB_Label_Spec = item.Label_Spec;
+                        latestTransaction.DB_IFU = item.IFU;
+                        latestTransaction.Product_Label_Spec = input2;
+                        latestTransaction.Scanned_IFU = input3;
                     }
                     else
                     {
@@ -905,27 +928,14 @@ namespace BostonScientificAVS.Controllers
 
                     }
                 }
-                else
-                {
-                    await SendMessageToUDPclient("E");
-                    return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
-                }
+
 
                 if (latestTransaction != null)
                 {
                     await _dataContext.SaveChangesAsync();
                 }
-                else
-                {
-                    await SendMessageToUDPclient("E");
-                    return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
-                }
 
-                return RedirectToAction("FinalResult", new {rescanmsg});
-            }
-            else
-            {
-                return RedirectToAction("WorkOrderError", "Home");
+                return RedirectToAction("FinalResult", new { rescanmsg });
             }
         }
         [HttpPost]
