@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Net.Mime;
 using Microsoft.VisualBasic;
 using Microsoft.AspNetCore.Http;
+using BostonScientificAVS.Entity;
 
 namespace BostonScientificAVS.Controllers
 {
@@ -34,8 +35,23 @@ namespace BostonScientificAVS.Controllers
         }
         public IActionResult Settings()
         {
-            return View();
+            var setting = _context.Settings.FirstOrDefault(s => s.ConfigKey == "SESSION_EXPIRY_TIME");
+
+            // Check if the setting is not null and ConfigValue is not null before passing it to the view
+            if (setting != null && setting.ConfigValue != null)
+            {
+                var timer = new settings
+                {
+                    sessiontime = setting.ConfigValue
+                };
+
+                return View(timer);
+            }
+
+            // Handle the case where the setting is not found or ConfigValue is null
+            return View(new settings());
         }
+
 
         public PartialViewResult RefreshItemsGrid()
         {
