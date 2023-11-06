@@ -128,10 +128,18 @@ namespace BostonScientificAVS.Controllers
                 if (match.Success)
                 {
                     latestTransaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
-                    if (latestTransaction.Result != null)
+                    if (latestTransaction.Product_Label_GTIN != null)
                     {
-                        latestTransaction.Rescan_Initated = true;                       
-                        await SendMessageToUDPclient("R");
+                        var record = new Transaction
+                        {
+                            WO_Catalog_Num = latestTransaction.WO_Catalog_Num,
+                            WO_Mfg_Date = latestTransaction.WO_Mfg_Date,
+                            WO_Lot_Num = latestTransaction.WO_Lot_Num
+                        };
+
+                        _dataContext.Transaction.Add(record);
+                        await _dataContext.SaveChangesAsync();
+                        latestTransaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
                     }
 
                     if (productLabel.Length == 34 && match.Groups[1].Length == 14 && match.Groups[2].Length == 6 && match.Groups[4].Length == 8)

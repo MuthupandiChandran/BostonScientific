@@ -1899,7 +1899,7 @@
             },
             complete: function () {
                 // Re-enable the input fields and button after the AJAX request is complete
-                $("#productLabelInput, #productLabelSpec, #submitBtn").prop("disabled", true);
+                $("#productLabelInput, #productLabelSpec, #submitBtn").prop("disabled", false);
             }
         });
     });
@@ -1933,25 +1933,8 @@
             duringToScanPass();
             setScannedData(response);
             setWorkOrderInfo(response);
-            var workOrderValue = localStorage.getItem("workOrderValue");
-            var apiurl ='/Home/SaveWorkOrder';
-            $.ajax({
-                url: apiurl,
-                method: "POST",
-                data: { input: workOrderValue },
-                success: function (response) {
-                    console.log("Data passed");
-                    $("#productLabelInput, #productLabelSpec, #submitBtn").prop("disabled",false);               
-                     return;
-                },
-                error: function (xhr, status, error) {
-                    console.log("An error occurred while making the AJAX call:", error);
-                }
-            });
-
-
-
-        } else {
+        } 
+        else {
             //setTimeout(duringToScanFail, 3000);
             scanfail(response);
             setWorkOrderInfo(response);
@@ -2309,6 +2292,7 @@
                 document.getElementById("greenButton").value = data.pageError.errorMsg;
                 configureContinueButton('supervisorInput');
             });
+
 
             /*document.getElementById("redButton").addEventListener("click", function () {
                 document.getElementById("redButton").value = data.pageError.errorMsg;
