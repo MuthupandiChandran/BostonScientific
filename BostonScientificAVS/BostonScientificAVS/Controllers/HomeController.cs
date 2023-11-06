@@ -805,6 +805,23 @@ namespace BostonScientificAVS.Controllers
                 {
                     transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
 
+                    if (transaction.Product_Label_GTIN != null)
+                    {
+                        var record = new Transaction
+                        {
+                            WO_Catalog_Num = transaction.WO_Catalog_Num,
+                            WO_Mfg_Date = transaction.WO_Mfg_Date,
+                            WO_Lot_Num = transaction.WO_Lot_Num,
+                            Carton_Label_GTIN = transaction.Carton_Label_GTIN,
+                            Carton_Lot_Num = transaction.Carton_Lot_Num,
+                            Carton_Use_By = transaction.Carton_Use_By
+                        };
+
+                        _dataContext.Transaction.Add(record);
+                        await _dataContext.SaveChangesAsync();
+                        transaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
+                    }
+
                     if (input1.Length == 34 || match.Groups[1].Length == 14 || match.Groups[2].Length == 6 || match.Groups[4].Length == 8)
                     {
                         transaction.Carton_Label_GTIN = match.Groups[1].Value;
@@ -883,24 +900,6 @@ namespace BostonScientificAVS.Controllers
                 if (match.Success)
                 {
                     latestTransaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
-
-                    if (latestTransaction.Product_Label_GTIN != null)
-                    {
-                        var record = new Transaction
-                        {
-                            WO_Catalog_Num = latestTransaction.WO_Catalog_Num,
-                            WO_Mfg_Date = latestTransaction.WO_Mfg_Date,
-                            WO_Lot_Num = latestTransaction.WO_Lot_Num,
-                            Carton_Label_GTIN = latestTransaction.Carton_Label_GTIN,
-                            Carton_Lot_Num = latestTransaction.Carton_Lot_Num,
-                            Carton_Use_By = latestTransaction.Carton_Use_By
-                        };
-
-                        _dataContext.Transaction.Add(record);
-                        await _dataContext.SaveChangesAsync();
-                        latestTransaction = _dataContext.Transaction.OrderByDescending(x => x.Transaction_Id).FirstOrDefault();
-                    }
-
                     if (input1.Length == 34 && match.Groups[1].Length == 14 && match.Groups[2].Length == 6 && match.Groups[4].Length == 8)
                     {
                         latestTransaction.Product_Label_GTIN = match.Groups[1].Value;
