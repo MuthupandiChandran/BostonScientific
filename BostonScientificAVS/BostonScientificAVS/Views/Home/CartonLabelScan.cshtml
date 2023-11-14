@@ -1,4 +1,4 @@
-﻿<div class="container1">
+﻿<div class="container-fluid">
     <div class="navigation-header-items">
         <div class="dropdown">
             <button class="custom-config-button" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -23,7 +23,7 @@
                 <h6 id="timer" class="session-expire-time text-color-blue"></h6>
             </div>
             <div>
-                <a class="button" href="javascript:history.go(-1)"><img class="back-button-img" src="/assets/images/back-arrow.png" /><span class="back-text">Back</span></a>
+                <a class="button" href="/Home/WorkOrderBarcodeScan"><img class="back-button-img" src="/assets/images/back-arrow.png" /><span class="back-text">Back</span></a>
             </div>
         </div>
 
@@ -76,6 +76,9 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div id="toast" style="visibility: hidden;">
+        User time limit reached, it will automatically logout.
     </div>
 </div>
 
@@ -215,10 +218,29 @@
         text-align: center;
     }
 
+    #toast {
+        max-width: 300px;
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 16px;
+        position: fixed;
+        z-index: 1;
+        left: 50%;
+        bottom: 30px;
+        transform: translateX(-50%);
+    }
+
 </style>
 @section Scripts{
 
     <script type="text/javascript">
+        var toastVisible = true; // Initially set to true so the message is not displayed
+        var timerHasStarted = false;
+        var intervalId;
+        var isPaused = false;
+        var pauseDuration = 60;
         document.addEventListener("DOMContentLoaded", function () {
             var input1Field = document.getElementById("input1");
             var input2Field = document.getElementById("input2");
@@ -234,7 +256,7 @@
 
         var socket = null;
         if (true) {
-            websocketUrl = "wss://localhost:7157" + "/ws";
+            websocketUrl = "ws://localhost:7157" + "/ws";
 
             socket = new WebSocket(websocketUrl);
 
@@ -246,13 +268,18 @@
             socket.onmessage = function (event) {
                 const jsonData = event.data;
                 const data = JSON.parse(jsonData);
-                console.log(data);
-                console.log(data.pageError.errorMsg);
-
-                document.getElementById("input1").value = data.pageError.errorMsg;
-                document.getElementById("input2").value = data.pageError.errorMsg;
-                document.getElementById("workOrderForm").submit();
-            };
+                if (data.pageData != null) {
+                    console.log(data.pageData.Barcode);
+                    if (data.pageData.Barcode.length < 25) {
+                        document.getElementById("input2").value = data.pageData.Barcode;
+                    } else {
+                        document.getElementById("input1").value = data.pageData.Barcode;
+                    }
+                    if (document.getElementById("input1").value !== '' && document.getElementById("input2").value !== '') {
+                        document.getElementById("workOrderForm").submit();
+                    }
+                }
+            }
 
             socket.onopen = function (event) {
                 // WebSocket connection opened
@@ -266,16 +293,28 @@
             };
         }
 
+        function displayToast() {
+            if (toastVisible) {
+                var toast = document.getElementById("toast");
+                toast.style.visibility = "visible";
+                toastVisible = false; // Set to false to hide the message
 
+                setTimeout(function () {
+                    toast.style.visibility = "hidden";
+                    isPaused = false;
+                }, pauseDuration * 1000); // Display the toast message for 1 minute
+            }
+        }
 
 
         function startTimer(duration) {
+            if (!isPaused) {
             var timerDisplay = document.getElementById("timer");
 
             var timer = duration;
             var hours, minutes, seconds;
 
-            var intervalId = setInterval(function () {
+             intervalId = setInterval(function () {
                 hours = parseInt(timer / 3600, 10);
                 minutes = parseInt((timer % 3600) / 60, 10);
                 seconds = parseInt(timer % 60, 10);
@@ -285,6 +324,13 @@
                 seconds = seconds < 10 ? "0" + seconds : seconds;
 
                 timerDisplay.textContent = hours + ":" + minutes + ":" + seconds;
+                    if (timer == 1800) {
+                        if (!timerHasStarted) {
+                            displayToast();
+                            timerHasStarted = true;
+                            isPaused = true;
+                        }
+                    }
 
                 if (--timer < 0) {
                     clearInterval(intervalId);
@@ -293,6 +339,7 @@
                     //alert("Timer has expired!");
                 }
             }, 1000);
+            }
         }
 
         // Local Storage is already set in homescreen so just obtain it here

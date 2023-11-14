@@ -50,6 +50,12 @@ namespace BostonScientificAVS.Models
         public int? scannedCount { get; set; }
 
         public string workOrderLotNo { get; set; }
+        public string workOrderCatalogNo { get; set; }
+        public DateTime? workOrderMfgDate { get; set; }
+        public int? shelflife { get;set;}
+        public string? DbCatalogNo { get; set; }
+        public string Dbspec { get; set; }
+        public string DbGtin { get; set; }
 
     }
 

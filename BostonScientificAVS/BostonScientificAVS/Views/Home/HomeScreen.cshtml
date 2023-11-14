@@ -1,4 +1,5 @@
 ﻿<div id="hoursInput" data-hours-input="@ViewBag.HoursInput"></div>
+<div class="container-fluid">
 <div class="navigation-header-home">
         <div class="dropdown">
   <button class="custom-config-button" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -11,7 +12,8 @@
             {
                  <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Users">Manage Users</a>
                 <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Items" >Manage Database</a>
-                <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="TransactionTable" >Transaction</a>
+                <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="TransactionTable">Transaction</a>
+                <a class="dropdown-item text-color-blue" asp-area="" asp-controller="Admin" asp-action="Settings">Settings</a>
             }
                          <a class="dropdown-item text-color-blue"  asp-area="" asp-controller="Login" asp-action="Logout" >Logout</a> 
   </div>
@@ -30,11 +32,11 @@
     <div class="mid-container">
     <div>
         <div class="logo-image">
-            <img src="~/assets/images/AbeTechLogo.png" class="image-size-default" />
+            <img src="~/assets/images/2560px-Boston_Scientific_Logo 1.png" class="homescreen-img" />
         </div>
     </div>
     <div>
-        <h6 class="app-name-text">Auto Verify System</h6>
+        <h6 class="app-name-text">Component Verification System</h6>
     </div>
     <div class="packaging">
         <a class="login-button" asp-area="" asp-controller="Home" asp-action="WorkOrderScan"><span class="login-text">Packaging</span></a>
@@ -43,11 +45,12 @@
         <a class="login-button" asp-area="" asp-controller="Home" asp-action="WorkOrderBarcodeScan"><span class="login-text">Boxing/Carton</span></a>
     </div>
     </div>
-   @*  <div>
-        <a class="login-button" asp-area="" asp-controller="Home" asp-action="Items"><span class="login-text">Manage Items</span></a>
-    </div>*@
+   
+    <div id="toast" style="visibility: hidden;">
+        User time limit reached, it will automatically logout.
+    </div>
 </div>
-
+</div>
 @*<div class="logout-container">
     <a class="logout" asp-area="" asp-controller="Home" asp-action="Index"><span class="logout-text">Logout</span></a>
 </div>*@
@@ -57,6 +60,28 @@
 </div>*@
 
 <style>
+    .homescreen-img{
+        position: absolute;
+        height: 34%;
+        left: 10px;
+        top: -47px;
+        width: 100%;
+        object-fit: contain;
+    }
+
+    #toast {
+        max-width: 300px;
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 16px;
+        position: fixed;
+        z-index: 1;
+        left: 50%;
+        bottom: 30px;
+        transform: translateX(-50%);
+    }
 
   .mid-container{
        display: flex;
@@ -81,6 +106,7 @@
         font-size:41px;
         font-weight: 700;
         text-align: center;
+        color:#003C71;
     }
 
     .login-button{
@@ -160,14 +186,21 @@
 </style>
 
 <script>
+    var toastVisible = true; // Initially set to true so the message is not displayed
+    var timerHasStarted = false;
+    var intervalId;
+    var isPaused = false;
+    var pauseDuration = 60;
+
     const myElement = document.getElementById('hoursInput');
     function startTimer(duration) {
+        if (!isPaused) {
     var timerDisplay = document.getElementById("timer");
 
     var timer = duration;
     var hours, minutes, seconds;
 
-    var intervalId = setInterval(function () {
+    intervalId = setInterval(function () {
         hours = parseInt(timer / 3600, 10);
         minutes = parseInt((timer % 3600) / 60, 10);
         seconds = parseInt(timer % 60, 10);
@@ -178,6 +211,14 @@
 
         timerDisplay.textContent = hours + ":" + minutes + ":" + seconds;
 
+                if (timer == 1800) {
+                    if (!timerHasStarted) {
+                        displayToast();
+                        timerHasStarted = true;
+                        isPaused = true;
+                    }
+                }
+
         if (--timer < 0) {
             clearInterval(intervalId);
             // Perform any action you need when the timer reaches 00:00:00
@@ -185,24 +226,42 @@
             //alert("Timer has expired!");
         }
     }, 1000);
+  }
 }
 
-    // Set the initial expiration time in JavaScript (2 hours in this example)
-    var hoursInput = myElement.dataset.hoursInput;; // Replace this with the desired hours from your input*/
-    var expirationTime;
-    if (hoursInput == 0) {
-    expirationTime = localStorage.getItem("expiration_time");
-    } else {
-     expirationTime = Math.floor(Date.now() / 1000) + hoursInput * 3600;
-    // Store the expiration time in localStorage
-    localStorage.setItem("expiration_time", expirationTime);
+    function displayToast() {
+        if (toastVisible) {
+            var toast = document.getElementById("toast");
+            toast.style.visibility = "visible";
+            toastVisible = false; // Set to false to hide the message
+
+            setTimeout(function () {
+                toast.style.visibility = "hidden";
+                isPaused = false;
+            }, pauseDuration * 1000); // Display the toast message for 1 minute
+        }
     }
 
 
 
+    // Set the initial expiration time in JavaScript (2 hours in this example)
+    var hoursInput = parseFloat(myElement.dataset.hoursInput); // Parse as a float
+    var expirationTime;
+    if (hoursInput == 0) {
+        expirationTime = localStorage.getItem("expiration_time");
+    } else {
+        // Convert hours to seconds
+        var seconds = hoursInput * 3600;
+
+        expirationTime = Math.floor(Date.now() / 1000) + seconds;
+
+        // Store the expiration time in localStorage
+        localStorage.setItem("expiration_time", expirationTime);
+    }
 
     // Get the expiration time from localStorage
     var currentTime = Math.floor(Date.now() / 1000);
     var remainingTime = expirationTime - currentTime;
     startTimer(remainingTime);
+
 </script>

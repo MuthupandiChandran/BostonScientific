@@ -36,6 +36,9 @@
             <th>
                 Created by
             </th>
+            <th>
+                Action
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -79,6 +82,9 @@
 
                     <div data-gtin=@item.GTIN data-column="Created_by" contenteditable="false" class="editableContent">@item.Created_by</div>
                 </td>
+                <td>
+                    <i class="bi bi-trash" data-user-id=@item.GTIN contenteditable="false"></i>
+                </td>
             </tr>
         }
 
@@ -100,7 +106,7 @@
                 <span class="text-danger" id="shelflifeerror"></span>
             </td>
             <td colspan="1">
-                <div class="editableDiv" contenteditable="true" placeholder="Lable Spec" id="labelspec"></div>
+                <div class="editableDiv" contenteditable="true" placeholder="Label spec" id="labelspec"></div>
                 <span class="text-danger" id="labelspecerror"></span>
             </td>
             <td colspan="1">
@@ -185,12 +191,16 @@
              padding-top:10px;
          }
 </style>
-<script>
+
+<script type="text/javascript">
+
 $(() => {
-  
-  new DataTable('#itemsTable', {
-     dom: '<"top"f>rt<"bottom"lpi><"clear">'
-});
+
+        console.log("Initializing DataTables...");
+        new DataTable('#itemsTable', {
+            dom: '<"top"f>rt<"bottom"lpi><"clear">'
+        });
+        console.log("DataTables initialized.");
                    
         document.getElementsByClassName('add-button')[0]
             .addEventListener('click', function (event) {
@@ -276,9 +286,18 @@ $(() => {
                 method: "POST",
                 data: item,
                 success: function (response) {
-                    hideLoader();
-                    console.log("Item saved successfully");
-                    location.reload();
+                    if (response.success) 
+                    {
+                        hideLoader();
+                        console.log("Item saved successfully");
+                        alert("Item saved successfully");
+                        location.reload();
+                     }
+                     else{
+                        console.log("GTIN already Exists");
+                        alert(response.message);
+                        location.reload();
+                     }
                 },
                 error: function(xhr, status, error) {
                     console.log("An error occurred while saving the data:", error);
@@ -290,7 +309,7 @@ $(() => {
             catalogNo.text('');
             shelfLife.text('');
             lableSpec.text('');
-            ifu.text('');
+            $("#ifu").val('');
             editDateTime.text('');
             editBy.text('');
             created.text('');
@@ -336,7 +355,7 @@ $(() => {
                 column_name: columnName,
                 gtin_value: gtinValue
             }
-               var apiUrl = "Admin/UpdateItem";
+               var apiUrl = "/UpdateItem";
 
         $.ajax({
             url: apiUrl,
@@ -344,6 +363,7 @@ $(() => {
             data: itemToUpdate,
             success: function(response) {
                 console.log("Item updated successfully");
+                    alert("Item updated successfully");
             },
             error: function(xhr, status, error) {
                 console.log("An error occurred while updating the data:", error);
@@ -368,7 +388,7 @@ $(() => {
 
     function updateItem(itemToUpdate) {
         // Replace the URL below with your API endpoint
-        var apiUrl = "Admin/UpdateItem";
+        var apiUrl = "/UpdateItem";
 
         $.ajax({
             url: apiUrl,
@@ -376,6 +396,7 @@ $(() => {
             data: itemToUpdate,
             success: function(response) {
                 console.log("Item updated successfully");
+                    alert("Item updated successfully");
                 location.reload();
             },
             error: function(xhr, status, error) {
@@ -385,31 +406,40 @@ $(() => {
 
     }
 
-    function saveItem(item) {
-        
-            var apiUrl = "Admin/SaveNewItem";
+   
 
-            $.ajax({
-                url: apiUrl,
-                method: "POST",
-                data: item,
-                success: function(response) {
-                    console.log("Item saved successfully");
-                    gtin.text(''),
-                    catalogNo.text(''),
-                    shelfLife.text(''),
-                    lableSpec.text(''),
-                    ifu.text(''),
-                    editDateTime.text(''),
-                    editBy.text(''),
-                    created.text(''),
-                    createdBy.text('')         
-                },
-                error: function(xhr, status, error) {
-                    console.log("An error occurred while saving the data:", error);
-                }
-            });
-    }
+        $(".bi-trash").click(function () {
+            var gtin = $(this).data("user-id");
+
+            if (confirm("Are you sure you want to delete this record?")) {
+                var $row = $(this).closest('tr'); // Store a reference to the row
+
+                // User confirmed, so send an AJAX request to delete the user
+                $.ajax({
+                    type: 'POST',
+                    url: '/DeleteItem', // Update the URL to match your controller action
+                    data: { GTIN: gtin },
+                    success: function (data) {
+                        if (data.success) {
+                            // User was deleted successfully, remove the row
+                            $row.remove();
+                            alert(data.message);
+                        } else {
+                            alert(data.message);
+                        }
+                    },
+                    error: function () {
+                        alert("An error occurred while deleting the user.");
+                    }
+                });
+            }
+        });
+
+
+
+
+
+
 
         function showLoader() {
             document.getElementById('loader').style.display = 'block';

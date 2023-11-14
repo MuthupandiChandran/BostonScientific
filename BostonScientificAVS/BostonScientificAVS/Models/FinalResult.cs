@@ -12,12 +12,10 @@
 
     public class mismatchess
     {
-        public bool gtinmismatch { get; set; }
-        public bool gtinmismatches { get; set; }
         public bool lotNoMismatch { get; set; }
         public bool labelSpecMismatch { get; set; }
         public bool CalculatedUseByMismatch { get; set; }
-        
+        public bool gtinMismatch { get; set; }
         public bool catalogNumMismatch { get; set; }
         public bool LotNumberMisMatch { get; set; }
         public bool ifumismatches { get; set; }
@@ -61,6 +59,19 @@
         public int? scannedCount { get; set; }
 
         public string workOrderLotNo { get; set; }
+        public string workOrderCatalogNo { get; set; }
+        public DateTime? workOrderMfgDate { get; set; }
+        public int? shelflife { get; set; }
+        public DateTime? Carton_Use_By { get; set; }
+        public string CartonLotNo { get; set; }
+        public string ifu { get; set; }
+        public string Cartongtin { get; set; }
+        public string Dbgtin { get; set; }
+        public string CartonLabelspec { get; set; }
+        public string Dbspec { get; set; }
+        public string DbCatalogNo { get; set; }
+        public DateTime? Calculateuseby { get; set; }
+        public bool cartonMismatch { get; set; }
 
     }
 }

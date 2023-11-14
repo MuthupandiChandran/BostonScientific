@@ -118,6 +118,7 @@ namespace BostonScientificAVS.Controllers
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            TempData.Clear();
             return RedirectToAction("Login", "Login");
         }
 

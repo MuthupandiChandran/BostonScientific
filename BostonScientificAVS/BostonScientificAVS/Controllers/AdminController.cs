@@ -9,6 +9,10 @@ using System.Globalization;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Mime;
+using Microsoft.VisualBasic;
+using Microsoft.AspNetCore.Http;
+using BostonScientificAVS.Entity;
 
 namespace BostonScientificAVS.Controllers
 {
@@ -29,12 +33,47 @@ namespace BostonScientificAVS.Controllers
         {
             return View();
         }
+        public IActionResult Settings()
+        {
+            var setting = _context.Settings.FirstOrDefault(s => s.ConfigKey == "SESSION_EXPIRY_TIME");
+
+            // Check if the setting is not null and ConfigValue is not null before passing it to the view
+            if (setting != null && setting.ConfigValue != null)
+            {
+                var timer = new settings
+                {
+                    sessiontime = setting.ConfigValue
+                };
+
+                return View(timer);
+            }
+
+            // Handle the case where the setting is not found or ConfigValue is null
+            return View(new settings());
+        }
+
 
         public PartialViewResult RefreshItemsGrid()
         {
             var items = _itemService.getItems();
             return PartialView("_ItemsTable", items);
         }
+
+        [HttpPost]
+        public IActionResult UpdateExpiration(float expirationTime)
+        {
+            var setting = _context.Settings.FirstOrDefault(s => s.ConfigKey == "SESSION_EXPIRY_TIME"); // The key to update
+            if (setting != null)
+            {
+                setting.ConfigValue = expirationTime.ToString();
+                _context.SaveChanges();
+            }
+
+            TempData["Admin"] = true; // Set TempData to true
+            return Json(setting);
+        }
+
+
 
         [HttpPost("/UpdateItem")]
         public ActionResult UpdateItem(SingleItemEdit itemToEdit)
@@ -69,24 +108,28 @@ namespace BostonScientificAVS.Controllers
                     // If the value is not null or empty, proceed with saving the item
                     if (!string.IsNullOrEmpty(currentUserName))
                     {
-                        // Assign the current user name to the "Created_by" property only if it's a new item
                         if (!string.IsNullOrEmpty(item.GTIN))
                         {
-                            // Assign the current date and time to the "Created" property for new items
-                            item.Created = DateTime.Now;
-                            item.Created_by = currentUserName;
-                            //if (item.Edit_Date_Time == default(DateTime))
-                            //{
-                            //    item.Edit_Date_Time = null;
-                            //}
+                            // Check if a record with the same GTIN already exists
+                            var existingItem = _context.ItemMaster.FirstOrDefault(u => u.GTIN == item.GTIN);
+                            if (existingItem != null)
+                            {
+                                return Json(new { success = false, message = "GTIN is already in use." });
+                            }
+                            else
+                            {
+                                // Assign the current date and time to the "Created" property for new items
+                                item.Created = DateTime.Now;
+                                item.Created_by = currentUserName;
 
-                            _itemService.saveNewItem(item);
-                            return Ok("success");
+                                // Call the service to save the new item
+                                _itemService.saveNewItem(item);
+                                return Json(new { success = true });
+                            }
                         }
                     }
                     else
                     {
-
                         return BadRequest("User not authenticated or session expired.");
                     }
                 }
@@ -101,6 +144,35 @@ namespace BostonScientificAVS.Controllers
 
 
 
+        [HttpPost("/DeleteItem")]
+
+        public async Task<IActionResult>DeleteItem (ItemMaster item)
+        {
+            try
+            {
+                var deleterecord = await _context.ItemMaster.FirstOrDefaultAsync(u => u.GTIN == item.GTIN);
+                if(deleterecord!=null)
+                {
+                    _context.ItemMaster.Remove(deleterecord);
+                    await _context.SaveChangesAsync();
+                    return Json(new { success = true, message = "Record deleted successfully" });
+                }
+
+                else
+                {
+                    return Json(new { success = false, message = "User not found" });
+                }
+            }
+            catch(Exception ex)
+            {
+                return Json(new { success = false, message = "Error deleting user: " + ex.Message });
+
+            }
+        }
+
+
+
+
         // MVC Controller action method to handle file upload
         [HttpPost("/uploadItemsExcel")]
         public async Task<string> ImportCSV(IFormFile file)
@@ -108,7 +180,7 @@ namespace BostonScientificAVS.Controllers
             try
             {
                 string currentUserName = @User.Identity.Name;
-                await _itemService.importCsv(file,currentUserName);
+                await _itemService.importCsv(file, currentUserName);
                 return "file upload Successfully";
             }
             catch (Exception e)
@@ -129,7 +201,11 @@ namespace BostonScientificAVS.Controllers
                 Catalog_Num = "Catalog_Num",
                 Shelf_Life = "Shelf_Life",
                 Label_Spec = "Label_Spec",
-                IFU = "IFU"
+                IFU = "IFU",
+                Edit_Date_Time = "Edit_Date_Time",
+                Edit_By = "Edit_By",
+                Created = "Created",
+                Created_by = "Created_by"
                 // Add more header column values as needed
             };
 
@@ -142,7 +218,7 @@ namespace BostonScientificAVS.Controllers
             }
 
             memoryStream.Seek(0, SeekOrigin.Begin);
-            return File(memoryStream, "text/csv", "users.csv");
+            return File(memoryStream, "text/csv", "Users.csv");
         }
 
         [HttpGet]
@@ -199,6 +275,31 @@ namespace BostonScientificAVS.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult>DeleteUser(ApplicationUser user)
+        {
+            try
+            {
+                var existingRecord = await _context.Users.FirstOrDefaultAsync(u => u.EmpID == user.EmpID);
+                if (existingRecord != null)
+                {
+                    _context.Users.Remove(existingRecord);
+                    await _context.SaveChangesAsync();
+                    return Json(new { success = true, message = "User deleted successfully" });
+                }
+
+                else
+                {
+                    return Json(new { success = false, message = "User not found" });
+                }
+            }
+            catch(Exception ex)
+            {
+                return Json(new { success = false, message = "Error deleting user: " + ex.Message });
+            }
+        }
+
+
 
         public async Task importCsv(IFormFile file)
         {
@@ -211,7 +312,7 @@ namespace BostonScientificAVS.Controllers
             {
                 Console.WriteLine(e);
             }
-         
+
         }
 
 
@@ -236,30 +337,71 @@ namespace BostonScientificAVS.Controllers
             memoryStream.Seek(0, SeekOrigin.Begin);
             return File(memoryStream, "text/csv", "users.csv");
         }
+        
         [HttpGet]
-        public IActionResult TransactionTable(string search)
+        public IActionResult TransactionTable(string startDate, string endDate)
         {
-            DateTime today = DateTime.Today;
-            ViewBag.SearchDate = search;
-            string userFullName = @User.Identity.Name;
-            ViewBag.UserFullName = userFullName;
+            var records = _context.Transaction.ToList();
 
-            var records = _context.Transaction.ToList(); // Fetch all records to memory
-
-            if (!string.IsNullOrEmpty(search))
+            if (!string.IsNullOrEmpty(startDate) && !string.IsNullOrEmpty(endDate))
             {
-                var searchDate = DateTime.ParseExact(search, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-                var formattedSearchDate = searchDate.ToString("dd-MM-yyyy");
+                if (DateTime.TryParse(startDate, out DateTime startSearchDate) && DateTime.TryParse(endDate, out DateTime endSearchDate))
+                {
+                    // Filter records within the specified date range, considering only the date portion
+                    var filteredRecords = records.Where(t =>
+                        t.Date_Time.Date >= startSearchDate.Date && t.Date_Time.Date <= endSearchDate.Date).ToList();
 
-                records = records.Where(t => t.Date_Time != null &&
-                                              t.Date_Time.StartsWith(formattedSearchDate)).ToList();
+                    return View("Transaction", filteredRecords);
+                }
             }
             else
             {
-                records = records.Where(t => t.Date_Time != null && t.Date_Time.Contains(today.ToString("dd-MM-yyyy"))).ToList();
+                // Filter records for today by default, considering only the date portion
+                DateTime today = DateTime.Today;
+                records = records.Where(t => t.Date_Time.Date == today).ToList();
             }
 
-            return View("Transaction", records); // Specify the view name and pass the records
+            return View("Transaction", records);
+        }
+
+
+        [HttpGet]
+        public IActionResult ExportTransactionData(string hiddenStartDate, string hiddenEndDate)
+        {
+            var records = _context.Transaction.ToList();
+
+            if (!string.IsNullOrEmpty(hiddenStartDate) && !string.IsNullOrEmpty(hiddenEndDate))
+            {
+                string dateFormat = "yyyy-MM-dd";
+                var startSearchDate = DateTime.ParseExact(hiddenStartDate, dateFormat, CultureInfo.InvariantCulture);
+                var endSearchDate = DateTime.ParseExact(hiddenEndDate, dateFormat, CultureInfo.InvariantCulture);
+
+                records = records.Where(t =>
+                    t.Date_Time != null &&
+                    t.Date_Time.Date >= startSearchDate.Date && t.Date_Time.Date <= endSearchDate.Date).ToList();
+            }
+
+            // Create a CSV content string with headers and data
+            var csvData = new StringBuilder();
+            csvData.AppendLine("Transaction Id,Product Label GTIN,Carton Label GTIN,DB GTIN,WO Lot No,Product Lot No,Carton Lot No,WO Catalog No,DB Catalog No,ShelfLife,WO Mfg Date,Calculated Use By,Product Use By,Carton Use By,DB Label Spec,Product Label Spec,Carton Label Spec,DB IFU,Scanned IFU,User,Date Time,Rescan Initiated,Result,Failure Reason,Supervisor Name");
+
+            foreach (var record in records)
+            {
+                csvData.AppendLine($"{record.Transaction_Id},{record.Product_Label_GTIN},{record.Carton_Label_GTIN},{record.DB_GTIN},{record.WO_Lot_Num},{record.Product_Lot_Num},{record.Carton_Lot_Num},{record.WO_Catalog_Num},{record.DB_Catalog_Num},{record.Shelf_Life},{record.WO_Mfg_Date},{record.Calculated_Use_By},{record.Product_Use_By},{record.Carton_Use_By},{record.DB_Label_Spec},{record.Product_Label_Spec},{record.Carton_Label_Spec},{record.DB_IFU},{record.Scanned_IFU},{User.Identity.Name},{record.Date_Time},{record.Rescan_Initated},{record.Result},{record.Failure_Reason},{record.Supervisor_Name}");
+            }
+
+            // Return the CSV file as a response
+            var fileName = "ExportedData.csv";
+            var contentDisposition = new ContentDisposition
+            {
+                FileName = fileName,
+                Inline = false
+            };
+            Response.Headers.Add("Content-Disposition", contentDisposition.ToString());
+
+            // Convert the CSV content to a byte array and return as a file
+            var csvBytes = Encoding.UTF8.GetBytes(csvData.ToString());
+            return File(csvBytes, "text/csv");
         }
     }
-}
+  }
