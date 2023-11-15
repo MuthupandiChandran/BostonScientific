@@ -403,5 +403,30 @@ namespace BostonScientificAVS.Controllers
             var csvBytes = Encoding.UTF8.GetBytes(csvData.ToString());
             return File(csvBytes, "text/csv");
         }
+
+        [HttpGet]
+        public IActionResult ExportItems()
+        {
+            var records = _context.ItemMaster.ToList();
+
+            var csvData = new StringBuilder();
+            csvData.AppendLine("GTIN,Catalog_Num,Shelf_Life,Label_Spec,IFU,Edit_Date_Time,Edit_By,Created,Created_by");
+            foreach (var record in records)
+            {
+                csvData.AppendLine($"{record.GTIN},{record.Catalog_Num},{record.Shelf_Life},{record.Label_Spec},{record.IFU},{record.Edit_Date_Time},{record.Edit_By},{record.Created},{record.Created_by}");
+            }
+            var fileName = "ExportedData.csv";
+            var contentDisposition = new ContentDisposition
+            {
+                FileName = fileName,
+                Inline = false
+            };
+            Response.Headers.Add("Content-Disposition", contentDisposition.ToString());
+
+            // Convert the CSV content to a byte array and return as a file
+            var csvBytes = Encoding.UTF8.GetBytes(csvData.ToString());
+            return File(csvBytes, "text/csv");
+        }
+
     }
   }

@@ -39,6 +39,7 @@
         <form id="uploader">
             <input id="fileInput" type="file">
             <input type="submit" value="Import" id="import" />
+            <a href="@Url.Action("ExportItems","Admin")" download id="downloadcsv">Export Data</a>
             <a href="@Url.Action("DownloadCSVItems", "Admin")" download id="download1">Please Download The Reference CSV</a>
         </form>
 
@@ -204,6 +205,9 @@
     #download1{
         margin-left:50px;
         margin-right:10px;
+    }
+    #downloadcsv{
+        margin-left:10px;
     }
 
 </style>
