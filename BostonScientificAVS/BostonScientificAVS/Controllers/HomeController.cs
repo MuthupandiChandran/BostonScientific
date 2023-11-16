@@ -173,6 +173,7 @@ namespace BostonScientificAVS.Controllers
                                 gtinmismatch = true;
                                 latestTransaction.Product_Label_Spec = productLabelSpec;
                                 await _dataContext.SaveChangesAsync();
+                                await SendMessageToUDPclient("F");
                                 return RedirectToAction("GTINmismatch", new { gtinMismatch = true, ProductLabelSpec = productLabelSpec });
                             }
 
