@@ -1576,10 +1576,15 @@
         document.getElementById("container").style.backgroundColor="#BAFFCD";
         document.getElementById("body").style.backgroundColor="#BAFFCD";
         document.getElementsByClassName('dropdown-button')[0].style.backgroundColor="#BAFFCD";
+        setTimeout(function() {
+            document.getElementById("container").style.backgroundColor = "#F9FAFB";
+            document.getElementById("body").style.backgroundColor = "#F9FAFB";
+            document.getElementsByClassName('dropdown-button')[0].style.backgroundColor = "#F9FAFB";
+         }, 2000); 
         document.getElementById("before-side-scan").style.display="none";
         document.getElementById("after-success-side-scan").style.display="block";
         document.getElementById("after-pass-workorder").style.display="block";
-        document.getElementById("popupContainer").style.display = "none"
+        document.getElementById("popupContainer").style.display = "none";
    
     }
     function duringToScanFail(response) {
