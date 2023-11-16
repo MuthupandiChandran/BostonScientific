@@ -502,10 +502,12 @@ namespace BostonScientificAVS.Controllers
 
         public IActionResult WorkOrderScan()
         {
+            SendMessageToUDPclient("R");
             return View();
         }
         public IActionResult WorkOrderBarcodeScan()
         {
+            SendMessageToUDPclient("R");
             return View();
         }
         public IActionResult CartonLabelScan(bool udpMsg)
