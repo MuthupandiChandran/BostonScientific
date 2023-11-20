@@ -115,9 +115,36 @@ namespace BostonScientificAVS.Controllers
 
 
         [HttpPost("/SaveProductLabel")]
-        public async Task<IActionResult> SaveProductLabel(string productLabel, string productLabelSpec, bool gtinmismatch)
+        public async Task<IActionResult> SaveProductLabel(string input, string productLabel, string productLabelSpec, bool gtinmismatch)
         {
-            
+            if (string.IsNullOrEmpty(productLabel) && string.IsNullOrEmpty(productLabelSpec))
+            {
+                string[] barcodeParts = input.Split('_');
+
+                if (barcodeParts.Length == 4 && barcodeParts[2].Length == 8 && barcodeParts.All(part => !string.IsNullOrEmpty(part.Trim())))
+                {
+                    // All parts are non-empty, proceed with saving the data
+                    Transaction transaction = new Transaction();
+                    transaction.WO_Catalog_Num = barcodeParts[0];
+                    DateTime date = DateTime.ParseExact(barcodeParts[2], "MMddyyyy", null);
+                    transaction.WO_Mfg_Date = date;
+                    transaction.WO_Lot_Num = barcodeParts[3];
+                    transaction.Date_Time = DateTime.Now;
+                    _dataContext.Transaction.Add(transaction);
+                    _dataContext.SaveChanges();
+
+                    TempData["WorkOrderLotNo"] = transaction.WO_Lot_Num;
+                    return Json(new {workorder = true,
+                        transaction.WO_Catalog_Num,
+                        transaction.WO_Mfg_Date,
+                        transaction.WO_Lot_Num
+                    });
+                }
+            }
+
+            else
+            {
+
                 gtinmismatch = false; // Assuming this line is not needed in other scenarios
                 string pattern = @"^\d{2}(\d{14})\d{2}(\d{6})(\d{2})(\w+)";
                 Match match = Regex.Match(productLabel, pattern);
@@ -200,10 +227,9 @@ namespace BostonScientificAVS.Controllers
                         await SendMessageToUDPclient("E");
                         return BadRequest(new { errorMessage = "Product Label spec Input is Invalid Format" });
                     }
-
-                    // Check udpMessage here, after all other operations
-                    return RedirectToAction("ValidateTransaction");
                 }
+            }
+            return RedirectToAction("ValidateTransaction");
         }
 
         public async Task<IActionResult> GTINmismatch(bool gtinMismatch,string ProductLabelSpec)

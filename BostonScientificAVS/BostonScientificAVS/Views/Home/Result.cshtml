@@ -44,7 +44,10 @@
             <div class="row inpt1">
                 <div class="col-md-8">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-3">
+                            <input id="workorderInput" class="scan-input" placeholder="Work Order" name="input2" autocomplete="off" />
+                        </div>
+                        <div class="col-md-3">
                             <input id="productLabelInput" class="scan-input" placeholder="Product label" name="input" autocomplete="off" />
                             <div id="productLabelInputError" class="text-danger"></div>
                         </div>
@@ -307,7 +310,7 @@
                       Passed
                     </div>
                   <div class="scan-container">
-                    Scan Product Label
+                    Scan Product Label/Work Order
                    </div>
                     <a asp-area="" asp-controller="Home" asp-action="WorkOrderScan" id="after-pass-workorder" class="work-btn">New Work Order</a>
                 </div>
@@ -1187,16 +1190,20 @@
 
     #productLabelInput {
         border-radius: 7px;
-        width: 90%;
-        margin-left: 11px;
+        width: 110%;
+        margin-left: 7px;
     }
-
-
 
     #productLabelSpec {
         border-radius: 7px;
-        width: 100%;
-        margin-left: -40px;
+        width: 80%;
+        margin-left: 14px;
+    }
+
+    #workorderInput {
+        border-radius: 7px;
+        width: 101%;
+        margin-left: 14px;
     }
 
     #submitBtn {
@@ -1585,7 +1592,9 @@
         document.getElementById("after-success-side-scan").style.display="block";
         document.getElementById("after-pass-workorder").style.display="block";
         document.getElementById("popupContainer").style.display = "none";
-   
+        $('#productLabelInput').val('');
+        $('#productLabelSpec').val('');
+        $('#workorderInput').val('');
     }
     function duringToScanFail(response) {
         document.getElementById("popupContainer").style.display = "none";
@@ -1870,20 +1879,46 @@
         $("#productLabelInput, #productLabelSpec, #submitBtn").prop("disabled", true);
         var productLabel = document.getElementById("productLabelInput").value;
         var productLabelSpec = document.getElementById("productLabelSpec").value;
+        var workOrder = document.getElementById("workorderInput").value;
         var apiUrl = "/SaveProductLabel"; 
-        beforeToDuringScan();
-
+       if(productLabel!="" && productLabelSpec!="")
+       {
+           beforeToDuringScan();
+       }
         $.ajax({
             url: apiUrl,
             method: "POST",
-            data: { productLabel: productLabel, productLabelSpec: productLabelSpec, udpMessage: udpMessageValue },
+            data: { productLabel: productLabel, productLabelSpec: productLabelSpec,input: workOrder,udpMessage: udpMessageValue },
             success: function (response) {
                 console.log(response);
                 if(response.gtinMismatch) {
                     responseData= response;
                     scanfail(response);
                     //GtinMismatch(response);
-                }else {
+                }
+                else if(response.workorder)
+                {
+                    responseData= response;
+                    document.getElementById("fail-db-catalog-num-error").innerHTML = responseData.wO_Catalog_Num;
+                    document.getElementById("fail-lotno-error").innerHTML =responseData.wO_Lot_Num;
+                    document.getElementById("wo-mfg-date").innerHTML =responseData.wO_Mfg_Date;
+                    document.getElementById("before-scan-cat-no").style.display = "block";
+                    document.getElementById("after-scan-pass-cat-no").style.display = "none";
+                    document.getElementById("before-scan-wo-mfg-date").style.display ="block";
+                    document.getElementById("after-scan-pass-wo-mfg-date").style.display ="none";
+                    document.getElementById("before-shelflife").style.display="block";
+                    document.getElementById("after-scan-pass-shelflife").style.display = "none";
+                    document.getElementById("before-scan-use-date").style.display = "block";
+                    document.getElementById("after-scan-pass-use-date").style.display = "none";
+                    document.getElementById("before-scan-lot-no").style.display = "block";
+                    document.getElementById("after-scan-pass-lot-no").style.display = "none";
+                    document.getElementById("before-scan-gtin").style.display = "block";
+                    document.getElementById("after-scan-pass-gtin").style.display = "none";
+                    document.getElementById("before-scan-label-spec").style.display = "block";
+                    document.getElementById("after-scan-pass-label-spec").style.display = "none";
+                    $('#workorderInput').val('');
+                }
+                else {
                     responseData = response;
                     processResponse(response);
                 }
