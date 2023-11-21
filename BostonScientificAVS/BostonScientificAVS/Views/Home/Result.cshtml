@@ -44,10 +44,7 @@
             <div class="row inpt1">
                 <div class="col-md-8">
                     <div class="row">
-                        <div class="col-md-3">
-                            <input id="workorderInput" class="scan-input" placeholder="Work Order" name="input2" autocomplete="off" />
-                        </div>
-                        <div class="col-md-3">
+                        <div class="col-md-6">
                             <input id="productLabelInput" class="scan-input" placeholder="Product label" name="input" autocomplete="off" />
                             <div id="productLabelInputError" class="text-danger"></div>
                         </div>
@@ -1190,20 +1187,14 @@
 
     #productLabelInput {
         border-radius: 7px;
-        width: 110%;
-        margin-left: 7px;
+        width: 90%;
+        margin-left: 11px;
     }
 
     #productLabelSpec {
         border-radius: 7px;
-        width: 80%;
-        margin-left: 14px;
-    }
-
-    #workorderInput {
-        border-radius: 7px;
-        width: 101%;
-        margin-left: 14px;
+        width: 100%;
+        margin-left: -40px;
     }
 
     #submitBtn {
@@ -1594,7 +1585,6 @@
         document.getElementById("popupContainer").style.display = "none";
         $('#productLabelInput').val('');
         $('#productLabelSpec').val('');
-        $('#workorderInput').val('');
     }
     function duringToScanFail(response) {
         document.getElementById("popupContainer").style.display = "none";
@@ -1879,16 +1869,15 @@
         $("#productLabelInput, #productLabelSpec, #submitBtn").prop("disabled", true);
         var productLabel = document.getElementById("productLabelInput").value;
         var productLabelSpec = document.getElementById("productLabelSpec").value;
-        var workOrder = document.getElementById("workorderInput").value;
         var apiUrl = "/SaveProductLabel"; 
-       if(productLabel!="" && productLabelSpec!="")
+       if(productLabelSpec!="")
        {
            beforeToDuringScan();
        }
         $.ajax({
             url: apiUrl,
             method: "POST",
-            data: { productLabel: productLabel, productLabelSpec: productLabelSpec,input: workOrder,udpMessage: udpMessageValue },
+            data: { productLabel: productLabel, productLabelSpec: productLabelSpec,udpMessage: udpMessageValue },
             success: function (response) {
                 console.log(response);
                 if(response.gtinMismatch) {
@@ -1916,7 +1905,9 @@
                     document.getElementById("after-scan-pass-gtin").style.display = "none";
                     document.getElementById("before-scan-label-spec").style.display = "block";
                     document.getElementById("after-scan-pass-label-spec").style.display = "none";
-                    $('#workorderInput').val('');
+                    document.getElementById("before-side-scan").style.display = "block";
+                    document.getElementById("after-success-side-scan").style.display="none";
+                    $('#productLabelInput').val('');
                 }
                 else {
                     responseData = response;
@@ -2313,10 +2304,12 @@
                 //console.log(data.pageData.Barcode);
                 if (data.pageData.Barcode.length < 25 && superVisorInput == false) {
                     document.getElementById("productLabelSpec").value = data.pageData.Barcode;
-                } else if (data.pageData.Barcode.length > 25 && superVisorInput == false) {
+                }
+                else if (data.pageData.Barcode.length > 25 && superVisorInput == false) {
                     document.getElementById("productLabelInput").value = data.pageData.Barcode;
                 }
-                if (document.getElementById("productLabelInput").value !== '' && document.getElementById("productLabelSpec").value !== '' && superVisorInput == false) {
+                
+                if (document.getElementById("productLabelInput").value !== '' && superVisorInput == false) {
                     document.getElementById("submitBtn").click();
                 }
                 if(superVisorInput == true){

@@ -115,11 +115,11 @@ namespace BostonScientificAVS.Controllers
 
 
         [HttpPost("/SaveProductLabel")]
-        public async Task<IActionResult> SaveProductLabel(string input, string productLabel, string productLabelSpec, bool gtinmismatch)
+        public async Task<IActionResult> SaveProductLabel(string productLabel, string productLabelSpec, bool gtinmismatch)
         {
-            if (string.IsNullOrEmpty(productLabel) && string.IsNullOrEmpty(productLabelSpec))
+            if (string.IsNullOrEmpty(productLabelSpec) && productLabel.Length >34)
             {
-                string[] barcodeParts = input.Split('_');
+                string[] barcodeParts = productLabel.Split('_');
 
                 if (barcodeParts.Length == 4 && barcodeParts[2].Length == 8 && barcodeParts.All(part => !string.IsNullOrEmpty(part.Trim())))
                 {
