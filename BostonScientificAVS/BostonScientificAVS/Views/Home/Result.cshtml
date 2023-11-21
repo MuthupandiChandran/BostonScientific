@@ -2309,7 +2309,7 @@
                     document.getElementById("productLabelInput").value = data.pageData.Barcode;
                 }
                 
-                if (document.getElementById("productLabelInput").value !== '' && superVisorInput == false) {
+                if (document.getElementById("productLabelInput").value !== '' && document.getElementById("productLabelSpec").value !== '' && superVisorInput == false) {
                     document.getElementById("submitBtn").click();
                 }
                 if(superVisorInput == true){
