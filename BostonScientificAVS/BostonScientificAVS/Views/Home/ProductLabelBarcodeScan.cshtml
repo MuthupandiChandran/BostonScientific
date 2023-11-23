@@ -440,7 +440,7 @@
                 <div class="status-wrapper p-2 bg-light-blue" id="before-side-scan">
                     <img src="/assets/images/scanning-temp-image.png" class="scan-img">
                     <div class="scan-container">
-                        Scan Product Label
+                        Scan Product Label/IFU
                     </div>
                     <div class="work-btn" id="before-workorder">New Work Order</div>
                 </div>
@@ -1657,7 +1657,7 @@ width: 76%;
     var isPaused = false;
     var pauseDuration = 60;
 
-    document.getElementById("ifu").disabled = true;
+    
     document.getElementById("after-fail-side-scan").style.display = "none";
     document.getElementById("after-success-side-scan").style.display = "none";
     document.getElementById("after-pass-workorder").style.display = "none";
@@ -1830,12 +1830,13 @@ width: 76%;
             document.getElementById("body").style.backgroundColor = "#F9FAFB";
             document.getElementsByClassName('dropdown-button')[0].style.backgroundColor = "#F9FAFB";
         }, 2000);
-        document.getElementById("ifu-scan").style.display = "none";
         document.getElementById("ifu-workorder").style.display = "none";
         document.getElementById("after-success-side-scan").style.display="block";
         document.getElementById("after-pass-workorder").style.display="block";
         document.getElementById("carton-btn").style.display="block";
-       
+        $('#productLabelInput').val('');
+        $('#productLabelSpec').val('');
+        $('#ifu').val('');
     }
 
     function duringToScanFail(response) {
@@ -1913,7 +1914,6 @@ width: 76%;
         document.getElementById("container").style.backgroundColor = "#FFCACA";
         document.getElementById("body").style.backgroundColor = "#FFCACA";
         document.getElementsByClassName('dropdown-button')[0].style.backgroundColor="#FFCACA";
-        document.getElementById("ifu-scan").style.display="none";
         document.getElementById("ifu-workorder").style.display="none";
         document.getElementById("after-fail-side-scan").style.display="block";
         document.getElementById("after-pass-workorder").style.display="block";
@@ -2134,106 +2134,87 @@ width: 76%;
     }
 
 
-    var isIfuEditable = false;
     var submitBtn = document.getElementById("submitBtn");
     var productLabelInput = document.getElementById("productLabelInput");
     var productLabelSpec = document.getElementById("productLabelSpec");
     var ifu = document.getElementById("ifu");
 
     submitBtn.addEventListener("click", function () {
-        if (!isIfuEditable) {
-            // First click behavior
-            var productLabel = productLabelInput.value;
-            var spec = productLabelSpec.value;
-            
-            if (productLabelInput.value === '' && productLabelInput.hasAttribute('required')) {
-                displayValidationError("productLabelInput", "Product Label Input is Invalid Format");
-            }
+        var productLabel = productLabelInput.value;
+        var spec = productLabelSpec.value;
+        var scannedIfu = ifu.value;
 
-            if (productLabelSpec.value === '' && productLabelSpec.hasAttribute('required')) {
-                displayValidationError1("productLabelSpec", "Product Label spec Input is Invalid Format");
-            }
-
-
-            // Save the values for the second click
-            submitBtn.dataset.productLabel = productLabel;
-            submitBtn.dataset.productLabelSpec = spec;
-
-            isIfuEditable = true; // Enable "ifu" input for the second click
-
-            // Enable the "ifu" input
-            ifu.disabled = false;
-            document.getElementById("before-side-scan").style.display="none";
-            document.getElementById("before-workorder").style.display="none";
-            document.getElementById("ifu-scan").style.display = "block";
-            document.getElementById("ifu-workorder").style.display = "block";
-            // Disable other inputs
-            productLabelInput.disabled = true;
-            productLabelSpec.disabled = true;
+        if (productLabelInput.value === '' && productLabelInput.hasAttribute('required')) {
+            displayValidationError("productLabelInput", "Product Label Input is Invalid Format");
         }
 
-        else {
-            // Second click behavior
-            var productLabel = submitBtn.dataset.productLabel;
-            var spec = submitBtn.dataset.productLabelSpec;
-            var scannedIfu = ifu.value;
-            isIfuEditable = false;
-            if(ifu.value ==='' && ifu.hasAttribute('required')){
-                var errorDivId = document.getElementById("ifu"); // Generate the error div id based on the input field id
-                var errorDiv = document.getElementById("productLabelInputError2");
-                var errorMessage = "Ifu Input is Invalid Format";
-                if (errorDiv) {
-                    errorDiv.textContent = errorMessage;
+        submitBtn.dataset.productLabel = productLabel;
+        submitBtn.dataset.productLabelSpec = spec;
+
+        document.getElementById("before-side-scan").style.display = "none";
+        document.getElementById("before-workorder").style.display = "none";
+        document.getElementById("ifu-workorder").style.display = "block";
+
+        $("#productLabelInput, #productLabelSpec,#ifu, #submitBtn").prop("disabled", true);
+
+        var apiUrl = "/SaveProductLabelBarcode";
+        if( spec!=''&& scannedIfu!='')
+        {
+           beforeToDuringScan();
+        }
+        $.ajax({
+            url: apiUrl,
+            method: "POST",
+            data: { input1: productLabel, input2: spec, input3: scannedIfu },
+            success: function (response) {
+                console.log(response);
+                if (response.gtinMismatch) {
+                    responseData = response;
+                    scanfail(response);
+                }
+                else if(response.workorder)
+                {
+                    responseData = response;
+                    document.getElementById("fail-db-catalog-num").innerHTML = responseData.wO_Catalog_Num;
+                    document.getElementById("fail-wo-lot-no").innerHTML =responseData.wO_Lot_Num;
+                    document.getElementById("wo-mfg-date").innerHTML =responseData.wO_Mfg_Date;
+                    document.getElementById("before-scan-lot-no1").style.display = "block";
+                    document.getElementById("during-scan-lot-no1").style.display = "none";
+                    document.getElementById("before-scan-product-useby").style.display = "block";
+                    document.getElementById("during-scan-product-useby").style.display = "none";
+                    document.getElementById("before-scan-ifu").style.display = "block";
+                    document.getElementById("during-scan-ifu").style.display = "none";
+                    document.getElementById("before-scan-gtin-1").style.display = "block";
+                    document.getElementById("during-scan-gtin-1").style.display = "none";
+                    document.getElementById("popupContainer1").style.display = "none";
+                    $('#productLabelInput').val('');
+                }
+                else {
+                    responseData = response;
+                    processResponse(response);
+                }
+                IFUScanActive = true;
+            },
+            error: function (xhr, status, error) {
+                if (xhr.responseJSON && xhr.responseJSON.errorMessage) {
+                    var errorMessage = xhr.responseJSON.errorMessage;
+                    $("#productLabelInputError").text(errorMessage);
                     setTimeout(function () {
-                        errorDiv.textContent = "";
+                        $("#productLabelInputError").text("");
                         location.reload();
-                    }, 5000); 
-                    return;
+                    }, 5000);
+                } else {
+                    console.log("An error occurred while making the AJAX call:", error);
                 }
+            },
+            complete: function () {
+                // Re-enable the input fields and button after the AJAX request is complete
+                $("#productLabelInput, #productLabelSpec,#ifu, #submitBtn").prop("disabled", false);
             }
 
-           
-            $("#productLabelInput, #productLabelSpec,#ifu, #submitBtn").prop("disabled", true);
-
-            var apiUrl = "/SaveProductLabelBarcode";
-            beforeToDuringScan();
-            $.ajax({
-                url: apiUrl,
-                method: "POST",
-                data: { input1: productLabel, input2: spec, input3: scannedIfu },
-                success: function (response) {
-                    console.log(response);
-                    if (response.gtinMismatch) {
-                        responseData = response;
-                        scanfail(response);
-                    } else {
-                        responseData = response;
-                        processResponse(response);
-                    }
-                    IFUScanActive = true;
-                },
-                error: function (xhr, status, error) {
-                    if (xhr.responseJSON && xhr.responseJSON.errorMessage) {
-                        var errorMessage = xhr.responseJSON.errorMessage;
-                        $("#productLabelInputError").text(errorMessage);
-                        setTimeout(function () {
-                            $("#productLabelInputError").text("");
-                            location.reload();
-                        }, 5000);
-                    } else {
-                        console.log("An error occurred while making the AJAX call:", error);
-                    }
-                },
-                complete: function () {
-                    // Re-enable the input fields and button after the AJAX request is complete
-                    $("#productLabelInput, #productLabelSpec,#ifu, #submitBtn").prop("disabled", true);
-                }
-
-            });
-
-
-        }
+        });
     });
+
 
     function displayValidationError(inputId, errorMessage) {
         var errorDivId = inputId + "productLabelInput"; // Generate the error div id based on the input field id
