@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using BostonScientificAVS.Websocket;
 using Azure;
 using System.Reflection.Metadata;
+using System.Diagnostics;
 
 namespace BostonScientificAVS.Controllers
 {
@@ -1202,7 +1203,32 @@ namespace BostonScientificAVS.Controllers
         [HttpPost]
         public IActionResult Shutdown()
         {
-            return Json(new { message = "Welcome to you" });
+            // Create a new process
+            Process process = new Process();
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                FileName = "cmd.exe",
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            process.StartInfo = startInfo;
+            process.Start();
+            // Run a command (for example, "dir" to list files in the current directory)
+            process.StandardInput.WriteLine("taskkill /f /im chrome.exe >nul");
+            process.StandardInput.WriteLine("shutdown /s");
+            process.StandardInput.Close();
+            string result = process.StandardOutput.ReadToEnd();
+            process.WaitForExit();
+            process.Close();
+
+            //System.Diagnostics.Process.Start("CMD.exe", "");
+            //System.Diagnostics.Process.Start("CMD.exe", "shutdown /s");
+            return Json(result);
+
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
