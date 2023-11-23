@@ -1092,7 +1092,12 @@ namespace BostonScientificAVS.Controllers
             }
 
         }
-     
+
+        [HttpPost]
+        public IActionResult Shutdown()
+        {
+            return Json(new { message = "Welcome to you" });
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
