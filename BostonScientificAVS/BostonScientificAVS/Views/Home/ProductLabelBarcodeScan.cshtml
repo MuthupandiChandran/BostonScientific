@@ -2134,87 +2134,81 @@ width: 76%;
     }
 
 
-    var submitBtn = document.getElementById("submitBtn");
-    var productLabelInput = document.getElementById("productLabelInput");
-    var productLabelSpec = document.getElementById("productLabelSpec");
-    var ifu = document.getElementById("ifu");
+ $(document).on("click", "#submitBtn", function () {
+    var productLabel = document.getElementById("productLabelInput").value;
+    var productLabelSpec = document.getElementById("productLabelSpec").value;
+    var ifu = document.getElementById("ifu").value;
 
-    submitBtn.addEventListener("click", function () {
-        var productLabel = productLabelInput.value;
-        var spec = productLabelSpec.value;
-        var scannedIfu = ifu.value;
+    if (productLabelInput.value === '' && productLabelInput.hasAttribute('required')) {
+        displayValidationError("productLabelInput", "Product Label Input is Invalid Format");
+    }
 
-        if (productLabelInput.value === '' && productLabelInput.hasAttribute('required')) {
-            displayValidationError("productLabelInput", "Product Label Input is Invalid Format");
-        }
+    document.getElementById("before-side-scan").style.display = "none";
+    document.getElementById("before-workorder").style.display = "none";
+    document.getElementById("ifu-workorder").style.display = "block";
 
-        submitBtn.dataset.productLabel = productLabel;
-        submitBtn.dataset.productLabelSpec = spec;
+    $("#productLabelInput, #productLabelSpec, #ifu, #submitBtn").prop("disabled", true);
 
-        document.getElementById("before-side-scan").style.display = "none";
-        document.getElementById("before-workorder").style.display = "none";
-        document.getElementById("ifu-workorder").style.display = "block";
+    var apiUrl = "/SaveProductLabelBarcode";
 
-        $("#productLabelInput, #productLabelSpec,#ifu, #submitBtn").prop("disabled", true);
+    if (productLabelSpec != '' && ifu != '') {
+        beforeToDuringScan();
+    }
 
-        var apiUrl = "/SaveProductLabelBarcode";
-        if( spec!=''&& scannedIfu!='')
-        {
-           beforeToDuringScan();
-        }
-        $.ajax({
-            url: apiUrl,
-            method: "POST",
-            data: { input1: productLabel, input2: spec, input3: scannedIfu },
-            success: function (response) {
-                console.log(response);
-                if (response.gtinMismatch) {
-                    responseData = response;
-                    scanfail(response);
-                }
-                else if(response.workorder)
-                {
-                    responseData = response;
-                    document.getElementById("fail-db-catalog-num").innerHTML = responseData.wO_Catalog_Num;
-                    document.getElementById("fail-wo-lot-no").innerHTML =responseData.wO_Lot_Num;
-                    document.getElementById("wo-mfg-date").innerHTML =responseData.wO_Mfg_Date;
-                    document.getElementById("before-scan-lot-no1").style.display = "block";
-                    document.getElementById("during-scan-lot-no1").style.display = "none";
-                    document.getElementById("before-scan-product-useby").style.display = "block";
-                    document.getElementById("during-scan-product-useby").style.display = "none";
-                    document.getElementById("before-scan-ifu").style.display = "block";
-                    document.getElementById("during-scan-ifu").style.display = "none";
-                    document.getElementById("before-scan-gtin-1").style.display = "block";
-                    document.getElementById("during-scan-gtin-1").style.display = "none";
-                    document.getElementById("popupContainer1").style.display = "none";
-                    $('#productLabelInput').val('');
-                }
-                else {
-                    responseData = response;
-                    processResponse(response);
-                }
-                IFUScanActive = true;
-            },
-            error: function (xhr, status, error) {
-                if (xhr.responseJSON && xhr.responseJSON.errorMessage) {
-                    var errorMessage = xhr.responseJSON.errorMessage;
-                    $("#productLabelInputError").text(errorMessage);
-                    setTimeout(function () {
-                        $("#productLabelInputError").text("");
-                        location.reload();
-                    }, 5000);
-                } else {
-                    console.log("An error occurred while making the AJAX call:", error);
-                }
-            },
-            complete: function () {
-                // Re-enable the input fields and button after the AJAX request is complete
-                $("#productLabelInput, #productLabelSpec,#ifu, #submitBtn").prop("disabled", false);
+    $.ajax({
+        url: apiUrl,
+        method: "POST",
+        data: {input1: productLabel, input2: productLabelSpec, input3: ifu },
+        success: function (response) {
+            console.log(response);
+            if (response.gtinMismatch) {
+                responseData = response;
+                scanfail(response);
+            } else if (response.workorder) {
+                responseData = response;
+                document.getElementById("fail-db-catalog-num").innerHTML = responseData.wO_Catalog_Num;
+                document.getElementById("fail-wo-lot-no").innerHTML = responseData.wO_Lot_Num;
+                document.getElementById("wo-mfg-date").innerHTML = responseData.wO_Mfg_Date;
+                document.getElementById("before-scan-lot-no1").style.display = "block";
+                document.getElementById("during-scan-lot-no1").style.display = "none";
+                document.getElementById("before-scan-product-useby").style.display = "block";
+                document.getElementById("during-scan-product-useby").style.display = "none";
+                document.getElementById("before-scan-ifu").style.display = "block";
+                document.getElementById("during-scan-ifu").style.display = "none";
+                document.getElementById("before-scan-gtin-1").style.display = "block";
+                document.getElementById("during-scan-gtin-1").style.display = "none";
+                document.getElementById("popupContainer1").style.display = "none";
+                $('#productLabelInput').val('');
+            } else if (response.cartonscan) {
+                responseData = response;
+                cartonscan(response);
+            } else {
+                responseData = response;
+                processResponse(response);
             }
-
-        });
+            IFUScanActive = true;
+        },
+        error: function (xhr, status, error) {
+            if (xhr.responseJSON && xhr.responseJSON.errorMessage) {
+                var errorMessage = xhr.responseJSON.errorMessage;
+                $("#productLabelInputError").text(errorMessage);
+                setTimeout(function () {
+                    $("#productLabelInputError").text("");
+                    location.reload();
+                }, 5000);
+            } else {
+                console.log("An error occurred while making the AJAX call:", error);
+            }
+        },
+        complete: function () {
+            // Re-enable the input fields and button after the AJAX request is complete
+            $("#productLabelInput, #productLabelSpec, #ifu, #submitBtn").prop("disabled", false);
+        }
     });
+});
 
+
+    
 
     function displayValidationError(inputId, errorMessage) {
         var errorDivId = inputId + "productLabelInput"; // Generate the error div id based on the input field id
@@ -2282,6 +2276,109 @@ width: 76%;
             scanfail(response);
         }
         setWorkOrderInfo(response); 
+    }
+    function cartonscan(response)
+    {
+        console.log(response);
+            var cartonGtin = response.cartongtin;
+            var dbGtin = response.dbgtin;
+            var dblabelspec = response.dbspec;
+            var cartonlotNo =response.cartonLotNo;
+            var wolotNo = response.workOrderLotNo;
+            var cartonlabelspec = response.cartonLabelspec;
+            var cartonuseby = response.carton_Use_By;
+            var calculateuseby = response.calculateuseby;
+            var dbcatalognum = response.dbCatalogNo;
+            var wocatalognum = response.workOrderCatalogNo;
+
+
+            // Update the content of the comparison labels
+            document.getElementById('fail-label-gtin1').innerHTML = cartonGtin;
+            document.getElementById('fail-db-gtin').innerHTML = dbGtin;
+            document.getElementById('fail-wo-lot-no').innerHTML = wolotNo;
+            document.getElementById('fail-carton-lot-no').innerHTML = cartonlotNo;
+            document.getElementById('fail-db-label-spec').innerHTML = cartonlabelspec;
+            document.getElementById('fail-product-label-spec').innerHTML = dblabelspec;
+            document.getElementById('fail-calc-use-by').innerHTML = cartonuseby;
+            document.getElementById('fail-product-use-by').innerHTML = calculateuseby;
+            document.getElementById('fail-db-catalog-num').innerHTML = wocatalognum;
+            document.getElementById('fail-wo-catalog-no-error').innerHTML = dbcatalognum;
+
+            // Compare values and show/hide elements based on comparison
+            if (cartonGtin === dbGtin) {
+                // Display pass icons and hide fail icons
+                document.getElementById('before-scan-gtin').style.display ='none';
+                document.getElementById('after-scan-pass-gtin').style.display = 'block';
+
+            } else {
+                document.getElementById('p-gtin').style.color="red";
+                document.getElementById('fail-label-gtin1').style.color = "red";
+                document.getElementById('before-scan-gtin').style.display ='none';
+                document.getElementById('after-scan-fail-gtin').style.display = 'block';
+            }
+            
+            if (wolotNo === cartonlotNo) {
+                document.getElementById('before-scan-lot-no').style.display = 'none';
+                document.getElementById('after-scan-pass-lot-no').style.display = 'block';
+            }
+
+            else {
+                document.getElementById('p-carton').style.color="red";
+                 document.getElementById('fail-carton-lot-no').style.color="red";
+                 document.getElementById('before-scan-lot-no').style.display = 'none';
+                document.getElementById('after-scan-fail-lot-no').style.display = 'block';
+            }
+            if (cartonlabelspec === dblabelspec) {
+                document.getElementById('before-scan-label-spec').style.display = 'none';
+                document.getElementById('after-scan-pass-label-spec').style.display = 'block';
+            }
+            else {
+                document.getElementById('p-labelspec').style.color ="red";
+                document.getElementById('fail-db-label-spec').style.color="red";
+                document.getElementById('before-scan-label-spec').style.display = 'none';
+                document.getElementById('after-scan-fail-label-spec').style.display = 'block';
+            }
+            if (cartonuseby === calculateuseby) {
+                document.getElementById('before-scan-use-date').style.display = 'none';
+                document.getElementById('after-scan-pass-use-date').style.display = 'block';
+            }
+            else {
+                document.getElementById('p-useby').style.color="red";
+                document.getElementById('fail-calc-use-by').style.color = "red";
+                document.getElementById('before-scan-use-date').style.display = 'none';
+                document.getElementById('after-scan-fail-use-date').style.display = 'block';
+
+            }
+            if (wocatalognum === dbcatalognum) {
+                document.getElementById('before-scan-catalog').style.display = 'none';
+                document.getElementById('after-scan-pass-catalog').style.display = 'block';
+            }
+            else {
+                document.getElementById('w-catlognum').style.color = "red";
+                document.getElementById('fail-db-catalog-num').style.color="red";
+                document.getElementById('before-scan-catalog').style.display = 'none';
+                document.getElementById('after-scan-fail-catalog').style.display = 'block';
+            }
+
+            if (cartonGtin !== dbGtin || wolotNo !== cartonlotNo || cartonlabelspec !== dblabelspec || cartonuseby !== calculateuseby || wocatalognum !== dbcatalognum) {
+            console.log("Error Div Condition checking");
+            document.getElementById("container").style.backgroundColor = "#FFCACA";
+            document.getElementById("body").style.backgroundColor = "#FFCACA";
+            document.getElementsByClassName('dropdown-button')[0].style.backgroundColor="#FFCACA";
+            document.getElementById("before-side-scan").style.display="none";
+            document.getElementById("before-workorder").style.display="none";
+            document.getElementById("after-fail-side-scan").style.display = "block";
+            document.getElementById("after-pass-workorder").style.display = "block";
+            document.getElementById("rescanBtn").style.display = "block";
+            showPopup1();
+          }
+
+            document.getElementById('before-scan-wo-mfg-date').style.display = 'none';
+            document.getElementById('after-scan-pass-wo-mfg-date').style.display = 'block';
+            document.getElementById('before-shelflife').style.display = 'none';
+            document.getElementById('after-scan-pass-shelflife').style.display = 'block';
+
+
     }
 
     function setScannedData(response) {
