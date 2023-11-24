@@ -199,7 +199,7 @@
                                     </td>
                                     <td>
                                         <div>
-                                            <h6 class="comparison-lable-text bld" id="p-carton">Carton Lot Number</h6>
+                                            <h6 class="comparison-lable-text bld" id="p-carton">Carton Label Lot Number</h6>
                                         </div>
                                         <div>
                                             <h6 id="fail-carton-lot-no" class="comparison-lable-text">@Model.CartonLotNo</h6>
@@ -223,7 +223,7 @@
                                 <tr>
                                     <td>
                                         <div>
-                                            <h6 class="comparison-lable-text bld">Carton Lot Number</h6>
+                                            <h6 class="comparison-lable-text bld">Carton Label Lot Number</h6>
                                         </div>
                                         <div>
                                             <h6 id="fail-carton-lot-no-1" class="comparison-lable-text">@Model.CartonLotNo</h6>
@@ -231,7 +231,7 @@
                                     </td>
                                     <td>
                                         <div>
-                                            <h6 class="comparison-lable-text bld" id="p-lotnum">Production Lot Number</h6>
+                                            <h6 class="comparison-lable-text bld" id="p-lotnum">Product Label Lot Number</h6>
                                         </div>
                                         <div>
                                             <h6 id="fail-product-lot-no1" class="comparison-lable-text">xxxxxxxxxxx</h6>
@@ -359,7 +359,7 @@
                                     </td>
                                     <td>
                                         <div>
-                                            <h6 class="comparison-lable-text bld" id="p-ifu">Carton IFU</h6>
+                                            <h6 class="comparison-lable-text bld" id="p-ifu">Carton Label IFU</h6>
                                         </div>
                                         <div>
                                             <h6 id="fail-ifu" class="comparison-lable-text">xxxxxxxxxxx</h6>
@@ -440,7 +440,7 @@
                 <div class="status-wrapper p-2 bg-light-blue" id="before-side-scan">
                     <img src="/assets/images/scanning-temp-image.png" class="scan-img">
                     <div class="scan-container">
-                        Scan Product Label
+                        Scan Product Label/IFU
                     </div>
                     <div class="work-btn" id="before-workorder">New Work Order</div>
                 </div>
@@ -481,7 +481,7 @@
                     <img src="~/assets/images/Barcode image 2.png" alt="Barcode Icon" id="scan-image">
                     <h5 class="supr-txt">Place Your Supervisor Badge</h5>
                     <h5 id="under">under the scanner</h5>
-                    <input id="supervisorInput1" placeholder="Super Visor Id" name="supervisorInput1" autocomplete="off" />
+                    <input id="supervisorInput1" placeholder="Supervisor ID" name="supervisorInput1" autocomplete="off" />
                     <br />
                     <button id="redButton" class="redButton" onclick="redbutton('supervisorInput1')">Continue</button>
                     <br />
@@ -493,7 +493,7 @@
                     <img src="~/assets/images/Barcode image 2.png" alt="Barcode Icon" id="scan-image">
                     <h5 class="supr-txt">Place Your Supervisor Badge</h5>
                     <h5 id="under">under the scanner</h5>
-                    <input id="supervisorInput" placeholder="Super Visor Id" name="supervisorInput" autocomplete="off" />
+                    <input id="supervisorInput" placeholder="Supervisor ID" name="supervisorInput" autocomplete="off" />
                     <br />
                     <button id="greenButton" class="greenButton" onclick="greenButton('supervisorInput')">Continue</button>
                     <br />
@@ -1657,7 +1657,7 @@ width: 76%;
     var isPaused = false;
     var pauseDuration = 60;
 
-    document.getElementById("ifu").disabled = true;
+    
     document.getElementById("after-fail-side-scan").style.display = "none";
     document.getElementById("after-success-side-scan").style.display = "none";
     document.getElementById("after-pass-workorder").style.display = "none";
@@ -1825,12 +1825,18 @@ width: 76%;
         document.getElementById("container").style.backgroundColor="#BAFFCD";
         document.getElementById("body").style.backgroundColor="#BAFFCD";
         document.getElementsByClassName('dropdown-button')[0].style.backgroundColor ="#BAFFCD";
-        document.getElementById("ifu-scan").style.display = "none";
+        setTimeout(function () {
+            document.getElementById("container").style.backgroundColor = "#F9FAFB";
+            document.getElementById("body").style.backgroundColor = "#F9FAFB";
+            document.getElementsByClassName('dropdown-button')[0].style.backgroundColor = "#F9FAFB";
+        }, 2000);
         document.getElementById("ifu-workorder").style.display = "none";
         document.getElementById("after-success-side-scan").style.display="block";
         document.getElementById("after-pass-workorder").style.display="block";
         document.getElementById("carton-btn").style.display="block";
-       
+        $('#productLabelInput').val('');
+        $('#productLabelSpec').val('');
+        $('#ifu').val('');
     }
 
     function duringToScanFail(response) {
@@ -1908,7 +1914,6 @@ width: 76%;
         document.getElementById("container").style.backgroundColor = "#FFCACA";
         document.getElementById("body").style.backgroundColor = "#FFCACA";
         document.getElementsByClassName('dropdown-button')[0].style.backgroundColor="#FFCACA";
-        document.getElementById("ifu-scan").style.display="none";
         document.getElementById("ifu-workorder").style.display="none";
         document.getElementById("after-fail-side-scan").style.display="block";
         document.getElementById("after-pass-workorder").style.display="block";
@@ -2129,106 +2134,111 @@ width: 76%;
     }
 
 
-    var isIfuEditable = false;
-    var submitBtn = document.getElementById("submitBtn");
-    var productLabelInput = document.getElementById("productLabelInput");
-    var productLabelSpec = document.getElementById("productLabelSpec");
-    var ifu = document.getElementById("ifu");
+ $(document).on("click", "#submitBtn", function () {
+    var productLabel = document.getElementById("productLabelInput").value;
+    var productLabelSpec = document.getElementById("productLabelSpec").value;
+    var ifu = document.getElementById("ifu").value;
 
-    submitBtn.addEventListener("click", function () {
-        if (!isIfuEditable) {
-            // First click behavior
-            var productLabel = productLabelInput.value;
-            var spec = productLabelSpec.value;
-            
-            if (productLabelInput.value === '' && productLabelInput.hasAttribute('required')) {
-                displayValidationError("productLabelInput", "Product Label Input is Invalid Format");
+    if (productLabelInput.value === '' && productLabelInput.hasAttribute('required')) {
+        displayValidationError("productLabelInput", "Product Label Input is Invalid Format");
+    }
+
+    document.getElementById("before-side-scan").style.display = "none";
+    document.getElementById("before-workorder").style.display = "none";
+    document.getElementById("ifu-workorder").style.display = "block";
+
+    $("#productLabelInput, #productLabelSpec, #ifu, #submitBtn").prop("disabled", true);
+
+    var apiUrl = "/SaveProductLabelBarcode";
+
+    if (productLabelSpec != '' && ifu != '') {
+        beforeToDuringScan();
+    }
+
+    $.ajax({
+        url: apiUrl,
+        method: "POST",
+        data: {input1: productLabel, input2: productLabelSpec, input3: ifu },
+        success: function (response) {
+            console.log(response);
+            if (response.gtinMismatch) {
+                responseData = response;
+                scanfail(response);
+            } else if (response.workorder) {
+                responseData = response;
+                document.getElementById("fail-db-catalog-num").innerHTML = responseData.wO_Catalog_Num;
+                document.getElementById("fail-wo-lot-no").innerHTML = responseData.wO_Lot_Num;
+                document.getElementById("wo-mfg-date").innerHTML = responseData.wO_Mfg_Date;
+                document.getElementById("fail-product-use-by").style.display = "block";
+                document.getElementById("fail-calc-use-by").style.display = "block";
+                document.getElementById("fail-carton-lot-no").innerHTML ="XXXXXX";
+                document.getElementById("fail-carton-lot-no-1").innerHTML = "XXXXXX";
+                document.getElementById("fail-product-lot-no1").innerHTML = "XXXXXX";
+                document.getElementById("fail-label-gtin1").innerHTML = "XXXXXX";
+                document.getElementById("fail-db-label-spec").innerHTML = "XXXXXX";
+                document.getElementById("fail-calc-use-by-1").innerHTML = "XXXXXX";
+                document.getElementById("fail-product-useby").innerHTML = "XXXXXX";
+                document.getElementById("fail-ifu").style.display ="block";
+                document.getElementById("fail-db-gtin-2").innerHTML="XXXXXX";
+                document.getElementById("fail-label-gtin2").innerHTML ="XXXXXX";
+                document.getElementById("before-scan-catalog").style.display = "block";
+                document.getElementById("after-scan-pass-catalog").style.display ="none";
+                document.getElementById("before-scan-wo-mfg-date").style.display ="block";
+                document.getElementById("after-scan-pass-wo-mfg-date").style.display ="none";
+                document.getElementById("before-shelflife").style.display = "block";
+                document.getElementById("after-scan-pass-shelflife").style.display ="none";
+                document.getElementById("before-scan-use-date").style.display ="block";
+                document.getElementById("after-scan-pass-use-date").style.display = "none";
+                document.getElementById("before-scan-lot-no").style.display = "block";
+                document.getElementById("after-scan-pass-lot-no").style.display ="none";
+                document.getElementById("before-scan-lot-no1").style.display = "block";
+                document.getElementById("after-scan-pass-lot-no1").style.display = "none";
+                document.getElementById("before-scan-product-useby").style.display = "block";
+                document.getElementById("after-scan-pass-product-useby").style.display = "none";
+                document.getElementById("before-scan-ifu").style.display = "block";
+                document.getElementById("after-scan-pass-ifu").style.display = "none";
+                document.getElementById("before-scan-gtin").style.display ="block";
+                document.getElementById("after-scan-pass-gtin").style.display ="none";
+                document.getElementById("before-scan-label-spec").style.display ="block";
+                document.getElementById("after-scan-pass-label-spec").style.display="none";
+                document.getElementById("before-scan-gtin-1").style.display = "block";
+                document.getElementById("after-scan-pass-gtin-1").style.display = "none";
+                document.getElementById("popupContainer1").style.display = "none";
+                document.getElementById('after-success-side-scan').style.display = "none";
+                document.getElementById('after-pass-workorder').style.display = "none";
+                document.getElementById('before-side-scan').style.display = "block";
+                document.getElementById('before-workorder').style.display = "block";
+                $('#productLabelInput').val('');
+            } else if (response.cartonscan) {
+                responseData = response;
+                cartonscan(response);
+            } else {
+                responseData = response;
+                processResponse(response);
             }
-
-            if (productLabelSpec.value === '' && productLabelSpec.hasAttribute('required')) {
-                displayValidationError1("productLabelSpec", "Product Label spec Input is Invalid Format");
+            IFUScanActive = true;
+        },
+        error: function (xhr, status, error) {
+            if (xhr.responseJSON && xhr.responseJSON.errorMessage) {
+                var errorMessage = xhr.responseJSON.errorMessage;
+                $("#productLabelInputError").text(errorMessage);
+                setTimeout(function () {
+                    $("#productLabelInputError").text("");
+                    location.reload();
+                }, 5000);
+            } else {
+                console.log("An error occurred while making the AJAX call:", error);
             }
-
-
-            // Save the values for the second click
-            submitBtn.dataset.productLabel = productLabel;
-            submitBtn.dataset.productLabelSpec = spec;
-
-            isIfuEditable = true; // Enable "ifu" input for the second click
-
-            // Enable the "ifu" input
-            ifu.disabled = false;
-            document.getElementById("before-side-scan").style.display="none";
-            document.getElementById("before-workorder").style.display="none";
-            document.getElementById("ifu-scan").style.display = "block";
-            document.getElementById("ifu-workorder").style.display = "block";
-            // Disable other inputs
-            productLabelInput.disabled = true;
-            productLabelSpec.disabled = true;
-        }
-
-        else {
-            // Second click behavior
-            var productLabel = submitBtn.dataset.productLabel;
-            var spec = submitBtn.dataset.productLabelSpec;
-            var scannedIfu = ifu.value;
-            isIfuEditable = false;
-            if(ifu.value ==='' && ifu.hasAttribute('required')){
-                var errorDivId = document.getElementById("ifu"); // Generate the error div id based on the input field id
-                var errorDiv = document.getElementById("productLabelInputError2");
-                var errorMessage = "Ifu Input is Invalid Format";
-                if (errorDiv) {
-                    errorDiv.textContent = errorMessage;
-                    setTimeout(function () {
-                        errorDiv.textContent = "";
-                        location.reload();
-                    }, 5000); 
-                    return;
-                }
-            }
-
-           
-            $("#productLabelInput, #productLabelSpec,#ifu, #submitBtn").prop("disabled", true);
-
-            var apiUrl = "/SaveProductLabelBarcode";
-            beforeToDuringScan();
-            $.ajax({
-                url: apiUrl,
-                method: "POST",
-                data: { input1: productLabel, input2: spec, input3: scannedIfu },
-                success: function (response) {
-                    console.log(response);
-                    if (response.gtinMismatch) {
-                        responseData = response;
-                        scanfail(response);
-                    } else {
-                        responseData = response;
-                        processResponse(response);
-                    }
-                    IFUScanActive = true;
-                },
-                error: function (xhr, status, error) {
-                    if (xhr.responseJSON && xhr.responseJSON.errorMessage) {
-                        var errorMessage = xhr.responseJSON.errorMessage;
-                        $("#productLabelInputError").text(errorMessage);
-                        setTimeout(function () {
-                            $("#productLabelInputError").text("");
-                            location.reload();
-                        }, 5000);
-                    } else {
-                        console.log("An error occurred while making the AJAX call:", error);
-                    }
-                },
-                complete: function () {
-                    // Re-enable the input fields and button after the AJAX request is complete
-                    $("#productLabelInput, #productLabelSpec,#ifu, #submitBtn").prop("disabled", true);
-                }
-
-            });
-
-
+        },
+        complete: function () {
+            // Re-enable the input fields and button after the AJAX request is complete
+            $("#productLabelInput, #productLabelSpec, #ifu, #submitBtn").prop("disabled", false);
         }
     });
+});
+
+
+    
 
     function displayValidationError(inputId, errorMessage) {
         var errorDivId = inputId + "productLabelInput"; // Generate the error div id based on the input field id
@@ -2296,6 +2306,113 @@ width: 76%;
             scanfail(response);
         }
         setWorkOrderInfo(response); 
+    }
+    function cartonscan(response)
+    {
+        console.log(response);
+            var cartonGtin = response.cartongtin;
+            var dbGtin = response.dbgtin;
+            var dblabelspec = response.dbspec;
+            var cartonlotNo =response.cartonLotNo;
+            var wolotNo = response.workOrderLotNo;
+            var cartonlabelspec = response.cartonLabelspec;
+            var cartonuseby = response.carton_Use_By;
+            var calculateuseby = response.calculateuseby;
+            var dbcatalognum = response.dbCatalogNo;
+            var wocatalognum = response.workOrderCatalogNo;
+
+
+            // Update the content of the comparison labels
+            document.getElementById('fail-label-gtin1').innerHTML = cartonGtin;
+            document.getElementById('fail-db-gtin').innerHTML = dbGtin;
+            document.getElementById('fail-wo-lot-no').innerHTML = wolotNo;
+            document.getElementById('fail-carton-lot-no').innerHTML = cartonlotNo;
+            document.getElementById('fail-db-label-spec').innerHTML = cartonlabelspec;
+            document.getElementById('fail-product-label-spec').innerHTML = dblabelspec;
+            document.getElementById('fail-calc-use-by').innerHTML = cartonuseby;
+            document.getElementById('fail-product-use-by').innerHTML = calculateuseby;
+            document.getElementById('fail-db-catalog-num').innerHTML = wocatalognum;
+            document.getElementById('fail-wo-catalog-no-error').innerHTML = dbcatalognum;
+
+            // Compare values and show/hide elements based on comparison
+            if (cartonGtin === dbGtin) {
+                // Display pass icons and hide fail icons
+                document.getElementById('before-scan-gtin').style.display ='none';
+                document.getElementById('after-scan-pass-gtin').style.display = 'block';
+
+            } else {
+                document.getElementById('p-gtin').style.color="red";
+                document.getElementById('fail-label-gtin1').style.color = "red";
+                document.getElementById('before-scan-gtin').style.display ='none';
+                document.getElementById('after-scan-fail-gtin').style.display = 'block';
+            }
+            
+            if (wolotNo === cartonlotNo) {
+                document.getElementById('before-scan-lot-no').style.display = 'none';
+                document.getElementById('after-scan-pass-lot-no').style.display = 'block';
+            }
+
+            else {
+                document.getElementById('p-carton').style.color="red";
+                 document.getElementById('fail-carton-lot-no').style.color="red";
+                 document.getElementById('before-scan-lot-no').style.display = 'none';
+                document.getElementById('after-scan-fail-lot-no').style.display = 'block';
+            }
+            if (cartonlabelspec === dblabelspec) {
+                document.getElementById('before-scan-label-spec').style.display = 'none';
+                document.getElementById('after-scan-pass-label-spec').style.display = 'block';
+            }
+            else {
+                document.getElementById('p-labelspec').style.color ="red";
+                document.getElementById('fail-db-label-spec').style.color="red";
+                document.getElementById('before-scan-label-spec').style.display = 'none';
+                document.getElementById('after-scan-fail-label-spec').style.display = 'block';
+            }
+            if (cartonuseby === calculateuseby) {
+                document.getElementById('before-scan-use-date').style.display = 'none';
+                document.getElementById('after-scan-pass-use-date').style.display = 'block';
+            }
+            else {
+                document.getElementById('p-useby').style.color="red";
+                document.getElementById('fail-calc-use-by').style.color = "red";
+                document.getElementById('before-scan-use-date').style.display = 'none';
+                document.getElementById('after-scan-fail-use-date').style.display = 'block';
+
+            }
+            if (wocatalognum === dbcatalognum) {
+                document.getElementById('before-scan-catalog').style.display = 'none';
+                document.getElementById('after-scan-pass-catalog').style.display = 'block';
+            }
+            else {
+                document.getElementById('w-catlognum').style.color = "red";
+                document.getElementById('fail-db-catalog-num').style.color="red";
+                document.getElementById('before-scan-catalog').style.display = 'none';
+                document.getElementById('after-scan-fail-catalog').style.display = 'block';
+            }
+
+            if (cartonGtin !== dbGtin || wolotNo !== cartonlotNo || cartonlabelspec !== dblabelspec || cartonuseby !== calculateuseby || wocatalognum !== dbcatalognum) {
+            console.log("Error Div Condition checking");
+            document.getElementById("container").style.backgroundColor = "#FFCACA";
+            document.getElementById("body").style.backgroundColor = "#FFCACA";
+            document.getElementsByClassName('dropdown-button')[0].style.backgroundColor="#FFCACA";
+            document.getElementById("before-side-scan").style.display="none";
+            document.getElementById("before-workorder").style.display="none";
+            document.getElementById("after-fail-side-scan").style.display = "block";
+            document.getElementById("after-pass-workorder").style.display = "block";
+            document.getElementById("rescanBtn").style.display = "block";
+            showPopup1();
+          }
+            document.getElementById('after-success-side-scan').style.display = 'none';
+            document.getElementById('after-pass-workorder').style.display = 'none';
+            document.getElementById('before-side-scan').style.display = 'block';
+            document.getElementById('before-workorder').style.display = 'block';
+            document.getElementById('before-scan-wo-mfg-date').style.display = 'none';
+            document.getElementById('after-scan-pass-wo-mfg-date').style.display = 'block';
+            document.getElementById('before-shelflife').style.display = 'none';
+            document.getElementById('after-scan-pass-shelflife').style.display = 'block';
+            $('#productLabelInput').val('');
+            $('#productLabelSpec').val('');
+            $('#ifu').val('');
     }
 
     function setScannedData(response) {

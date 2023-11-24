@@ -183,7 +183,7 @@
                                         <div><h6 id="fail-lotno-error" class="comparison-lable-text">@Model.workOrderLotNo</h6></div>
                                         </td>
                                          <td>
-                                            <div><h6 class="comparison-lable-text bld" id="p-lotnum-error">Product Lot Number</h6></div>
+                                            <div><h6 class="comparison-lable-text bld" id="p-lotnum-error">Product Label Lot Number</h6></div>
                                             <div><h6 id="fail-product-lot-no-error" class="comparison-lable-text">xxxxxxxxxxx</h6></div>
                                         </td>   
                                         <td>
@@ -307,7 +307,7 @@
                       Passed
                     </div>
                   <div class="scan-container">
-                    Scan Product Label
+                    Scan Product Label/Work Order
                    </div>
                     <a asp-area="" asp-controller="Home" asp-action="WorkOrderScan" id="after-pass-workorder" class="work-btn">New Work Order</a>
                 </div>
@@ -319,7 +319,7 @@
                 <img src="~/assets/images/Barcode image 2.png" alt="Barcode Icon" id="scan-image">
                 <h5 class="supr-txt">Place Your Supervisor Badge</h5>
                 <h5 id="under">under the scanner</h5>
-                <input id="supervisorInput" placeholder="Super Visor Id" name="supervisorInput" autocomplete="off" />
+                <input id="supervisorInput" placeholder="Supervisor ID" name="supervisorInput" autocomplete="off" />
                 <br />
                 <button id="greenButton" class="greenButton" onclick="configureContinueButton('supervisorInput')">Continue</button>
                 <br />
@@ -1191,8 +1191,6 @@
         margin-left: 11px;
     }
 
-
-
     #productLabelSpec {
         border-radius: 7px;
         width: 100%;
@@ -1577,11 +1575,17 @@
         document.getElementById("container").style.backgroundColor="#BAFFCD";
         document.getElementById("body").style.backgroundColor="#BAFFCD";
         document.getElementsByClassName('dropdown-button')[0].style.backgroundColor="#BAFFCD";
+        setTimeout(function() {
+            document.getElementById("container").style.backgroundColor = "#F9FAFB";
+            document.getElementById("body").style.backgroundColor = "#F9FAFB";
+            document.getElementsByClassName('dropdown-button')[0].style.backgroundColor = "#F9FAFB";
+         }, 2000); 
         document.getElementById("before-side-scan").style.display="none";
         document.getElementById("after-success-side-scan").style.display="block";
         document.getElementById("after-pass-workorder").style.display="block";
-        document.getElementById("popupContainer").style.display = "none"
-   
+        document.getElementById("popupContainer").style.display = "none";
+        $('#productLabelInput').val('');
+        $('#productLabelSpec').val('');
     }
     function duringToScanFail(response) {
         document.getElementById("popupContainer").style.display = "none";
@@ -1867,19 +1871,46 @@
         var productLabel = document.getElementById("productLabelInput").value;
         var productLabelSpec = document.getElementById("productLabelSpec").value;
         var apiUrl = "/SaveProductLabel"; 
-        beforeToDuringScan();
-
+       if(productLabelSpec!="")
+       {
+           beforeToDuringScan();
+       }
         $.ajax({
             url: apiUrl,
             method: "POST",
-            data: { productLabel: productLabel, productLabelSpec: productLabelSpec, udpMessage: udpMessageValue },
+            data: { productLabel: productLabel, productLabelSpec: productLabelSpec,udpMessage: udpMessageValue },
             success: function (response) {
                 console.log(response);
                 if(response.gtinMismatch) {
                     responseData= response;
                     scanfail(response);
                     //GtinMismatch(response);
-                }else {
+                }
+                else if(response.workorder)
+                {
+                    responseData= response;
+                    document.getElementById("fail-db-catalog-num-error").innerHTML = responseData.wO_Catalog_Num;
+                    document.getElementById("fail-lotno-error").innerHTML =responseData.wO_Lot_Num;
+                    document.getElementById("wo-mfg-date").innerHTML =responseData.wO_Mfg_Date;
+                    document.getElementById("before-scan-cat-no").style.display = "block";
+                    document.getElementById("after-scan-pass-cat-no").style.display = "none";
+                    document.getElementById("before-scan-wo-mfg-date").style.display ="block";
+                    document.getElementById("after-scan-pass-wo-mfg-date").style.display ="none";
+                    document.getElementById("before-shelflife").style.display="block";
+                    document.getElementById("after-scan-pass-shelflife").style.display = "none";
+                    document.getElementById("before-scan-use-date").style.display = "block";
+                    document.getElementById("after-scan-pass-use-date").style.display = "none";
+                    document.getElementById("before-scan-lot-no").style.display = "block";
+                    document.getElementById("after-scan-pass-lot-no").style.display = "none";
+                    document.getElementById("before-scan-gtin").style.display = "block";
+                    document.getElementById("after-scan-pass-gtin").style.display = "none";
+                    document.getElementById("before-scan-label-spec").style.display = "block";
+                    document.getElementById("after-scan-pass-label-spec").style.display = "none";
+                    document.getElementById("before-side-scan").style.display = "block";
+                    document.getElementById("after-success-side-scan").style.display="none";
+                    $('#productLabelInput').val('');
+                }
+                else {
                     responseData = response;
                     processResponse(response);
                 }
@@ -2274,12 +2305,15 @@
                 //console.log(data.pageData.Barcode);
                 if (data.pageData.Barcode.length < 25 && superVisorInput == false) {
                     document.getElementById("productLabelSpec").value = data.pageData.Barcode;
+                }
+                else if (data.pageData.Barcode.length > 25 && superVisorInput == false) {
                     receivedInput++;
                 } else if (data.pageData.Barcode.length > 25 && superVisorInput == false) {
                     document.getElementById("productLabelInput").value = data.pageData.Barcode;
                     receivedInput++;
                 }
-                if (document.getElementById("productLabelInput").value !== '' && document.getElementById("productLabelSpec").value !== '' && superVisorInput == false && receivedInput==2) {
+                
+                if (document.getElementById("productLabelInput").value !== '' && document.getElementById("productLabelSpec").value !== '' && superVisorInput == false) {
                     document.getElementById("submitBtn").click();
                     receivedInput = 0;
                 }
