@@ -2169,15 +2169,45 @@ width: 76%;
                 document.getElementById("fail-db-catalog-num").innerHTML = responseData.wO_Catalog_Num;
                 document.getElementById("fail-wo-lot-no").innerHTML = responseData.wO_Lot_Num;
                 document.getElementById("wo-mfg-date").innerHTML = responseData.wO_Mfg_Date;
+                document.getElementById("fail-product-use-by").style.display = "block";
+                document.getElementById("fail-calc-use-by").style.display = "block";
+                document.getElementById("fail-carton-lot-no").innerHTML ="XXXXXX";
+                document.getElementById("fail-carton-lot-no-1").innerHTML = "XXXXXX";
+                document.getElementById("fail-product-lot-no1").innerHTML = "XXXXXX";
+                document.getElementById("fail-label-gtin1").innerHTML = "XXXXXX";
+                document.getElementById("fail-db-label-spec").innerHTML = "XXXXXX";
+                document.getElementById("fail-calc-use-by-1").innerHTML = "XXXXXX";
+                document.getElementById("fail-product-useby").innerHTML = "XXXXXX";
+                document.getElementById("fail-ifu").style.display ="block";
+                document.getElementById("fail-db-gtin-2").innerHTML="XXXXXX";
+                document.getElementById("fail-label-gtin2").innerHTML ="XXXXXX";
+                document.getElementById("before-scan-catalog").style.display = "block";
+                document.getElementById("after-scan-pass-catalog").style.display ="none";
+                document.getElementById("before-scan-wo-mfg-date").style.display ="block";
+                document.getElementById("after-scan-pass-wo-mfg-date").style.display ="none";
+                document.getElementById("before-shelflife").style.display = "block";
+                document.getElementById("after-scan-pass-shelflife").style.display ="none";
+                document.getElementById("before-scan-use-date").style.display ="block";
+                document.getElementById("after-scan-pass-use-date").style.display = "none";
+                document.getElementById("before-scan-lot-no").style.display = "block";
+                document.getElementById("after-scan-pass-lot-no").style.display ="none";
                 document.getElementById("before-scan-lot-no1").style.display = "block";
-                document.getElementById("during-scan-lot-no1").style.display = "none";
+                document.getElementById("after-scan-pass-lot-no1").style.display = "none";
                 document.getElementById("before-scan-product-useby").style.display = "block";
-                document.getElementById("during-scan-product-useby").style.display = "none";
+                document.getElementById("after-scan-pass-product-useby").style.display = "none";
                 document.getElementById("before-scan-ifu").style.display = "block";
-                document.getElementById("during-scan-ifu").style.display = "none";
+                document.getElementById("after-scan-pass-ifu").style.display = "none";
+                document.getElementById("before-scan-gtin").style.display ="block";
+                document.getElementById("after-scan-pass-gtin").style.display ="none";
+                document.getElementById("before-scan-label-spec").style.display ="block";
+                document.getElementById("after-scan-pass-label-spec").style.display="none";
                 document.getElementById("before-scan-gtin-1").style.display = "block";
-                document.getElementById("during-scan-gtin-1").style.display = "none";
+                document.getElementById("after-scan-pass-gtin-1").style.display = "none";
                 document.getElementById("popupContainer1").style.display = "none";
+                document.getElementById('after-success-side-scan').style.display = "none";
+                document.getElementById('after-pass-workorder').style.display = "none";
+                document.getElementById('before-side-scan').style.display = "block";
+                document.getElementById('before-workorder').style.display = "block";
                 $('#productLabelInput').val('');
             } else if (response.cartonscan) {
                 responseData = response;
@@ -2372,13 +2402,17 @@ width: 76%;
             document.getElementById("rescanBtn").style.display = "block";
             showPopup1();
           }
-
+            document.getElementById('after-success-side-scan').style.display = 'none';
+            document.getElementById('after-pass-workorder').style.display = 'none';
+            document.getElementById('before-side-scan').style.display = 'block';
+            document.getElementById('before-workorder').style.display = 'block';
             document.getElementById('before-scan-wo-mfg-date').style.display = 'none';
             document.getElementById('after-scan-pass-wo-mfg-date').style.display = 'block';
             document.getElementById('before-shelflife').style.display = 'none';
             document.getElementById('after-scan-pass-shelflife').style.display = 'block';
-
-
+            $('#productLabelInput').val('');
+            $('#productLabelSpec').val('');
+            $('#ifu').val('');
     }
 
     function setScannedData(response) {
