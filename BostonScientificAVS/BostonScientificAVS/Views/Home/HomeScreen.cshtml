@@ -24,9 +24,6 @@
       <h6 class="session-expires-text text-color-blue">Your Session Expires On</h6>
       <h6 id="timer" class="session-expire-time text-color-blue"></h6>
       </div>
-            <div class="shutdown">
-                <button id="shutdownButton" class="btn btn-danger"><i class="bi bi-power"></i></button>
-            </div>
 </div>     
 </div>
 <div class="login-container">
@@ -184,12 +181,6 @@
         padding-right: 20px;
     }
 
-    .shutdown {
-        position: fixed;
-        top: 31px;
-        right: 360px;
-    }
-
  
 </style>
 
@@ -250,22 +241,6 @@
         }
     }
 
-    $("#shutdownButton").click(function () {
-        var apiUrl = "/Home/Shutdown";
-        $.ajax({
-            url: apiUrl,
-            method: "POST",
-            success: function (response) {
-                console.log(response);
-                if (response.message) {
-                    alert(response.message);
-                }
-            },
-            error: function (xhr, status, error) {
-                console.log("An error occurred while making the AJAX call:", error);
-            }
-        });
-    });
 
     // Set the initial expiration time in JavaScript (2 hours in this example)
     var hoursInput = parseFloat(myElement.dataset.hoursInput); // Parse as a float
