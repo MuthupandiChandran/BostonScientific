@@ -2303,10 +2303,17 @@
             console.log(data);
             if (data.pageData != null) {
                 //console.log(data.pageData.Barcode);
-                if (data.pageData.Barcode.length < 25 && superVisorInput == false) {
+                data.pageData.Barcode = data.pageData.Barcode.replace(/(\r\n|\n|\r)/gm, "");
+                data.pageData.Barcode = data.pageData.Barcode.replace(/(\r\n|\n|\r)/gm, "");
+                var barcode = data.pageData.Barcode;
+                var regex = /^[a-zA-Z0-9]{34,}$/;
+                var regex1 = /^(?=.*[a-zA-Z0-9_]{36,})[a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9]+$/g;
+                var regex2 = /^(?=.*-)[a-zA-Z0-9-]{12}$/;
+                
+                if (data.pageData.Barcode.length < 25 && superVisorInput == false && regex2.test(barcode)) {
                     document.getElementById("productLabelSpec").value = data.pageData.Barcode;
                 }
-                else if (data.pageData.Barcode.length > 25 && superVisorInput == false) {
+                else if (data.pageData.Barcode.length > 25 && superVisorInput == false && regex.test(barcode)) {
                     receivedInput++;
                 } else if (data.pageData.Barcode.length > 25 && superVisorInput == false) {
                     document.getElementById("productLabelInput").value = data.pageData.Barcode;
