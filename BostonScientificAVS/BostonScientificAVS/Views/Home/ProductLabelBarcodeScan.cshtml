@@ -2705,34 +2705,38 @@ width: 76%;
             if (superVisorInput == false && superVisorInput1 == false && data.pageData != null && (document.getElementById("productLabelInput").value == '' || document.getElementById("productLabelSpec").value == '')) {
                 //console.log(data.pageData.Barcode);
                 data.pageData.Barcode = data.pageData.Barcode.replace(/(\r\n|\n|\r)/gm, "");
-                var barcode = data.pageData.Barcode;
-                var regex = /^[a-zA-Z0-9]{34,}$/;
-                var regex1 = /^(?=.*[a-zA-Z0-9_]{36,})[a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9]+$/g;
-                var regex2 = /^(?=.*-)[a-zA-Z0-9-]{12}$/;
-                if (regex.test(barcode)) {
-                    document.getElementById("productLabelInput").value = data.pageData.Barcode;
-                } 
-                else if (regex2.test(barcode)){
-                    document.getElementById("productLabeSpec").value = data.pageData.Barcode;
+                var prod_l_format = /^[a-zA-Z0-9]{34,}$/g;
+                var wo_l_format = /^(?=.*[a-zA-Z0-9_]{36,})[a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9]+$/g;
+                var  label_spec_format= /^(?=.*-)[a-zA-Z0-9-]{11,}$g/;
+                var ifu_format = /^(?=.*-)[0-9-]{12}$/;
+                if (data.pageData.Barcode.match(label_spec_format) != null && superVisorInput == false && superVisorInput1 == false) {
+                    document.getElementById("productLabelSpec").value = data.pageData.Barcode;
                 }
-                else if (regex1.test(barcode))
+                else if (data.pageData.Barcode.match(prod_l_format) != null && superVisorInput == false && superVisorInput1 == false) {
+                    receivedInput++;
+                } else if ((data.pageData.Barcode.match(prod_l_format) != null || data.pageData.Barcode.match(wo_l_format) != null) && superVisorInput == false &&superVisorInput1 == false) {
+                    document.getElementById("productLabelInput").value = data.pageData.Barcode;
+                    receivedInput++;
+                }
+                else if ((data.pageData.Barcode.match(ifu_format) != null && superVisorInput == false && superVisorInput1 == false))
                 {
-                    document.getElementById("productLabelInput").value = data.pageData.Barcode;
+                     document.getElementById("ifu").value = data.pageData.Barcode;
                 }
-                if (document.getElementById("productLabelInput").value !== '' && document.getElementById("productLabelSpec").value !== '' && superVisorInput== false && superVisorInput==false) {
+             
+                if (document.getElementById("productLabelInput").value !== '' && document.getElementById("productLabelSpec").value !== '' && superVisorInput== false && superVisorInput1==false) {
                     //IFUScanActive = true;
                     console.log("Submitting First Time");
                     data.pageData = null;
                     document.getElementById("submitBtn").click();
                 }
             }
-            if (data.pageData != null && superVisorInput == false && superVisorInput1 == false) {
-                console.log("Filling UP IFU");
-                    //console.log(data.pageData.Barcode);
-                    document.getElementById("ifu").value = data.pageData.Barcode;
-                //IFUScanActive = false;
-                    document.getElementById("submitBtn").click();
-            }
+            //if (data.pageData != null && superVisorInput == false && superVisorInput1 == false) {
+            //    console.log("Filling UP IFU");
+            //        //console.log(data.pageData.Barcode);
+            //        document.getElementById("ifu").value = data.pageData.Barcode;
+            //    //IFUScanActive = false;
+            //        document.getElementById("submitBtn").click();
+            //}
             if(data.pageData != null && superVisorInput == true){
                 document.getElementById("supervisorInput").value = data.pageData.Barcode;
                 document.getElementById("supervisorInput1").value = data.pageData.Barcode;

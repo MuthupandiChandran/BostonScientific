@@ -2310,7 +2310,7 @@
                 var wo_l_format = /^(?=.*[a-zA-Z0-9_]{36,})[a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9]+$/g;
                 var  label_spec_format= /^(?=.*-)[a-zA-Z0-9-]{11,}$g/;
                 
-                if (data.pageData.Barcode.match(label_spec_format)!=null && superVisorInput == false && regex2.test(barcode)) {
+                if (data.pageData.Barcode.match(label_spec_format)!=null && superVisorInput == false) {
                     document.getElementById("productLabelSpec").value = data.pageData.Barcode;
                 }
                 else if (data.pageData.Barcode.match(prod_l_format) != null && superVisorInput == false) {
