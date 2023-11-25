@@ -2704,9 +2704,19 @@ width: 76%;
             console.log(data.pageData);
             if (superVisorInput == false && superVisorInput1 == false && data.pageData != null && (document.getElementById("productLabelInput").value == '' || document.getElementById("productLabelSpec").value == '')) {
                 //console.log(data.pageData.Barcode);
-                if (data.pageData.Barcode.length < 25) {
-                    document.getElementById("productLabelSpec").value = data.pageData.Barcode;
-                } else {
+                data.pageData.Barcode = data.pageData.Barcode.replace(/(\r\n|\n|\r)/gm, "");
+                var barcode = data.pageData.Barcode;
+                var regex = /^[a-zA-Z0-9]{34,}$/;
+                var regex1 = /^(?=.*[a-zA-Z0-9_]{36,})[a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9]+$/g;
+                var regex2 = /^(?=.*-)[a-zA-Z0-9-]{12}$/;
+                if (regex.test(barcode)) {
+                    document.getElementById("productLabelInput").value = data.pageData.Barcode;
+                } 
+                else if (regex2.test(barcode)){
+                    document.getElementById("productLabeSpec").value = data.pageData.Barcode;
+                }
+                else if (regex1.test(barcode))
+                {
                     document.getElementById("productLabelInput").value = data.pageData.Barcode;
                 }
                 if (document.getElementById("productLabelInput").value !== '' && document.getElementById("productLabelSpec").value !== '' && superVisorInput== false && superVisorInput==false) {
@@ -2716,8 +2726,7 @@ width: 76%;
                     document.getElementById("submitBtn").click();
                 }
             }
-            console.log(isIfuEditable);
-            if (data.pageData != null && isIfuEditable == true && superVisorInput == false && superVisorInput1 == false) {
+            if (data.pageData != null && superVisorInput == false && superVisorInput1 == false) {
                 console.log("Filling UP IFU");
                     //console.log(data.pageData.Barcode);
                     document.getElementById("ifu").value = data.pageData.Barcode;
