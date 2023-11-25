@@ -43,7 +43,9 @@
             </div>
         }
     </div>
-
+    <div class="shutdown">
+                <button id="shutdownButton" class="btn btn-danger"><i class="bi bi-power"></i></button>
+            </div>
 </div>
 
 @*<div class="error-mockup">
@@ -132,6 +134,12 @@
         gap: 5px;
     }
 
+    .shutdown {
+        position: fixed;
+        bottom: 45px;
+        right: 85px;
+    }
+
 </style>
 
 <script>
@@ -141,6 +149,23 @@
         document.getElementById("loginForm").submit();
         hideLoader();
     }
+
+    $("#shutdownButton").click(function () {
+        var apiUrl = "/Home/Shutdown";
+        $.ajax({
+            url: apiUrl,
+            method: "POST",
+            success: function (response) {
+                console.log(response);
+                if (response.message) {
+                    alert(response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log("An error occurred while making the AJAX call:", error);
+            }
+        });
+    });
 
     // Function to show the loader and overlay
 function showLoader() {
