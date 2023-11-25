@@ -2304,18 +2304,18 @@
             if (data.pageData != null) {
                 //console.log(data.pageData.Barcode);
                 data.pageData.Barcode = data.pageData.Barcode.replace(/(\r\n|\n|\r)/gm, "");
-                data.pageData.Barcode = data.pageData.Barcode.replace(/(\r\n|\n|\r)/gm, "");
-                var barcode = data.pageData.Barcode;
-                var regex = /^[a-zA-Z0-9]{34,}$/;
-                var regex1 = /^(?=.*[a-zA-Z0-9_]{36,})[a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9]+$/g;
-                var regex2 = /^(?=.*-)[a-zA-Z0-9-]{12}$/;
+                //data.pageData.Barcode = data.pageData.Barcode.replace(/(\r\n|\n|\r)/gm, "");
+                //var barcode = data.pageData.Barcode;
+                var prod_l_format = /^[a-zA-Z0-9]{34,}$/g;
+                var wo_l_format = /^(?=.*[a-zA-Z0-9_]{36,})[a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9]+$/g;
+                var  label_spec_format= /^(?=.*-)[a-zA-Z0-9-]{11,}$g/;
                 
-                if (data.pageData.Barcode.length < 25 && superVisorInput == false && regex2.test(barcode)) {
+                if (data.pageData.Barcode.match(label_spec_format)!=null && superVisorInput == false && regex2.test(barcode)) {
                     document.getElementById("productLabelSpec").value = data.pageData.Barcode;
                 }
-                else if (data.pageData.Barcode.length > 25 && superVisorInput == false && regex.test(barcode)) {
+                else if (data.pageData.Barcode.match(prod_l_format) != null && superVisorInput == false) {
                     receivedInput++;
-                } else if (data.pageData.Barcode.length > 25 && superVisorInput == false) {
+                } else if ((data.pageData.Barcode.match(prod_l_format) != null || data.pageData.Barcode.match(wo_l_format) != null) && superVisorInput == false) {
                     document.getElementById("productLabelInput").value = data.pageData.Barcode;
                     receivedInput++;
                 }
