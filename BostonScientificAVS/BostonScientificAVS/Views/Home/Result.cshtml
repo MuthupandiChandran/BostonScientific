@@ -1929,6 +1929,7 @@
                     document.getElementById("before-side-scan").style.display = "block";
                     document.getElementById("after-success-side-scan").style.display="none";
                     $('#productLabelInput').val('');
+                    $("#productLabelInput, #productLabelSpec, #submitBtn").prop("disabled", false);
                 }
                 else {
                     responseData = response;
@@ -2333,7 +2334,20 @@
                 //    receivedInput++;
                 //} 
                 else if ((data.pageData.Barcode.match(prod_l_format) != null || data.pageData.Barcode.match(wo_l_format) != null) && superVisorInput == false) {
+                    if(data.pageData.Barcode.match(wo_l_format) != null)
+                    {
+                        var match = wo_l_format.exec(data.pageData.Barcode);
+                         if (match) {
+                            // The captured value is in match[1] (group 1)
+                            var capturedValue = match[1];
+
+                            // Set the productLabelInput value to the captured value
+                            document.getElementById("productLabelInput").value = capturedValue;
+                    }
+                    else
+                    {
                     document.getElementById("productLabelInput").value = data.pageData.Barcode;
+                    }
                     //receivedInput++;
                 }
                 
