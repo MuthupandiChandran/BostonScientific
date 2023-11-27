@@ -2337,11 +2337,11 @@
                     //receivedInput++;
                 }
                 
-                if (document.getElementById("productLabelInput").value !== '' && document.getElementById("productLabelSpec").value !== '' && superVisorInput == false) {
+                if ((document.getElementById("productLabelInput").value !== '' && document.getElementById("productLabelSpec").value !== '') && superVisorInput == false) {
                     document.getElementById("submitBtn").click();
                     //receivedInput = 0;
                 }
-                else if (document.getElementById("productLabelInput").value !== '' && data.pageData.Barcode.match(wo_l_format) != null) && superVisorInput == false)
+                else if ((document.getElementById("productLabelInput").value !== '' && data.pageData.Barcode.match(wo_l_format) != null) && superVisorInput == false)
                 {
                     document.getElementById("submitBtn").click();
                 }
