@@ -1454,7 +1454,7 @@
     var intervalId;
     var isPaused = false;
     var pauseDuration = 60;
-    var receivedInput = 0;
+    //var receivedInput = 0;
   
     document.getElementById("after-fail-side-scan").style.display = "none";
     document.getElementById("after-success-side-scan").style.display = "none";
@@ -1586,6 +1586,7 @@
         document.getElementById("popupContainer").style.display = "none";
         $('#productLabelInput').val('');
         $('#productLabelSpec').val('');
+        $("#productLabelInput, #productLabelSpec, #submitBtn").prop("disabled", false);
     }
     function duringToScanFail(response) {
         document.getElementById("popupContainer").style.display = "none";
@@ -1651,6 +1652,7 @@
         document.getElementById("rescanBtn").style.display = "block";
         document.getElementById("body").style.backgroundColor="#FFCACA";
         document.getElementsByClassName('dropdown-button')[0].style.backgroundColor="#FFCACA";
+        $("#productLabelInput, #productLabelSpec, #submitBtn").prop("disabled", true);
         if(responseData.gtinMismatch==true)
         {
          gtinmismatchblink();
@@ -1663,41 +1665,49 @@
     function gtinmismatchblink()
     {
         if (responseData.gtinMismatch == true) {
+            document.getElementById("before-scan-gtin").style.display = "none";
             document.getElementById("during-scan-gtin").style.display = "none";
             document.getElementById("after-scan-fail-gtin").style.display = "block";
         }
         if (responseData.lotnoMismatch == true) {
+            document.getElementById("before-scan-lot-no").style.display = "none";
             document.getElementById("during-scan-lot-no").style.display = "none";
             document.getElementById("after-scan-fail-lot-no").style.display = "block";
         }
         else {
+            document.getElementById("before-scan-lot-no").style.display = "none";
             document.getElementById("during-scan-lot-no").style.display = "none";
             document.getElementById("after-scan-pass-lot-no").style.display = "block";
 
         }
 
         if (responseData.labelMismatch == true) {
+            document.getElementById("before-scan-label-spec").style.display ="none";
             document.getElementById("during-scan-label-spec").style.display = "none";
             document.getElementById("after-scan-fail-label-spec").style.display = "block";
         }
         else {
-
+            document.getElementById("before-scan-label-spec").style.display ="none";
             document.getElementById("during-scan-label-spec").style.display = "none";
             document.getElementById("after-scan-pass-label-spec").style.display = "block";
         }
         if (responseData.firstUseby_Mismatch == true) {
+            document.getElementById("before-scan-use-date").style.display ="none";
             document.getElementById("during-scan-use-date").style.display = "none";
             document.getElementById("after-scan-fail-use-date").style.display = "block";
         }
         else {
+            document.getElementById("before-scan-use-date").style.display = "none";
             document.getElementById("during-scan-use-date").style.display = "none";
             document.getElementById("after-scan-pass-use-date").style.display = "block";
         }
         if (responseData.catalogMismatch == true) {
+            document.getElementById("before-scan-cat-no").style.display = "none";
             document.getElementById("during-scan-cat-no").style.display = "none";
             document.getElementById("after-scan-fail-cat-no").style.display = "block";
         }
         else {
+            document.getElementById("before-scan-cat-no").style.display = "none";
             document.getElementById("during-scan-cat-no").style.display = "none";
             document.getElementById("after-scan-pass-cat-no").style.display = "block";
         }
@@ -1708,11 +1718,13 @@
     function mismatchblink()
     {
         if (responseData.mismatches.gtinMismatch == true) {
+            document.getElementById("before-scan-gtin").style.display = "none";
             document.getElementById("during-scan-gtin").style.display = "none";
             document.getElementById("after-scan-fail-gtin").style.display = "block";
         }
 
         else {
+            document.getElementById("before-scan-gtin").style.display = "none";
             document.getElementById("during-scan-gtin").style.display = "none";
             document.getElementById("after-scan-fail-gtin").style.display = "none";
             document.getElementById("after-scan-pass-gtin").style.display = "block";
@@ -1720,10 +1732,12 @@
         }
 
         if (responseData.mismatches.lotNoMismatch == true) {
+            document.getElementById("before-scan-lot-no").style.display = "none";
             document.getElementById("during-scan-lot-no").style.display = "none";
             document.getElementById("after-scan-fail-lot-no").style.display = "block";
         }
         else {
+            document.getElementById("before-scan-lot-no").style.display = "none";
             document.getElementById("during-scan-lot-no").style.display = "none";
             document.getElementById("after-scan-fail-lot-no").style.display = "none";
             document.getElementById("after-scan-pass-lot-no").style.display = "block";
@@ -1731,30 +1745,36 @@
         }
 
         if (responseData.mismatches.labelSpecMismatch == true) {
+            document.getElementById("before-scan-label-spec").style.display = "none";
              document.getElementById("during-scan-label-spec").style.display = "none";
             document.getElementById("after-scan-fail-label-spec").style.display = "block";
         }
         else {
+            document.getElementById("before-scan-label-spec").style.display = "none";
             document.getElementById("during-scan-label-spec").style.display = "none";
             document.getElementById("after-scan-fail-label-spec").style.display = "none";
             document.getElementById("after-scan-pass-label-spec").style.display = "block";
 
         }
         if (responseData.mismatches.calculatedUseByMismatch == true) {
-           document.getElementById("during-scan-use-date").style.display = "none";
+            document.getElementById("before-scan-use-date").style.display = "none";
+            document.getElementById("during-scan-use-date").style.display = "none";
             document.getElementById("after-scan-fail-use-date").style.display="block";
 
         }
         else {
+            document.getElementById("before-scan-use-date").style.display ="none";
             document.getElementById("during-scan-use-date").style.display = "none";
             document.getElementById("after-scan-fail-use-date").style.display="none";
             document.getElementById("after-scan-pass-use-date").style.display = "block";
         }
         if (responseData.mismatches.catalogNumMismatch == true) {
+            document.getElementById("before-scan-cat-no").style.display = "none";
             document.getElementById("during-scan-cat-no").style.display = "none";
             document.getElementById("after-scan-fail-cat-no").style.display = "block";
         }
         else {
+            document.getElementById("before-scan-cat-no").style.display = "none";
             document.getElementById("during-scan-cat-no").style.display = "none";
             document.getElementById("after-scan-fail-cat-no").style.display = "none";
             document.getElementById("after-scan-pass-cat-no").style.display = "block";
@@ -1927,10 +1947,6 @@
                     console.log("An error occurred while making the AJAX call:", error);
                 }
             },
-            complete: function () {
-                // Re-enable the input fields and button after the AJAX request is complete
-                $("#productLabelInput, #productLabelSpec, #submitBtn").prop("disabled", false);
-            }
         });
     });
 
@@ -2307,27 +2323,32 @@
                 //data.pageData.Barcode = data.pageData.Barcode.replace(/(\r\n|\n|\r)/gm, "");
                 //var barcode = data.pageData.Barcode;
                 var prod_l_format = /^[a-zA-Z0-9]{34,}$/g;
-                var wo_l_format = /^(?=.*[a-zA-Z0-9_]{36,})[a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9]+$/g;
-                var  label_spec_format= /^(?=.*-)[a-zA-Z0-9-]{11,}$g/;
+                var wo_l_format = /^(?:CR7_SLED)?([a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9]+)$/;
+                var  label_spec_format= /^(?=.*-)[a-zA-Z0-9-]{11,}$/;
                 
                 if (data.pageData.Barcode.match(label_spec_format)!=null && superVisorInput == false) {
                     document.getElementById("productLabelSpec").value = data.pageData.Barcode;
                 }
-                else if (data.pageData.Barcode.match(prod_l_format) != null && superVisorInput == false) {
-                    receivedInput++;
-                } else if ((data.pageData.Barcode.match(prod_l_format) != null || data.pageData.Barcode.match(wo_l_format) != null) && superVisorInput == false) {
+                //else if (data.pageData.Barcode.match(prod_l_format) != null && superVisorInput == false) {
+                //    receivedInput++;
+                //} 
+                else if ((data.pageData.Barcode.match(prod_l_format) != null || data.pageData.Barcode.match(wo_l_format) != null) && superVisorInput == false) {
                     document.getElementById("productLabelInput").value = data.pageData.Barcode;
-                    receivedInput++;
+                    //receivedInput++;
                 }
                 
                 if (document.getElementById("productLabelInput").value !== '' && document.getElementById("productLabelSpec").value !== '' && superVisorInput == false) {
                     document.getElementById("submitBtn").click();
-                    receivedInput = 0;
+                    //receivedInput = 0;
+                }
+                else if (document.getElementById("productLabelInput").value !== '' && data.pageData.Barcode.match(wo_l_format) != null) && superVisorInput == false)
+                {
+                    document.getElementById("submitBtn").click();
                 }
                 if(superVisorInput == true){
                     document.getElementById("supervisorInput").value = data.pageData.Barcode;
                     configureContinueButton('supervisorInput');
-                    receivedInput = 0;
+                    //receivedInput = 0;
                 }
                 console.log("Supervisor Input Enabled:", superVisorInput);
             }
