@@ -2327,33 +2327,17 @@
                 var wo_l_format = /^(?:CR7_SLED)?([a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9]+)$/;
                 var  label_spec_format= /^(?=.*-)[a-zA-Z0-9-]{11,}$/;
                 
-                if (data.pageData.Barcode.match(label_spec_format)!=null && superVisorInput == false) {
+                 if (data.pageData.Barcode.match(label_spec_format)!=null && superVisorInput == false) {
                     document.getElementById("productLabelSpec").value = data.pageData.Barcode;
                 }
-                //else if (data.pageData.Barcode.match(prod_l_format) != null && superVisorInput == false) {
-                //    receivedInput++;
-                //} 
+              
                 else if ((data.pageData.Barcode.match(prod_l_format) != null || data.pageData.Barcode.match(wo_l_format) != null) && superVisorInput == false) {
-                    if(data.pageData.Barcode.match(wo_l_format) != null)
-                    {
-                        var match = wo_l_format.exec(data.pageData.Barcode);
-                         if (match) {
-                            // The captured value is in match[1] (group 1)
-                            var capturedValue = match[1];
-
-                            // Set the productLabelInput value to the captured value
-                            document.getElementById("productLabelInput").value = capturedValue;
-                    }
-                    else
-                    {
-                    document.getElementById("productLabelInput").value = data.pageData.Barcode;
-                    }
-                    //receivedInput++;
+                    document.getElementById("productLabelInput").value = data.pageData.Barcode;                 
                 }
                 
-                if ((document.getElementById("productLabelInput").value !== '' && document.getElementById("productLabelSpec").value !== '') && superVisorInput == false) {
+                if ((document.getElementById("productLabelInput").value !== '' && document.getElementById("productLabelSpec").value !== '')&& superVisorInput == false) {
                     document.getElementById("submitBtn").click();
-                    //receivedInput = 0;
+                    
                 }
                 else if ((document.getElementById("productLabelInput").value !== '' && data.pageData.Barcode.match(wo_l_format) != null) && superVisorInput == false)
                 {

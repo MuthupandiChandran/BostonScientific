@@ -2210,6 +2210,7 @@ width: 76%;
                 document.getElementById('before-side-scan').style.display = "block";
                 document.getElementById('before-workorder').style.display = "block";
                 $('#productLabelInput').val('');
+                $("#productLabelInput, #productLabelSpec, #ifu, #submitBtn").prop("disabled", false);
             } else if (response.cartonscan) {
                 responseData = response;
                 cartonscan(response);
@@ -2397,6 +2398,7 @@ width: 76%;
             document.getElementById("after-fail-side-scan").style.display = "block";
             document.getElementById("after-pass-workorder").style.display = "block";
             document.getElementById("rescanBtn").style.display = "block";
+            $("#productLabelInput, #productLabelSpec, #ifu, #submitBtn").prop("disabled", true);
             showPopup1();
           }
             document.getElementById('after-success-side-scan').style.display = 'none';
@@ -2721,12 +2723,12 @@ width: 76%;
                      document.getElementById("ifu").value = data.pageData.Barcode;
                 }
              
-                if (document.getElementById("productLabelInput").value !== '' && document.getElementById("productLabelSpec").value !== '' && superVisorInput== false && superVisorInput1==false) {
+                if ((document.getElementById("productLabelInput").value !== '' && document.getElementById("productLabelSpec").value !== '') && superVisorInput== false && superVisorInput1==false) {
                     //IFUScanActive = true;
                     console.log("Product Label Submission");
                     document.getElementById("submitBtn").click();
                 }
-                else if (document.getElementById("productLabelInput").value !== '' && data.pageData.Barcode.match(wo_l_format) != null) && superVisorInput == false && superVisorInput1 == false) {
+                else if ((document.getElementById("productLabelInput").value !== '' && data.pageData.Barcode.match(wo_l_format) != null) && superVisorInput == false && superVisorInput1 == false) {
                     //IFUScanActive = true;
                     console.log("Work Order Label Submission");
                     document.getElementById("submitBtn").click();
